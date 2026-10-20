@@ -297,6 +297,82 @@ function checkerView(){
   pls.forEach(pid=>stats(pid).then(d=>{ if(!d) return; main.querySelectorAll(`[data-ckp="${CSS.escape(pid)}"]`).forEach(el=>{ const s=d[el.dataset.ckb], ti=el.dataset.ckt; if(!s||!s.n||ti===''||+ti>=s.c.length) return; const better=s.c.slice(+ti+1).reduce((a,b)=>a+b,0); const pc=Math.round((s.n-better-s.c[+ti]/2)/s.n*100); el.textContent=T(`lepší než ${pc} %`,`beats ${pc}%`); el.title=T(`podle ${s.n} rollů od hráčů`,`based on ${s.n} player rolls`); }); }));
 }
 
+
+// =====================================================================
+//  IMPORT GEARU ZE SCREENSHOTŮ (do plánovače)
+// =====================================================================
+const slotNamesFor = slot => { const set=new Set(); itemPools().forEach(p=>p.rows.forEach(r=>{ if(r.sl.includes(slot)) set.add(r.n); })); return [...set]; };
+function poolForLine(b, v, slot, godly){
+  if(godly && poolById('Godly') && rowIn(poolById('Godly'),b,slot)) return poolById('Godly');
+  const cand=itemPools().map(p=>[p,rowIn(p,b,slot)]).filter(x=>x[1]);
+  return (cand.find(([p,r])=>exactTier(r,v)) || cand.find(([p,r])=>inRange(r,v)) || [null])[0];
+}
+function bestParse(texts, names){ let best=[]; texts.forEach(t=>{ const f=parseItemText(t,names); if(f.length>best.length) best=f; }); return best; }
+// rozpozná jeden screenshot: {kind:'slot'|'pet'|'unk', slot, item, rows}
+function classifyShot(texts, forceSlot){
+  if(forceSlot==='__pet') return {kind:'pet', rows:bestParse(texts, PET.rows.map(r=>r.n))};
+  let det=null; for(const t of texts){ det=detectItem(t); if(det) break; }
+  const slot = forceSlot || det?.slot;
+  if(slot) return {kind:'slot', slot, item:det&&det.slot===slot?det.item:null, rows:bestParse(texts, slotNamesFor(slot))};
+  const petRows=bestParse(texts, PET.rows.map(r=>r.n));
+  if(petRows.length>=2 || texts.some(t=>/artifact|artefakt/i.test(t))) return {kind:'pet', rows:petRows};
+  return {kind:'unk', rows:[]};
+}
+function applyShot(b, res){
+  if(res.kind==='pet'){ if(!res.rows.length) return 0; b.pet.lines=res.rows.map(r=>({b:r.b,v:r.v})); return res.rows.length; }
+  if(res.kind!=='slot') return 0;
+  const st=slotState(b,res.slot); if(res.item) st.item=res.item.id;
+  const lines=res.rows.map(r=>{ const p=poolForLine(r.b,r.v,res.slot,r.godly); if(!p) return null; const row=rowIn(p,r.b,res.slot); const t=tierOf(row,r.v); return t&&t.ti>=0?{b:r.b,ti:t.ti,p:p.id}:null; }).filter(Boolean);
+  if(!lines.length && !res.item) return 0;
+  const cnt={}; lines.filter(l=>l.p!=='Godly').forEach(l=>cnt[l.p]=(cnt[l.p]||0)+1);
+  st.pool=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]?.[0] || lines[0]?.p || st.pool;
+  st.lines=lines.map(l=>l.p===st.pool?{b:l.b,ti:l.ti}:l);
+  return lines.length;
+}
+const IMP = {list:[], busy:false};
+async function runImport(rerender){
+  if(IMP.busy) return; IMP.busy=true;
+  let w=null;
+  try{
+    await loadTess();
+    w = await Tesseract.createWorker('eng',1,{workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int'});
+    let x;
+    while((x=IMP.list.find(i=>i.st==='wait'))){
+      x.st='busy'; rerender();
+      try{
+        x.texts=[]; for(const thr of [140,110,170]){ const cv=await prepImage(x.url,thr); const {data}=await w.recognize(cv); x.texts.push(data.text); }
+        finishShot(x);
+      }catch(e){ x.st='err'; x.msg=e.message; }
+      rerender();
+    }
+  }catch(e){ IMP.list.filter(i=>i.st==='wait'||i.st==='busy').forEach(i=>{i.st='err';i.msg=e.message;}); }
+  if(w) await w.terminate().catch(()=>{});
+  IMP.busy=false; rerender();
+}
+function finishShot(x, forceSlot){
+  const b=curBuild(); const res=classifyShot(x.texts, forceSlot);
+  x.kind=res.kind; x.slot=res.slot||''; x.item=res.item?res.item.n:''; 
+  if(res.kind==='unk'){ x.st='unk'; return; }
+  x.n=applyShot(b,res); x.st=x.n||res.item?'ok':'none'; saveBuilds();
+}
+function importPanel(){
+  const sname = k => k==='__pet' ? T('Pet artefakt','Pet artifact') : slotName(SLOTS.find(s=>s.k===k)||{k,cz:k});
+  const items = IMP.list.map((x,i)=>{
+    const lab = x.st==='wait'?T('čeká…','queued…') : x.st==='busy'?T('čtu…','reading…') : x.st==='err'?(x.msg||T('chyba','error'))
+      : x.st==='unk'?T('nepoznal jsem slot – vyber:','slot not recognised – pick:')
+      : x.st==='none'?T(`${sname(x.kind==='pet'?'__pet':x.slot)} – žádný bonus nenalezen`,`${sname(x.kind==='pet'?'__pet':x.slot)} – no bonus found`)
+      : `<b>${esc(sname(x.kind==='pet'?'__pet':x.slot))}</b>${x.item?' · '+esc(x.item):''} · ${x.n} ${T('řádků','lines')}`;
+    const pick = x.st==='unk'||x.st==='none' ? `<select class="bsel" data-impslot="${i}"><option value="">—</option>${SLOTS.map(s=>`<option value="${esc(s.k)}">${esc(slotName(s))}</option>`).join('')}<option value="__pet">${T('Pet artefakt','Pet artifact')}</option></select>` : '';
+    return `<div class="impi ${x.st}"><img src="${x.url}" alt=""><span>${lab}</span>${pick}</div>`; }).join('');
+  return `<div class="imp">
+    <div class="impdrop" id="impdrop" role="button" tabindex="0">
+      <b>${T('Importovat gear ze screenshotů','Import gear from screenshots')}</b>
+      <span>${T('Najeď ve hře na item, udělej screenshot tooltipu (Win+Shift+S) a dej tu <kbd>Ctrl+V</kbd>. Postupně tak vlož všechny itemy i pet – každý se sám zařadí do správného slotu. Můžeš i přetáhnout víc obrázků najednou.','Hover an item in game, screenshot the tooltip (Win+Shift+S) and press <kbd>Ctrl+V</kbd> here. Repeat for every item and the pet – each one goes to the right slot. You can also drop several images at once.')}</span>
+      <input type="file" id="impfile" accept="image/*" multiple hidden>
+    </div>
+    ${items?`<div class="impl">${items}${IMP.busy?'':`<button class="lnk2" id="impclr">${T('Vyčistit seznam','Clear list')}</button>`}</div>`:''}
+  </div>`;
+}
 // =====================================================================
 //  PLÁNOVAČ BUILDU
 // =====================================================================
@@ -305,6 +381,32 @@ function emblemOptions(spec, sel){
   const groups={};
   D.emblems.forEach(e=>{ const forSpec = e.sp&&e.sp.length; if(forSpec && (!spec || !e.sp.includes(spec))) return; const g = forSpec ? T('Emblemy classy','Class emblems')+(e.set!=null&&D.emblemSets[e.set]?' · '+D.emblemSets[e.set]:'') : e.t; (groups[g] ||= []).push(e); });
   return `<option value="">${T('— prázdné —','— empty —')}</option>`+Object.entries(groups).map(([g,l])=>`<optgroup label="${esc(g)}">${l.map(e=>`<option value="${esc(e.id)}" ${e.id===sel?'selected':''}>${esc(e.n)}</option>`).join('')}</optgroup>`).join('');
+}
+const BEDIT = new Set();
+function lineRead(name, valTxt, ti, tn, pct){
+  const c = pct>=.999?'var(--gold2)':pct>=.6?'var(--good)':pct>=.3?'var(--mid)':'var(--bad)';
+  const pips = tn ? `<span class="pips" style="--c:${c}">${Array.from({length:tn},(_,j)=>`<i class="${j<=ti?'on':''}"></i>`).join('')}</span>` : `<span class="pips pct" style="--c:${c}"><i style="width:${Math.round(pct*100)}%"></i></span>`;
+  return `<div class="bro"><span class="bron">${esc(name)}</span><b style="color:${c}">+${esc(valTxt)}</b>${tn?`<em>T${ti+1}/${tn}</em>`:'<em></em>'}${pips}</div>`;
+}
+function slotRead(b, s){
+  const st=slotState(b,s.k), p=poolById(st.pool);
+  const it=D.equip.find(e=>e.id===st.item);
+  const lines=st.lines.map(l=>{ const lp=poolById(l.p)||p; const r=lp?.rows.find(x=>x.n===l.b); if(!r) return ''; const tn=r.t.length; return lineRead(r.n, r.t[l.ti], l.ti, tn, tn>1?l.ti/(tn-1):1); }).join('');
+  const has = it || st.lines.length;
+  return `<div class="bcard rd ${has?'':'empty'}" data-slot="${esc(s.k)}" data-open="${esc(s.k)}" role="button" tabindex="0">
+    <div class="bch">${it?img(it.i,'bimg'):`<span class="bimg ph">${esc(slotName(s).slice(0,2))}</span>`}<div class="bct"><b>${esc(slotName(s))}</b><span class="smut">${it?esc(it.n):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot')}</span></div>
+      ${st.rank?`<span class="brk">R${st.rank}</span>`:''}</div>
+    ${p?`<span class="bpool">${esc(p.n)}</span>`:''}
+    ${lines?`<div class="brl">${lines}</div>`:''}
+  </div>`;
+}
+function petRead(b){
+  const st=b.pet;
+  const lines=(st.lines||[]).map(l=>{ const r=PET.rows.find(x=>x.n===l.b); if(!r||l.v==='') return ''; const a=num(r.t[0]), z=num(r.t[1]); const pct=clamp((num(l.v)-a)/((z-a)||1),0,1); return lineRead(r.n, l.v+unitOf(r.t[1]), 0, 0, pct); }).join('');
+  return `<div class="bcard rd pet ${lines?'':'empty'}" data-slot="__pet" data-open="__pet" role="button" tabindex="0">
+    <div class="bch"><span class="bimg ph">🐾</span><div class="bct"><b>${T('Pet artefakt','Pet artifact')}</b><span class="smut">${lines?T('hodnoty rollů','roll values'):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot')}</span></div>${st.rank?`<span class="brk">R${st.rank}</span>`:''}</div>
+    ${lines?`<div class="brl">${lines}</div>`:''}
+  </div>`;
 }
 function slotCard(b, s){
   const st=slotState(b,s.k), pools=poolsFor(s.k), p=poolById(st.pool);
@@ -320,6 +422,7 @@ function slotCard(b, s){
     ${p||st.lines.length?`<div class="blines">${st.lines.map((l,i)=>{ const lp=poolById(l.p)||p; const lrows=lp?lp.rows.filter(r=>r.sl.includes(s.k)):[]; const r=lrows.find(x=>x.n===l.b); return `<div class="bline"><select data-l="${i}" data-f="lb"><option value="">—</option>${lrows.map(x=>`<option ${x.n===l.b?'selected':''}>${esc(x.n)}</option>`).join('')}</select>
         <select data-l="${i}" data-f="lt" class="tsel">${r?r.t.map((t,j)=>`<option value="${j}" ${j===l.ti?'selected':''}>T${j+1} · ${esc(t)}</option>`).join(''):''}</select><button class="bx" data-l="${i}" data-f="ldel">×</button>${l.p&&l.p!==st.pool?`<span class="lpool">${esc(lp?lp.n:l.p)}</span>`:''}</div>`; }).join('')}
       ${st.lines.length<7?`<button class="badd" data-f="ladd">+ ${T('řádek','line')}</button>`:''}</div>`:''}
+    <button class="bdone" data-close="${esc(s.k)}">${T('Hotovo','Done')}</button>
   </div>`;
 }
 function petCard(b){
@@ -328,7 +431,8 @@ function petCard(b){
     ${PET_UP?`<label class="brank" title="${esc(PET_UP.item)}">R<input type="number" min="0" max="${maxR}" data-f="rank" value="${st.rank||0}"></label>`:''}</div>
     <div class="blines">${st.lines.map((l,i)=>{ const r=PET.rows.find(x=>x.n===l.b); return `<div class="bline"><select data-l="${i}" data-f="lb"><option value="">—</option>${PET.rows.map(x=>`<option ${x.n===l.b?'selected':''}>${esc(x.n)}</option>`).join('')}</select>
       <input data-l="${i}" data-f="lv" class="tsel" inputmode="decimal" value="${esc(l.v??'')}" placeholder="${r?esc(r.t[0]+' – '+r.t[1]):''}"><button class="bx" data-l="${i}" data-f="ldel">×</button></div>`; }).join('')}
-      ${st.lines.length<7?`<button class="badd" data-f="ladd">+ ${T('řádek','line')}</button>`:''}</div></div>`;
+      ${st.lines.length<7?`<button class="badd" data-f="ladd">+ ${T('řádek','line')}</button>`:''}</div>
+    <button class="bdone" data-close="__pet">${T('Hotovo','Done')}</button></div>`;
 }
 function costView(b){
   const rowsH=[]; let total=0, missing=0;
@@ -372,10 +476,11 @@ function buildView(){
       <button class="tbtn ghost" id="bnew">${T('+ Nový','+ New')}</button><button class="tbtn ghost" id="bdup">${T('Duplikovat','Duplicate')}</button><button class="tbtn" id="bshare">🔗 ${T('Sdílet odkaz','Share link')}</button><button class="lnk2" id="bdel">${T('Smazat','Delete')}</button></div>`}
     ${BTAB==='cost' ? costView(b) : `<div class="bgrid">
       <div>
+        ${SHARED?'':importPanel()}
         <div class="tl">${T('Classa','Class')}</div>
         <select id="bspec" class="bsel full" style="max-width:320px"><option value="">${T('— vyber classu —','— pick a class —')}</option>${specs.map(([k,v])=>`<option value="${esc(k)}" ${k===b.spec?'selected':''}>${esc(v)}</option>`).join('')}</select>
         <div class="tl">${T('Emblemy','Emblems')}</div><div class="emgrid">${emb}</div>
-        <div class="tl">${T('Vybavení','Equipment')}</div><div class="bcards">${SLOTS.map(s=>slotCard(b,s)).join('')}${petCard(b)}</div>
+        <div class="tl">${T('Vybavení','Equipment')}</div><div class="bcards">${SLOTS.map(s=>BEDIT.has(s.k)||SHARED&&false?slotCard(b,s):slotRead(b,s)).join('')}${BEDIT.has('__pet')?petCard(b):petRead(b)}</div>
       </div>
       <aside class="card bsum"><h3 class="sh" style="margin-top:0">${T('Celkové bonusy','Total bonuses')}</h3>
         ${tot.length?`<table class="ptab"><tbody>${tot.map(t=>`<tr title="${esc(t.src.join(', '))}"><td>${esc(t.name)}</td><td class="r pm" style="font-size:14px">${fmtN(t.v)}${t.u}</td></tr>`).join('')}</tbody></table>`:`<p class="smut">${T('Vyber u slotů, čím jsou točené, a přidej řádky bonusů. Tady se sečtou.','Pick how slots are rolled and add bonus lines. They add up here.')}</p>`}
@@ -404,6 +509,16 @@ function buildView(){
     return;
   }
   $('#bspec').onchange=e=>{ b.spec=e.target.value; persist(); re(); };
+  main.querySelectorAll('[data-open]').forEach(c=>{ const go=()=>{ BEDIT.add(c.dataset.open); re(); }; c.onclick=go; c.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } }; });
+  main.querySelectorAll('[data-close]').forEach(x=>x.onclick=e=>{ e.stopPropagation(); BEDIT.delete(x.dataset.close); re(); });
+  const addShots = files => { const f=[...files].filter(x=>x&&x.type&&x.type.startsWith('image/')); if(!f.length||SHARED) return; f.forEach(file=>IMP.list.push({url:URL.createObjectURL(file), st:'wait'})); re(); runImport(re); };
+  const dz=$('#impdrop'), fi=$('#impfile');
+  if(dz){ dz.onclick=()=>fi.click(); dz.onkeydown=e=>{ if(e.key==='Enter') fi.click(); }; fi.onchange=()=>addShots(fi.files);
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')}; dz.ondragleave=()=>dz.classList.remove('over');
+    dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over');addShots(e.dataTransfer.files)}; }
+  document.onpaste = e => { if(state.cat!=='tool-build'||state.q||BTAB!=='build') return; const its=[...(e.clipboardData?.items||[])].filter(i=>i.type.startsWith('image/')).map(i=>i.getAsFile()); if(its.length){ e.preventDefault(); addShots(its); } };
+  main.querySelectorAll('[data-impslot]').forEach(sel=>sel.onchange=()=>{ const x=IMP.list[+sel.dataset.impslot]; if(!x||!sel.value||!x.texts) return; finishShot(x, sel.value); re(); });
+  const ic=$('#impclr'); if(ic) ic.onclick=()=>{ IMP.list.forEach(x=>URL.revokeObjectURL(x.url)); IMP.list=[]; re(); };
   main.querySelectorAll('[data-emb]').forEach(s=>s.onchange=()=>{ b.emb[+s.dataset.emb]=s.value; persist(); re(); });
   main.querySelectorAll('.bcard').forEach(card=>{
     const k=card.dataset.slot, st = k==='__pet' ? b.pet : slotState(b,k);
