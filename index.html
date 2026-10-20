@@ -660,7 +660,7 @@ body{background:radial-gradient(1000px 420px at 20% -180px,color-mix(in srgb,var
 a{color:var(--gold2)}
 
 /* ---------- Pet artefakty ---------- */
-main.pet2{padding:24px 30px 50px;max-width:1100px}
+main.pet2{padding:24px 30px 50px;max-width:1560px}
 .plhead{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:18px}
 .plhead>div{flex:1;min-width:260px}
 .plhead h1{margin:0;font:400 28px var(--head);color:var(--gold2)}
@@ -677,7 +677,7 @@ main.pet2{padding:24px 30px 50px;max-width:1100px}
 .plfav span{color:var(--dim,#6f6458);margin-left:4px}
 .plfav.on{color:var(--gold2);border-color:var(--bronze)}
 .plhint{color:var(--muted);font-size:13px;margin:12px 0 4px}
-.plsec{margin-top:22px}
+.plsec{margin-top:22px;scroll-margin-top:80px}
 .plsh{display:flex;align-items:baseline;gap:12px;padding:0 0 6px;border-bottom:1px solid var(--line)}
 .plsh h3{margin:0;font:400 19px var(--head);color:var(--text)}
 .plsh span{color:var(--muted);font-size:13px;flex:1}
@@ -692,7 +692,7 @@ main.pet2{padding:24px 30px 50px;max-width:1100px}
 .plrange{color:var(--muted);font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .plmax{text-align:right;font:500 18px var(--head);color:var(--gold2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .plrate{display:flex;gap:3px;justify-content:flex-end}
-.plrate button{width:14px;height:8px;border:1px solid var(--bronze);background:transparent;border-radius:1px;padding:0;cursor:pointer}
+.plrate button{width:14px;height:8px;border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);background:transparent;border-radius:1px;padding:0;cursor:pointer}
 .plrate button.on{background:var(--gold);border-color:var(--gold)}
 .plrate:hover button{border-color:var(--gold2)}
 @media(max-width:760px){main.pet2{padding:18px 16px 40px}.plr{grid-template-columns:26px minmax(0,1fr) 70px;row-gap:2px}.plrange{grid-column:2;grid-row:2}.plrate{grid-column:3;grid-row:2}.plfav{margin-left:0}}
@@ -720,6 +720,33 @@ html[data-theme] .logo{text-shadow:0 1px 0 #000}
 .thsw button{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;box-shadow:0 0 0 1px rgba(255,255,255,.25) inset}
 .thsw button.on{border-color:var(--text)}
 @media(max-width:700px){.thsw button{width:16px;height:16px}}
+
+/* pet – dvousloupcové rozložení */
+.plgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:start}
+.plaside{position:sticky;top:76px;display:flex;flex-direction:column;gap:14px;padding-top:4px}
+.plcard{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.plcard h4{margin:0 0 10px;font:400 16px var(--head);color:var(--gold2)}
+.pldrop{border:1.5px dashed color-mix(in srgb,var(--gold) 55%,transparent);border-radius:6px;padding:18px 12px;text-align:center;cursor:pointer;color:var(--muted);font-size:13px;line-height:1.5;transition:.15s}
+.pldrop:hover,.pldrop.over{background:color-mix(in srgb,var(--gold) 8%,transparent);border-color:var(--gold)}
+.pldrop b{display:block;color:var(--text);font-size:15px;margin-bottom:2px}
+.plfl{display:flex;flex-direction:column}
+.plfl div{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.plfl div:last-child{border-bottom:0}
+.plfl span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plfl em{font-style:normal;color:var(--gold2);font-weight:600}
+.plfl button{background:none;border:0;color:var(--gold);cursor:pointer;padding:0;font-size:15px}
+.plsum{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.plsum button{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:8px 10px;text-align:left;cursor:pointer;color:var(--muted);font:inherit;font-size:12px}
+.plsum button:hover{border-color:var(--gold)}
+.plsum b{display:block;font-size:20px;color:var(--text);font-weight:600}
+.plleg{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0}
+.plleg i{display:inline-flex;gap:2px;vertical-align:middle;margin-right:6px}
+.plleg i s{display:block;width:10px;height:4px;border-radius:1px;background:var(--line)}
+.plleg i s.on{background:var(--gold)}
+@media(max-width:1280px){.plgrid{grid-template-columns:minmax(0,1fr)}.plaside{display:none}}
+:root{color-scheme:dark}
+*{scrollbar-color:var(--line) var(--bg)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;border:2px solid var(--bg)}::-webkit-scrollbar-thumb:hover{background:var(--bronze2)}
 </style>
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("mmr_theme")||"gold"}catch(e){document.documentElement.dataset.theme="gold"}</script>
 </head>
@@ -1129,8 +1156,17 @@ function renderPet(c){
       <div class="plrate" role="group" aria-label="${tr('Hodnocení','Rating')}">${[1,2,3].map(i=>`<button class="${i<=r?'on':''}" data-rate="${esc(b.name)}" data-rv="${i}" title="${[tr('slabé','weak'),tr('užitečné','useful'),tr('nejlepší','best')][i-1]}"></button>`).join('')}</div>
     </div>`; };
   const body = list.length ? SEC.map(([rv,title,sub])=>{ const l=list.filter(b=>rateOf(b)===rv).sort((a,b)=>a.name.localeCompare(b.name)); if(!l.length) return '';
-      return `<section class="plsec"><div class="plsh"><h3>${title}</h3><span>${sub}</span><em>${l.length}</em></div>${l.map(row).join('')}</section>`; }).join('')
+      return `<section class="plsec" data-sec="${rv}"><div class="plsh"><h3>${title}</h3><span>${sub}</span><em>${l.length}</em></div>${l.map(row).join('')}</section>`; }).join('')
     : `<div class="pempty">${view==='fav'&&!favList.length?tr('Zatím nemáš oblíbené. Klikni na ☆ u bonusu.','No favourites yet. Click ☆ on a bonus.'):tr('Nic nenalezeno.','Nothing found.')}</div>`;
+  const cnt = rv => list.filter(b=>rateOf(b)===rv).length;
+  const marks = n => `<i>${[1,2,3].map(i=>`<s class="${i<=n?'on':''}"></s>`).join('')}</i>`;
+  const aside = `<aside class="plaside">
+    <div class="plcard"><h4>${tr('Zkontroluj svůj artefakt','Check your artifact')}</h4>
+      <div class="pldrop" id="pldrop" role="button" tabindex="0"><b>Ctrl+V</b>${tr('vlož screenshot artefaktu<br>nebo ho sem přetáhni','paste an artifact screenshot<br>or drop it here')}</div><input type="file" id="plfile" accept="image/*" hidden></div>
+    <div class="plcard"><h4>${tr('Přehled','Overview')}</h4><div class="plsum">${SEC.filter(x=>x[0]>0||cnt(0)).map(([rv,t])=>`<button data-jump="${rv}"><b>${cnt(rv)}</b>${t}</button>`).join('')}</div></div>
+    <div class="plcard"><h4>★ ${tr('Tvoje oblíbené','Your favourites')}</h4>${favList.length?`<div class="plfl">${favList.map(b=>`<div><span title="${esc(b.name)}">${esc(b.name)}</span><em>${fmt(b.max,b.unit)}</em><button data-fav="${esc(key(c,b))}" title="${tr('Odebrat','Remove')}">★</button></div>`).join('')}</div>`:`<p class="plleg">${tr('Klikni na ☆ u bonusu, který hledáš – uvidíš ho tady i s max hodnotou.','Click ☆ on a bonus you want – it shows up here with its max.')}</p>`}</div>
+    <div class="plcard"><h4>${tr('Jak číst hodnocení','Rating guide')}</h4><p class="plleg">${marks(3)}${tr('nejlepší – chceš mít','best – keep it')}<br>${marks(2)}${tr('užitečné – dobrý doplněk','useful – good filler')}<br>${marks(1)}${tr('slabé – přetoč','weak – reroll')}<br>${tr('Klikem na dílky si to přenastavíš.','Click the marks to change it.')}</p></div>
+  </aside>`;
   const main=$('#main'); main.className='pet2';
   main.innerHTML = `<div class="plhead"><div><h1>${esc(tr(c.name,c.name_en||c.name))}</h1><p>${tr(`${c.bonuses.length} bonusů, které můžou padnout na pet artefakt, a jejich rozsah.`,`${c.bonuses.length} bonuses that can roll on a pet artifact and their range.`)}</p></div>
       <button class="tbtn" id="petcheck">${tr('Zkontrolovat můj artefakt','Check my artifact')}</button></div>
@@ -1140,8 +1176,14 @@ function renderPet(c){
       <button class="plfav ${view==='fav'?'on':''}" data-pv="${view==='fav'?'all':'fav'}">★ ${tr('Oblíbené','Favourites')} <span>${favList.length}</span></button>
     </div>
     <p class="plhint">${tr('Rozřazení je můj návrh pro PvM. Kliknutím na dílky vpravo si hodnocení nastavíš podle sebe.','The grouping is my PvM suggestion. Click the marks on the right to rate bonuses your way.')}${Object.keys(petRate).length?` <button class="lnk2" id="rreset">${tr('Vrátit původní','Reset')}</button>`:''}</p>
-    ${body}`;
+    <div class="plgrid"><div class="plmain">${body}</div>${aside}</div>`;
   const re = ()=>{ const sc=main.scrollTop; renderPet(c); main.scrollTop=sc; };
+  const dz=$('#pldrop'), fi=$('#plfile');
+  if(dz){ dz.onclick=()=>fi.click(); fi.onchange=()=>window.petCheckFile&&window.petCheckFile(fi.files[0]);
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')}; dz.ondragleave=()=>dz.classList.remove('over');
+    dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over');window.petCheckFile&&window.petCheckFile(e.dataTransfer.files[0])}; }
+  document.onpaste = e => { if(state.cat!==c.id||state.q) return; const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/')); if(it){e.preventDefault();window.petCheckFile&&window.petCheckFile(it.getAsFile());} };
+  main.querySelectorAll('[data-jump]').forEach(x=>x.onclick=()=>{ const el=main.querySelector(`[data-sec="${x.dataset.jump}"]`); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); });
   main.querySelectorAll('[data-pv]').forEach(x=>x.onclick=()=>{state.petView=x.dataset.pv;store.set('petView',state.petView);re()});
   main.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>{ state.petGroups = x.dataset.g?[x.dataset.g]:[]; store.set('petGroups',state.petGroups); re(); });
   main.querySelectorAll('[data-fav]').forEach(x=>x.onclick=e=>{e.stopPropagation();const k=x.dataset.fav;favs.has(k)?favs.delete(k):favs.add(k);store.set('favs',[...favs]);re()});
