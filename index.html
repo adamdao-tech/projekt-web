@@ -532,10 +532,11 @@ td[data-cst]{white-space:nowrap}
    VZHLED „Jinteia“ – lakované dřevo, bronz, zlato
    ========================================================= */
 :root{
-  --bg:#120e0b; --panel:#1b1511; --panel2:#241b15; --line:#35281d; --bronze:#8f6c3d; --bronze2:#c19a5b;
-  --text:#ece3cf; --muted:#9a8b74; --gold:#c9a24a; --gold2:#f0d58c;
-  --good:#6fc28f; --mid:#d9b24c; --bad:#d0583f; --six:#b58ce0; --godly:#7ec3f0;
-  --head:'Marcellus',Georgia,serif; --accent:var(--gold2); --sel:#2c2117;
+  --bg:#17130f; --panel:#1f1a15; --panel2:#29221b; --line:#3a3128; --bronze:#7d6443; --bronze2:#b39463;
+  --text:#ebe3d3; --muted:#a29482; --gold:#cfa75a; --gold2:#ead09a;
+  --good:#e2c784; --mid:#b89a66; --bad:#b0715a; --six:#b7a5d1; --godly:#9bbad0;
+  --fire:var(--text); --curse:var(--text); --lightning:var(--text); --magic:var(--text); --poison:var(--text);
+  --head:'Marcellus',Georgia,serif; --accent:var(--gold2); --sel:#2b231b; --name:var(--gold2); --max:var(--gold2);
 }
 html,body{font-family:'Barlow',system-ui,sans-serif;font-size:14.5px}
 body{background:
@@ -593,7 +594,7 @@ main.tool.ck{padding:22px 28px 50px}
 .ttip::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
 .ttip::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
 .ttitle{display:flex;align-items:center;gap:10px;padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid rgba(193,154,91,.18)}
-.ttitle b{display:block;color:#7fe07a;font-size:14px;font-weight:700}
+.ttitle b{display:block;color:var(--gold2);font-size:14px;font-weight:700}
 .ttitle span{color:var(--muted);font-size:12px}
 .titem{width:36px;height:36px;object-fit:contain}
 .tsec{padding:6px 0 4px}
@@ -639,6 +640,63 @@ main.tool.ck{padding:22px 28px 50px}
 .vnote{color:var(--muted);font-size:12px;line-height:1.5;margin-top:18px}
 @media(max-width:1180px){.ckmain.has{grid-template-columns:minmax(0,1fr) minmax(220px,280px)}.ckleft{grid-column:1/-1;flex-direction:row;align-items:center}.ckmain.has .drop{min-height:0;flex-direction:row;padding:10px 14px}.ckmain.has .drop img{max-height:60px}}
 @media(max-width:760px){.ckmain.has{grid-template-columns:1fr}.ckverd{position:static;border-left:0;padding:0}}
+
+/* ---------- sjednocení barev (jedna teplá paleta) ---------- */
+body{background:radial-gradient(1000px 420px at 20% -180px,rgba(207,167,90,.07),transparent 70%),var(--bg)!important}
+.note{border-left-color:var(--gold)!important;background:rgba(207,167,90,.06)!important;color:var(--muted)!important}
+.info{background:rgba(207,167,90,.05)!important;border-color:var(--line)!important;color:var(--muted)}
+.inf{color:var(--gold2)!important}
+.src{background:rgba(207,167,90,.08)!important;color:var(--gold2)!important;border-color:transparent!important}
+.src.alt,.src.none{background:var(--panel2)!important;color:var(--muted)!important}
+.ui,.ui.big{--c:var(--gold)!important}
+.ubar i{background:linear-gradient(90deg,var(--bronze),var(--gold2))!important}
+.ecard{--tc:var(--gold)!important}
+.dots.r3 i.on{background:var(--good)!important}.dots.r2 i.on{background:var(--mid)!important}.dots.r1 i.on{background:var(--bad)!important}
+.v.top,.v.ok{color:var(--good)!important}.v.mid{color:var(--mid)!important}.v.bad{color:var(--bad)!important}
+.snum.top{color:var(--good)!important}.snum.ok{color:var(--mid)!important}.snum.bad{color:var(--bad)!important}
+.c-fire,.c-curse,.c-lightning,.c-magic,.c-poison{color:inherit!important}
+.gchip{--gc:var(--gold)!important}
+.badge{font-weight:600}
+a{color:var(--gold2)}
+
+/* ---------- Pet artefakty ---------- */
+main.pet2{padding:24px 30px 50px;max-width:1100px}
+.plhead{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.plhead>div{flex:1;min-width:260px}
+.plhead h1{margin:0;font:400 28px var(--head);color:var(--gold2)}
+.plhead p{margin:4px 0 0;color:var(--muted)}
+.plbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0 12px;border-bottom:1px solid var(--line);position:sticky;top:-24px;background:var(--bg);z-index:2}
+.plq{flex:0 1 240px;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--text);font:inherit;padding:8px 11px;outline:none}
+.plq:focus{border-color:var(--bronze2)}
+.plseg{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.plseg button{background:none;border:0;border-right:1px solid var(--line);color:var(--muted);font:inherit;font-size:13.5px;padding:7px 12px;cursor:pointer}
+.plseg button:last-child{border-right:0}
+.plseg button:hover{color:var(--text);background:rgba(207,167,90,.05)}
+.plseg button.on{background:var(--sel);color:var(--gold2)}
+.plfav{margin-left:auto;background:none;border:1px solid var(--line);border-radius:4px;color:var(--muted);font:inherit;font-size:13.5px;padding:7px 12px;cursor:pointer}
+.plfav span{color:var(--dim,#6f6458);margin-left:4px}
+.plfav.on{color:var(--gold2);border-color:var(--bronze)}
+.plhint{color:var(--muted);font-size:13px;margin:12px 0 4px}
+.plsec{margin-top:22px}
+.plsh{display:flex;align-items:baseline;gap:12px;padding:0 0 6px;border-bottom:1px solid var(--line)}
+.plsh h3{margin:0;font:400 19px var(--head);color:var(--text)}
+.plsh span{color:var(--muted);font-size:13px;flex:1}
+.plsh em{font-style:normal;color:var(--muted);font-size:13px}
+.plr{display:grid;grid-template-columns:30px minmax(0,1fr) 150px 80px 64px;align-items:center;gap:12px;padding:9px 6px;border-bottom:1px solid rgba(58,49,40,.55)}
+.plr:hover{background:rgba(207,167,90,.035)}
+.plstar{background:none;border:0;color:#6f6458;font-size:17px;cursor:pointer;padding:0;line-height:1}
+.plstar.on,.plstar:hover{color:var(--gold2)}
+.pln{min-width:0}
+.pln b{display:block;font-weight:500;font-size:15px;color:var(--text)}
+.pln span{font-size:12px;color:var(--muted)}
+.plrange{color:var(--muted);font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.plmax{text-align:right;font:500 18px var(--head);color:var(--gold2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.plrate{display:flex;gap:3px;justify-content:flex-end}
+.plrate button{width:14px;height:8px;border:1px solid var(--bronze);background:transparent;border-radius:1px;padding:0;cursor:pointer}
+.plrate button.on{background:var(--gold);border-color:var(--gold)}
+.plrate:hover button{border-color:var(--gold2)}
+@media(max-width:760px){main.pet2{padding:18px 16px 40px}.plr{grid-template-columns:26px minmax(0,1fr) 70px;row-gap:2px}.plrange{grid-column:2;grid-row:2}.plrate{grid-column:3;grid-row:2}.plfav{margin-left:0}}
+
 button:focus:not(:focus-visible),.row:focus:not(:focus-visible){outline:none}
 button:focus-visible{outline:1px solid var(--gold2);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -882,7 +940,7 @@ function renderUpgrades(){
 // ---------------- PET ARTEFAKTY (kompaktní) ----------------
 const shortName = n => n.replace('Strong against ','vs. ').replace('Resistance against ','Res. vs ').replace('Resistance to ','Res. vs ').replace('Average Damage Resistance','AVG Resistance').replace('% Chance for piercing Hits','Piercing chance').replace('% Chance for EXP Bonus','EXP Bonus chance').replace('% increased Item-Drop','Item-Drop').replace('Chance of critical hit','Critical chance').replace('Average Damage (AVG)','AVG Damage');
 const PET_LAYOUT = [['utok','cc'],['obrana'],['elem','farm'],['strong']];
-const GCOL = {utok:'#ff6b4a',cc:'#2fd4c4',obrana:'#4aa8ff',elem:'#b77cff',farm:'#46d17a',strong:'#e8b93c'};
+const GCOL = {utok:'#cfa75a',cc:'#cfa75a',obrana:'#cfa75a',elem:'#cfa75a',farm:'#cfa75a',strong:'#cfa75a'};
 // výchozí hodnocení (můj návrh pro PvM: farmení + bossové). 3 = top, 2 = ok, 1 = slabé
 const PET_DEFAULT = {
   'Strong against Monsters':3,'Strong against Metinstones':3,'Strong against Portals':3,'Average Damage (AVG)':3,'Skill Damage (SD)':3,
@@ -1025,66 +1083,46 @@ function checkView(c){
 }
 
 function renderPet(c){
-  const gname = Object.fromEntries(c.groups.map(g=>[g.id,g]));
   const q = state.petQ.trim().toLowerCase();
   const isFav = b => favs.has(key(c,b));
   const favList = c.bonuses.filter(isFav);
+  if(state.petView==='check'){ state.petView='all'; store.set('petView','all'); }
   const view = state.petView;
-  const gOn = id => !state.petGroups.length || state.petGroups.includes(id);
-  const match = b => !q || b.name.toLowerCase().includes(q) || shortName(b.name).toLowerCase().includes(q);
-  const star = b => `<button class="pstar ${isFav(b)?'on':''}" data-fav="${esc(key(c,b))}" title="${isFav(b)?tr('Odebrat z oblíbených','Remove from favourites'):tr('Přidat do oblíbených','Add to favourites')}">${isFav(b)?'★':'☆'}</button>`;
-  const row = b => `<div class="pr ${isFav(b)?"isfav":""} rate${rateOf(b)}" title="${esc(b.name)}, ${tr('rozsah','range')} ${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}">
-      ${star(b)}<span class="pi">${b.ic||'•'}</span>
-      <div class="pt"><span class="pn ${b.color?'c-'+b.color:''}">${esc(shortName(b.name))}</span><span class="prg">${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}</span></div>
-      ${dots(b)}<div class="pm">${fmt(b.max,b.unit)}</div></div>`;
-  let body;
-  if(view==='check'){ body = checkView(c); }
-  else {
-    const src = view==='fav' ? favList : c.bonuses;
-    const col = ids => ids.filter(gOn).map(id=>{ const g=gname[id], list=src.filter(b=>b.g===id&&match(b)).sort((a,b)=>rateOf(b)-rateOf(a));
-      if(!list.length) return '';
-      return `<div class="pg" style="--gc:${GCOL[id]||'#888'}"><div class="pgh">${esc(tr(g.name,g.en||g.name))}<span class="pgc">${list.length}</span></div>${list.map(row).join('')}</div>`; }).join('');
-    const cols = PET_LAYOUT.map(col).filter(Boolean);
-    body = cols.length ? `<div class="pcols" style="grid-template-columns:repeat(${Math.min(4,Math.max(cols.length,2))},1fr)">${cols.map(x=>`<div class="pcol">${x}</div>`).join('')}</div>`
-      : view==='fav' && !favList.length ? `<div class="pempty">${tr('Zatím nemáš oblíbené. V „Všechny bonusy“ klikni na ☆ u řádku.','No favourites yet. In “All bonuses” click the ☆ on a row.')}</div>` : `<div class="pempty">${tr('Nic nenalezeno.','Nothing found.')}</div>`;
-  }
-  const main=$('#main'); main.className='em pet';
-  main.innerHTML = `<div class="em-top"><h1>${esc(tr(c.name,c.name_en||c.name))}</h1>
-      <div class="btabs">
-        <button class="btab ${view==='all'?'on':''}" data-pv="all">${tr('Všechny bonusy','All bonuses')}</button>
-        <button class="btab ${view==='fav'?'on':''}" data-pv="fav">${tr('Oblíbené','Favourites')} <kbd>${favList.length}</kbd></button>
-        <button class="btab ${view==='check'?'on':''}" data-pv="check">${tr('Zkontrolovat artefakt','Check artifact')}</button>
-      </div></div>
-    ${view!=='check'?`<div class="pbar">
-      <input id="pq" class="pq" placeholder="${tr('Filtrovat bonusy…','Filter bonuses…')}" value="${esc(state.petQ)}" autocomplete="off">
-      <button class="gchip ${!state.petGroups.length?'on':''}" data-g="">${tr('Všechny skupiny','All groups')}</button>
-      ${c.groups.map(g=>`<button class="gchip ${state.petGroups.includes(g.id)?'on':''}" data-g="${g.id}" style="--gc:${GCOL[g.id]}">${esc(tr(g.name,g.en||g.name))}</button>`).join('')}
+  const gname = Object.fromEntries(c.groups.map(g=>[g.id,g]));
+  const gsel = state.petGroups[0] || '';
+  const match = b => (!q || b.name.toLowerCase().includes(q) || shortName(b.name).toLowerCase().includes(q)) && (!gsel || b.g===gsel) && (view!=='fav' || isFav(b));
+  const list = c.bonuses.filter(match);
+  const SEC = [[3,tr('Nejlepší pro PvM','Best for PvM'),tr('Tohle chceš na artefaktu mít.','You want these on your artifact.')],[2,tr('Užitečné','Useful'),tr('Dobrý doplněk, když nemáš lepší řádek.','Fine filler if nothing better rolls.')],[1,tr('Slabší','Weak'),tr('Řádek, který ti moc nedá – kandidát na přetočení.','Does little – reroll candidate.')],[0,tr('Neohodnocené','Unrated'),'']];
+  const fmtR = b => `${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}`;
+  const row = b => { const r=rateOf(b);
+    return `<div class="plr">
+      <button class="plstar ${isFav(b)?'on':''}" data-fav="${esc(key(c,b))}" title="${isFav(b)?tr('Odebrat z oblíbených','Remove from favourites'):tr('Přidat do oblíbených','Add to favourites')}" aria-label="${tr('Oblíbené','Favourite')}">${isFav(b)?'★':'☆'}</button>
+      <div class="pln"><b>${esc(b.name)}</b><span>${esc(tr(gname[b.g]?.name||'',gname[b.g]?.en||gname[b.g]?.name||''))}</span></div>
+      <div class="plrange"><span>${fmtR(b)}</span></div>
+      <div class="plmax">${fmt(b.max,b.unit)}</div>
+      <div class="plrate" role="group" aria-label="${tr('Hodnocení','Rating')}">${[1,2,3].map(i=>`<button class="${i<=r?'on':''}" data-rate="${esc(b.name)}" data-rv="${i}" title="${[tr('slabé','weak'),tr('užitečné','useful'),tr('nejlepší','best')][i-1]}"></button>`).join('')}</div>
+    </div>`; };
+  const body = list.length ? SEC.map(([rv,title,sub])=>{ const l=list.filter(b=>rateOf(b)===rv).sort((a,b)=>a.name.localeCompare(b.name)); if(!l.length) return '';
+      return `<section class="plsec"><div class="plsh"><h3>${title}</h3><span>${sub}</span><em>${l.length}</em></div>${l.map(row).join('')}</section>`; }).join('')
+    : `<div class="pempty">${view==='fav'&&!favList.length?tr('Zatím nemáš oblíbené. Klikni na ☆ u bonusu.','No favourites yet. Click ☆ on a bonus.'):tr('Nic nenalezeno.','Nothing found.')}</div>`;
+  const main=$('#main'); main.className='pet2';
+  main.innerHTML = `<div class="plhead"><div><h1>${esc(tr(c.name,c.name_en||c.name))}</h1><p>${tr(`${c.bonuses.length} bonusů, které můžou padnout na pet artefakt, a jejich rozsah.`,`${c.bonuses.length} bonuses that can roll on a pet artifact and their range.`)}</p></div>
+      <button class="tbtn" id="petcheck">${tr('Zkontrolovat můj artefakt','Check my artifact')}</button></div>
+    <div class="plbar">
+      <input id="pq" class="plq" type="search" placeholder="${tr('Hledat bonus…','Search bonus…')}" value="${esc(state.petQ)}" autocomplete="off">
+      <div class="plseg"><button class="${!gsel?'on':''}" data-g="">${tr('Vše','All')}</button>${c.groups.map(g=>`<button class="${gsel===g.id?'on':''}" data-g="${g.id}">${esc(tr(g.name,g.en||g.name))}</button>`).join('')}</div>
+      <button class="plfav ${view==='fav'?'on':''}" data-pv="${view==='fav'?'all':'fav'}">★ ${tr('Oblíbené','Favourites')} <span>${favList.length}</span></button>
     </div>
-    <p class="rlegend"><span class="dots r3"><i class="on"></i><i class="on"></i><i class="on"></i></span> top stat <span class="dots r2"><i class="on"></i><i class="on"></i><i></i></span> ok <span class="dots r1"><i class="on"></i><i></i><i></i></span> ${tr('slabé. Tečky jsou můj návrh pro PvM, kliknutím na ně si je přenastavíš.','weak. The dots are my suggestion for PvM, click them to change.')}${Object.keys(petRate).length?` <button class="lnk2" id="rreset">${tr('Vrátit můj návrh','Restore my suggestion')}</button>`:''}</p>`:''}
+    <p class="plhint">${tr('Rozřazení je můj návrh pro PvM. Kliknutím na dílky vpravo si hodnocení nastavíš podle sebe.','The grouping is my PvM suggestion. Click the marks on the right to rate bonuses your way.')}${Object.keys(petRate).length?` <button class="lnk2" id="rreset">${tr('Vrátit původní','Reset')}</button>`:''}</p>
     ${body}`;
   const re = ()=>{ const sc=main.scrollTop; renderPet(c); main.scrollTop=sc; };
   main.querySelectorAll('[data-pv]').forEach(x=>x.onclick=()=>{state.petView=x.dataset.pv;store.set('petView',state.petView);re()});
-  main.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>{
-    const id=x.dataset.g;
-    if(!id) state.petGroups=[]; else { const i=state.petGroups.indexOf(id); i>=0?state.petGroups.splice(i,1):state.petGroups.push(id); if(state.petGroups.length===c.groups.length) state.petGroups=[]; }
-    store.set('petGroups',state.petGroups); re();
-  });
+  main.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>{ state.petGroups = x.dataset.g?[x.dataset.g]:[]; store.set('petGroups',state.petGroups); re(); });
   main.querySelectorAll('[data-fav]').forEach(x=>x.onclick=e=>{e.stopPropagation();const k=x.dataset.fav;favs.has(k)?favs.delete(k):favs.add(k);store.set('favs',[...favs]);re()});
-  main.querySelectorAll('[data-rate]').forEach(x=>x.onclick=e=>{e.stopPropagation();const n=x.dataset.rate,b=c.bonuses.find(y=>y.name===n);const r=(rateOf(b)%3)+1;petRate[n]=r;if(PET_DEFAULT[n]===r)delete petRate[n];store.set('petRate',petRate);re()});
+  main.querySelectorAll('[data-rate]').forEach(x=>x.onclick=()=>{ const n=x.dataset.rate, v=+x.dataset.rv; petRate[n]=v; if(PET_DEFAULT[n]===v) delete petRate[n]; store.set('petRate',petRate); re(); });
   const rr=$('#rreset'); if(rr) rr.onclick=()=>{petRate={};store.set('petRate',petRate);re()};
   const pq=$('#pq'); if(pq) pq.oninput=()=>{state.petQ=pq.value;re();const n=$('#pq');n.focus();n.setSelectionRange(n.value.length,n.value.length)};
-  main.querySelectorAll('.aslot').forEach(sel=>sel.onchange=()=>{artifact[+sel.dataset.slot]={b:sel.value,v:''};store.set('artifact',artifact);re()});
-  main.querySelectorAll('.aval').forEach(inp=>inp.onchange=()=>{artifact[+inp.dataset.val].v=inp.value;store.set('artifact',artifact);re()});
-  main.querySelectorAll('.aval').forEach(inp=>inp.onkeydown=e=>{if(e.key==='Enter'){inp.blur()}});
-  const ac=$('#aclr'); if(ac) ac.onclick=()=>{artifact=Array.from({length:7},()=>({b:'',v:''}));store.set('artifact',artifact);ocrState.img='';ocrState.msg='';ocrState.miss=[];re()};
-  const z=$('#ocrzone');
-  if(z){
-    const take = f => { if(f && f.type.startsWith('image/')) readScreenshot(f,c); };
-    $('#ocrfile').onchange=e=>take(e.target.files[0]);
-    z.ondragover=e=>{e.preventDefault();z.classList.add('over')}; z.ondragleave=()=>z.classList.remove('over');
-    z.ondrop=e=>{e.preventDefault();z.classList.remove('over');take(e.dataTransfer.files[0])};
-    document.onpaste = e => { if(state.petView!=='check'||state.cat!==c.id) return; const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/')); if(it){e.preventDefault();take(it.getAsFile());} };
-  }
+  $('#petcheck').onclick=()=>{ if(window.openPetCheck) window.openPetCheck(); };
 }
 state.build = store.get('build','single');
 document.addEventListener('keydown',e=>{

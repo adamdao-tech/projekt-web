@@ -430,6 +430,7 @@ window.TOOLNAV = [
   {id:'tool-check', label:T('Kontrola itemu','Item check')},
   {id:'tool-build', label:T('Plánovač buildu','Build planner')},
 ];
+window.openPetCheck = () => { CK.mode='__pet'; CK.rows=[]; CK.item=''; ckEdit=null; saveCK(); state.cat='tool-check'; store.set('cat','tool-check'); state.q=''; render(); };
 window.renderTool = id => id==='tool-build' ? buildView() : checkerView();
 
 // sdílený build z odkazu
