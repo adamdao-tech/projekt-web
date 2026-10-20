@@ -426,80 +426,17 @@ nav .upd{margin:24px 10px 0;font-size:12px}
 .tip .slots{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px}
 .tip .slots .gchip{--gc:#e8b93c}
 .ptab .chk input{width:86px}
+/* ---------- hledání napříč ---------- */
+.sres{margin:4px 0 18px}
+main .sh{text-align:left;font:600 12px "Segoe UI",sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.sres .srow{display:flex;flex-wrap:wrap;gap:6px}
+.sbtn{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 11px;color:var(--text);cursor:pointer;font:inherit;font-size:13.5px}
+.sbtn:hover{border-color:#d9a44188;color:var(--gold2)}
+.sbtn img{width:20px;height:20px;object-fit:contain}
+.sbtn small{color:var(--muted);font-size:11.5px}
 /* ---------- JAZYK ---------- */
 .langsw{display:flex;gap:4px}
 .langsw .chip{padding:5px 10px;font-weight:600;letter-spacing:.5px}
-/* ---------- WIKI ---------- */
-main.wiki{scroll-behavior:smooth}
-main.wiki .wbody{max-width:980px}
-main.wiki .sec{margin:26px 0 38px;scroll-margin-top:10px}
-main.wiki .sec>h2{margin:0 0 6px;font:700 20px Georgia,serif;color:var(--gold2);padding-bottom:8px;border-bottom:1px solid var(--line)}
-main.wiki .lead{color:var(--muted);margin:6px 0 14px}
-main.wiki h3{margin:22px 0 10px;font:700 15px Georgia,serif;color:var(--text)}
-main.wiki h4{margin:0 0 8px;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--gold)}
-main.wiki p{margin:0 0 10px}main.wiki p:last-child{margin-bottom:0}
-main.wiki strong{color:var(--text)}
-main.wiki a{color:var(--gold2)}
-main.wiki .g{display:grid;gap:10px;margin:10px 0}
-main.wiki .g2{grid-template-columns:repeat(2,1fr)}main.wiki .g3{grid-template-columns:repeat(3,1fr)}main.wiki .g4{grid-template-columns:repeat(4,1fr)}
-main.wiki .pnl,main.wiki .bld{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-main.wiki .pnl p,main.wiki .pnl .mono{color:var(--muted)!important}
-main.wiki .note{margin:10px 0}
-main.wiki .note b{display:block;margin-bottom:2px;color:var(--gold2)}
-main.wiki .note.warn{border-left-color:var(--bad);background:#e2553c12}main.wiki .note.warn b{color:var(--bad)}
-main.wiki .note.info{border-left-color:var(--lightning);background:#38a8f512;color:#a9cbe6}main.wiki .note.info b{color:var(--lightning)}
-main.wiki .note.ok{border-left-color:var(--good);background:#3ecf6e12;color:#a9dcb9}main.wiki .note.ok b{color:var(--good)}
-main.wiki .note.gap{border-left-color:var(--curse);background:#a855f712;color:#cdb3ea}main.wiki .note.gap b{color:var(--curse)}
-main.wiki .tw{overflow-x:auto;margin:10px 0}
-main.wiki .tw table{min-width:520px}
-main.wiki td.nm{font-weight:600;white-space:nowrap}
-main.wiki .mono,main.wiki td.mo{font-variant-numeric:tabular-nums;color:var(--muted)}
-main.wiki td.ct{text-align:center}
-main.wiki .wrt{font-weight:700}main.wiki .wrt.hi{color:var(--gold2)}main.wiki .wrt.md{color:var(--text)}main.wiki .wrt.lo{color:var(--muted)}main.wiki .wrt.na{color:var(--line)}
-main.wiki .stp,main.wiki .lad,main.wiki .lst,main.wiki .emb{list-style:none;margin:0;padding:0}
-main.wiki .stp{counter-reset:s;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px 14px}
-main.wiki .stp li{position:relative;padding:10px 0 10px 34px;counter-increment:s;border-bottom:1px solid var(--line)}
-main.wiki .stp li:last-child{border-bottom:0}
-main.wiki .stp li::before{content:counter(s);position:absolute;left:0;top:11px;width:22px;height:22px;border-radius:50%;border:1px solid #d9a44166;color:var(--gold);font-size:11px;display:flex;align-items:center;justify-content:center}
-main.wiki .stp li b{display:block}main.wiki .stp li span{display:block;color:var(--muted);font-size:13px}
-main.wiki .lst li{display:flex;gap:9px;padding:4px 0;align-items:flex-start}
-main.wiki .lst li::before{content:'◆';color:var(--gold);opacity:.6;font-size:7px;margin-top:7px;flex-shrink:0}
-main.wiki .lst li em{font-style:normal;color:var(--muted);font-size:12px;margin-left:auto;padding-left:12px;text-align:right}
-main.wiki .lad{counter-reset:l}
-main.wiki .lad li{position:relative;padding:4px 0 4px 22px;counter-increment:l;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line)}
-main.wiki .lad li:last-child{border-bottom:0;color:var(--gold2);font-weight:600}
-main.wiki .lad li::before{content:counter(l);position:absolute;left:0;top:5px;font-size:10px;color:var(--gold)}
-main.wiki .route,main.wiki .gts{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-main.wiki .stop,main.wiki .gt{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:10px 14px;border-bottom:1px solid var(--line)}
-main.wiki .gt{grid-template-columns:70px 1fr}
-main.wiki .stop:last-child,main.wiki .gt:last-child{border-bottom:0}
-main.wiki .stop-lv,main.wiki .gt-p{color:var(--gold);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
-main.wiki .stop-n,main.wiki .gt-t{font-weight:600}
-main.wiki .stop-d,main.wiki .gt-d{color:var(--muted);font-size:13px}
-main.wiki .blds{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
-main.wiki .bld-c{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
-main.wiki .bld-n{font-weight:700;color:var(--gold2);margin:2px 0 8px}
-main.wiki .emb li{padding:2px 0 2px 12px;font-size:13px;position:relative}
-main.wiki .emb li::before{content:'·';position:absolute;left:2px;color:var(--gold);font-weight:700}
-main.wiki .bld-x{font-size:12px;color:var(--muted);padding-top:8px;margin-top:8px;border-top:1px solid var(--line)}
-main.wiki .sts{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
-main.wiki .st{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-main.wiki .st-k{font-size:11.5px;color:var(--muted)}main.wiki .st-v{font:700 18px Georgia,serif;color:var(--gold2)}
-main.wiki .chips,main.wiki .tgs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-main.wiki .chips .chip{cursor:default}
-main.wiki .chip.k{color:var(--gold2);border-color:#d9a44188}
-main.wiki .chip em{font-style:normal;color:var(--muted);font-size:11px;margin-left:5px}
-main.wiki .tg{font-size:12px;padding:3px 10px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--muted)}
-main.wiki .tg.n{color:var(--gold2);border-color:#d9a44166}main.wiki .tg.c{color:var(--lightning)}
-main.wiki .fig{margin:12px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-main.wiki .fig img{display:block;width:100%;height:auto}
-main.wiki .fig figcaption{padding:7px 12px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line)}
-main.wiki .figrow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-main.wiki .fig.sm{max-width:200px;flex-shrink:0}
-main.wiki kbd,main.wiki code{font-size:12px;padding:1px 6px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);color:var(--gold)}
-main.wiki .foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
-@media(max-width:900px){main.wiki .g3,main.wiki .g4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){main.wiki .g2,main.wiki .g3,main.wiki .g4{grid-template-columns:1fr}main.wiki .stop,main.wiki .gt{grid-template-columns:1fr;gap:2px}}
 </style>
 </head>
 <body>
@@ -558,7 +495,6 @@ function renderNav(){
     (UP ? `<h4>${tr('Upgrady','Upgrades')}</h4>` + btn(UP.id,esc(tr(UP.name,UP.name_en)),null) : '') +
     (EM ? '<h4>Heal šaman</h4>' + btn(EM.id,'Emblemy a buildy',null) : '') +
     (window.DBNAV ? `<h4>${tr('Databáze','Database')}</h4>` + window.DBNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
-    (window.WIKINAV ? '<h4>Wiki</h4>' + window.WIKINAV.map(n=>btn(n.id,n.icon+' '+esc(n.label),null)).join('') : '') +
     `<div class="upd">${tr('Aktualizováno','Updated')}: ${esc(window.LAST_UPDATE||'')}</div>`;
   $('#langsw').innerHTML = ['cs','en'].map(l=>`<button class="chip ${LANG===l?'on':''}" data-lang="${l}">${l==='cs'?'CZ':'EN'}</button>`).join('');
   $('#langsw').querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{ if(b.dataset.lang===LANG) return; store.set('lang',b.dataset.lang); location.reload(); });
@@ -584,7 +520,7 @@ function renderMain(){
   const c = CATS.find(x=>x.id===state.cat) || CATS[0];
   const list = rows();
   const head = q
-    ? `<div class="title"><h1>${tr('Hledání','Search')}: „${esc(q)}“</h1></div><p class="desc">${list.length} ${tr('výsledků napříč všemi kategoriemi.','results across all categories.')}</p>`
+    ? `<div class="title"><h1>${tr('Hledání','Search')}: „${esc(q)}“</h1></div><p class="desc">${tr('Výsledky napříč celou aplikací – klikni a otevře se to.','Results across the whole app – click to open.')}</p>`
     : `<div class="title"><h1>${c.icon||''} ${esc(tr(c.name,c.name_en||c.name))}</h1></div><p class="desc">${esc(tr(c.desc||'',c.desc_en||c.desc||''))}</p>${c.note?`<div class="note">${esc(tr(c.note,c.note_en||c.note))}</div>`:''}`;
   const tb = list.map(({c:cat,b})=>{
     const k=key(cat,b), v=rolls[k];
@@ -599,16 +535,17 @@ function renderMain(){
         <span class="badge" style="${g?`color:${g.col};background:color-mix(in srgb,${g.col} 15%,transparent)`:'opacity:0'}">${g?g.label+' '+Math.round(g.pct*100)+'%':'–'}</span>
       </div></td></tr>`;
   }).join('');
-  $('#main').innerHTML = head + `
+  $('#main').innerHTML = head + (q && !list.length ? '' : `
     <div class="toolbar">
       <button class="chip ${state.sort==='az'?'on':''}" data-s="az">A–Z</button>
       <button class="chip ${state.sort==='fav'?'on':''}" data-s="fav">${tr('Oblíbené nahoru','Favourites first')}</button>
       <button class="chip ${state.onlyFav?'on':''}" id="of">★ ${tr('Jen oblíbené','Favourites only')}</button>
       <span class="hint">${tr('Napiš svůj roll → uvidíš, jak blízko jsi maxu','Type your roll → see how close you are to max')}</span>
-    </div>` + (list.length ? `<table><thead><tr><th>Bonus</th><th class="hide-sm">Min</th><th>Max</th><th>${tr('Kontrola rollu','Roll check')}</th></tr></thead><tbody>${tb}</tbody></table>` : `<div class="empty">${tr('Nic nenalezeno.','Nothing found.')}</div>`);
+    </div>`) + (q && window.dbSearch ? window.dbSearch(q) : '') + (list.length ? (q?`<h3 class="sh">${tr('Pet artefakty','Pet artifacts')}</h3>`:'')+`<table><thead><tr><th>Bonus</th><th class="hide-sm">Min</th><th>Max</th><th>${tr('Kontrola rollu','Roll check')}</th></tr></thead><tbody>${tb}</tbody></table>` : (q && window.dbSearch && window.dbSearch(q) ? '' : `<div class="empty">${tr('Nic nenalezeno.','Nothing found.')}</div>`));
+  if(q && window.dbSearchBind) window.dbSearchBind($('#main'));
 
   $('#main').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{state.sort=b.dataset.s;render()});
-  $('#of').onclick=()=>{state.onlyFav=!state.onlyFav;render()};
+  const ofb=$('#of'); if(ofb) ofb.onclick=()=>{state.onlyFav=!state.onlyFav;render()};
   $('#main').querySelectorAll('.fav').forEach(f=>f.onclick=()=>{
     const k=f.dataset.k; favs.has(k)?favs.delete(k):favs.add(k); store.set('favs',[...favs]); render();
   });
@@ -949,14 +886,12 @@ document.addEventListener('keydown',e=>{
   if(EM&&state.cat===EM.id){const k=Object.keys(EM.builds)[+e.key-1]; if(k){state.build=k;store.set('build',k);renderEmblems()}}
   if(UP&&state.cat===UP.id){const k=Object.keys(UTABS)[+e.key-1]; if(k){state.utab=k;store.set('utab',k);renderUpgrades()}}
 });
-function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('wiki-') && window.renderWiki){ if(nq) return window.renderWiki(state.cat); } if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
+function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
 $('#q').oninput=e=>{state.q=e.target.value;render();$('#q').focus()};
 render();
 </script>
 <script src="db.js"></script>
 <script src="db-ui.js"></script>
-<script src="wiki/wiki-data.js"></script>
-<script src="wiki.js"></script>
 <script>render();</script>
 </body>
 </html>

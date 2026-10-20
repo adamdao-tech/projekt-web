@@ -192,7 +192,27 @@ window.DBNAV = [
   {id:'db-bon',label:tr('Bonusy a tiery','Bonuses & tiers')},{id:'db-roll',label:tr('Točení bonusů','Bonus rolls')},{id:'db-cls',label:tr('Classy a skilly','Classes & skills')},{id:'db-fav',label:tr('Oblíbené','Favourites')},
 ];
 
-const goto = (catId, fn) => { fn(); save(); state.cat=catId; store.set('cat',catId); render(); };
+const goto = (catId, fn) => { fn(); save(); state.cat=catId; store.set('cat',catId); state.q=''; const qi=$('#q'); if(qi) qi.value=''; render(); };
+// ---------- výsledky globálního hledání (nahoře v hlavičce) ----------
+window.dbSearch = function(q){
+  const ql=q.trim().toLowerCase(); if(ql.length<2) return '';
+  const has = s => String(s||'').toLowerCase().includes(ql);
+  const pools = POOLS.filter(p=>has(p.n));
+  const bons = D.bonuses.filter(b=>has(b.n)).slice(0,16);
+  const pick = (k,l) => l.filter(x=>has(x.n)).slice(0,10);
+  const groups = [['items',tr('Itemy','Items')],['equip',tr('Vybavení','Equipment')],['emb',tr('Emblemy','Emblems')]].map(([k,t])=>[k,t,pick(k,KIND[k].list())]).filter(g=>g[2].length);
+  if(!pools.length && !bons.length && !groups.length) return '';
+  return `<div class="sres">`
+    + (pools.length?`<h3 class="sh">${tr('Točení bonusů','Bonus rolls')}</h3><div class="srow">${pools.map(p=>`<button class="sbtn" data-gopool="${esc(p.id)}">${img(p.pi,'')}${esc(p.n)} <small>${p.rows.length}</small></button>`).join('')}</div>`:'')
+    + (bons.length?`<h3 class="sh">${tr('Bonusy a tiery','Bonuses & tiers')}</h3><div class="srow">${bons.map(b=>`<button class="sbtn" data-gobon="${esc(b.n)}">${esc(b.n)} <small>${b.p.length} ${tr('zdrojů','sources')}</small></button>`).join('')}</div>`:'')
+    + groups.map(([k,t,l])=>`<h3 class="sh">${t}</h3><div class="srow">${l.map(x=>`<button class="sbtn" data-go="${k}|${esc(x.id)}">${img(x.i,'')}${esc(x.n)}</button>`).join('')}</div>`).join('')
+    + `</div>`;
+};
+window.dbSearchBind = function(main){
+  main.querySelectorAll('[data-gopool]').forEach(b=>b.onclick=()=>goto('db-roll',()=>{const s=S('roll');s.sel=b.dataset.gopool;s.spec='';s.q='';s.fav=false;}));
+  main.querySelectorAll('.sres [data-gobon]').forEach(b=>b.onclick=()=>goto('db-bon',()=>{const s=S('bon');s.sel=b.dataset.gobon;s.q='';s.fav=false;}));
+  main.querySelectorAll('.sres [data-go]').forEach(b=>b.onclick=()=>{const [kk,xid]=b.dataset.go.split('|');goto({items:'db-items',equip:'db-equip',emb:'db-emb'}[kk],()=>{const s=S(kk);s.sel=xid;s.q='';s.cat='';s.fav=false;s.spec='';});});
+};
 window.renderDB = function(id){
   const main=$('#main'); main.className='db';
   const k={'db-items':'items','db-equip':'equip','db-emb':'emb'}[id];
