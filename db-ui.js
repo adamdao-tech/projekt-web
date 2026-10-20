@@ -120,6 +120,65 @@ function classView(){
   </section>`).join('')}</div>`;
 }
 
+// ---------- TOČENÍ BONUSŮ: zdroj (Divine, pet, Exalted…) -> jeho bonusy a max staty ----------
+const num = v => { const n=parseFloat(String(v).replace(/[\s,%]/g,'')); return isNaN(n)?null:n; };
+const POOL_ORDER = ['__pet','Normal','Divine','6/7','Divine 6/7','Godly','Exalted','Exalted + Divine','Exalted 6/7','Exalted + Divine 6/7','Magic Word','Mount Equipment: Plain','Mount Equipment: Magic','Mount Equipment: Rare','Mount Equipment: Legendary'];
+const POOLS = (() => {
+  const m = new Map();
+  D.bonuses.forEach(b => b.p.forEach(p => {
+    let o = m.get(p.pool); if(!o){ o={id:p.pool,n:p.pool,pi:p.pi,rows:[]}; m.set(p.pool,o); }
+    o.rows.push({n:b.n, sl:[...new Set(p.sl)], t:p.t});
+  }));
+  const pet = {id:'__pet', n:tr('Pet artefakt','Pet artifact'), pi:'/assets/catalog/items/299008.webp', pet:true,
+    rows:D.pet.map(x=>{ const [a,b]=String(x.r).split(/\s*[–-]\s*/); return {n:x.n, sl:[], t:[a,b||a]}; })};
+  const all = [pet, ...m.values()];
+  const ix = id => { const i=POOL_ORDER.indexOf(id); return i<0?99:i; };
+  return all.sort((a,b)=>ix(a.id)-ix(b.id) || a.n.localeCompare(b.n));
+})();
+const prolls = store.get('poolrolls',{});
+function pgrade(r, v){
+  const lo=num(r.t[0]), hi=num(r.t[r.t.length-1]), x=num(v);
+  if(x==null||hi==null) return null;
+  const pct = hi===lo ? 1 : Math.max(0,Math.min(1,(x-lo)/(hi-lo)));
+  let label,col;
+  if(x>hi){label='> max?';col='var(--bad)'} else if(x>=hi){label='MAX';col='var(--gold2)'}
+  else if(pct>=.8){label='Top';col='var(--good)'} else if(pct>=.5){label='OK';col='var(--mid)'} else {label=tr('Slabé','Weak');col='var(--bad)'}
+  return {pct,label,col};
+}
+function rollView(){
+  const st=S('roll'), q=st.q.trim().toLowerCase();
+  const pool = POOLS.find(p=>p.id===st.sel) || POOLS[0];
+  const slots = [...new Set(pool.rows.flatMap(r=>r.sl))].sort();
+  const slot = slots.includes(st.spec) ? st.spec : '';
+  let rows = pool.rows.filter(r=>(!q||r.n.toLowerCase().includes(q)) && (!slot||r.sl.includes(slot)) && (!st.fav||dbFav.has('bon:'+r.n)));
+  rows = [...rows].sort(st.sort==='max' ? (a,b)=>(num(b.t[b.t.length-1])||0)-(num(a.t[a.t.length-1])||0) : (a,b)=>a.n.localeCompare(b.n));
+  const k = r => pool.id+'::'+r.n;
+  const body = rows.map(r=>{ const g=pgrade(r,prolls[k(r)]); const fav=dbFav.has('bon:'+r.n);
+    return `<tr>
+      <td class="pn"><span class="fav ${fav?'on':''}" data-dbfav="${esc('bon:'+r.n)}">★</span><button class="lnk2" data-gobon="${esc(r.n)}">${esc(r.n)}</button>${!pool.pet&&!slot?`<div class="rsl">${r.sl.map(esc).join(', ')}</div>`:''}</td>
+      <td><div class="pl3" style="margin:0">${r.t.map((t,i)=>`<span class="${i===r.t.length-1?'last':''}">${esc(t)}</span>`).join('')}</div></td>
+      <td class="r"><span class="pm">${esc(r.t[r.t.length-1])}</span></td>
+      <td><div class="chk"><input type="text" inputmode="decimal" placeholder="roll" data-pk="${esc(k(r))}" value="${esc(prolls[k(r)]??'')}">
+        <span class="badge" style="${g?`color:${g.col};background:color-mix(in srgb,${g.col} 15%,transparent)`:'opacity:0'}">${g?g.label+' '+Math.round(g.pct*100)+'%':'–'}</span></div></td></tr>`; }).join('');
+  return `<div class="dhead"><h1>${tr('Točení bonusů','Bonus rolls')}</h1><span class="cnt">${tr('Vyber, čím točíš, a uvidíš všechny bonusy a jejich max.','Pick what you roll with and see every bonus and its max.')}</span></div>
+  <div class="dsplit">
+    <section class="dlist">
+      <ul class="rows">${POOLS.map(p=>`<li class="row ${p===pool?'on':''}" data-psel="${esc(p.id)}">${img(p.pi,'rimg')}<span class="rn">${esc(p.n)}</span><span class="rc">${p.rows.length}</span></li>`).join('')}</ul>
+    </section>
+    <section class="ddetail"><article class="tip" style="max-width:none">
+      <header>${img(pool.pi,'timg')}<div><h2>${esc(pool.n)}</h2><p>${pool.rows.length} ${tr('bonusů','bonuses')}${slots.length?` · ${tr('sloty','slots')}: ${slots.map(esc).join(', ')}`:''}</p></div></header>
+      <div class="dfilters"><div class="frow">
+        <input id="dq" type="search" placeholder="${tr('Hledat bonus…','Search bonus…')}" value="${esc(st.q)}" autocomplete="off">
+        ${slots.length?`<select id="dslot"><option value="">${tr('Všechny sloty','All slots')}</option>${slots.map(x=>`<option ${x===slot?'selected':''}>${esc(x)}</option>`).join('')}</select>`:''}
+      </div><div class="frow small">
+        <label><input type="checkbox" id="dfav" ${st.fav?'checked':''}> ${tr('Jen oblíbené','Favourites only')}</label>
+        <span class="sort">${tr('Řadit','Sort')}: <button class="${st.sort!=='max'?'on':''}" data-sort="az">${tr('název','name')}</button> <button class="${st.sort==='max'?'on':''}" data-sort="max">max</button></span>
+      </div></div>
+      ${rows.length?`<table class="ptab"><thead><tr><th>Bonus</th><th>${tr('Tiery (min → max)','Tiers (min → max)')}</th><th class="r">Max</th><th>${tr('Tvůj roll','Your roll')}</th></tr></thead><tbody>${body}</tbody></table>`:`<p class="dempty">${tr('Nic tomu neodpovídá.','Nothing matches.')}</p>`}
+    </article></section>
+  </div>`;
+}
+
 function favView(){
   const groups=[];
   for(const k of ['items','equip','emb']){ const l=KIND[k].list().filter(x=>dbFav.has(fk(k,x))); if(l.length) groups.push(`<h3>${KIND[k].title}</h3><div class="links">${l.map(x=>`<button class="lnk" data-go="${k}|${esc(x.id)}">${img(x.i,'li')}<span>${esc(x.n)}</span></button>`).join('')}</div>`); }
@@ -130,17 +189,24 @@ function favView(){
 
 window.DBNAV = [
   {id:'db-items',label:tr('Itemy','Items')},{id:'db-equip',label:tr('Vybavení','Equipment')},{id:'db-emb',label:tr('Emblemy','Emblems')},
-  {id:'db-bon',label:tr('Bonusy a tiery','Bonuses & tiers')},{id:'db-cls',label:tr('Classy a skilly','Classes & skills')},{id:'db-fav',label:tr('Oblíbené','Favourites')},
+  {id:'db-bon',label:tr('Bonusy a tiery','Bonuses & tiers')},{id:'db-roll',label:tr('Točení bonusů','Bonus rolls')},{id:'db-cls',label:tr('Classy a skilly','Classes & skills')},{id:'db-fav',label:tr('Oblíbené','Favourites')},
 ];
 
 const goto = (catId, fn) => { fn(); save(); state.cat=catId; store.set('cat',catId); render(); };
 window.renderDB = function(id){
   const main=$('#main'); main.className='db';
   const k={'db-items':'items','db-equip':'equip','db-emb':'emb'}[id];
-  main.innerHTML = k?listView(k): id==='db-bon'?bonusView(): id==='db-cls'?classView(): favView();
-  const st=S(k||'bon');
+  main.innerHTML = k?listView(k): id==='db-bon'?bonusView(): id==='db-roll'?rollView(): id==='db-cls'?classView(): favView();
+  const st=S(k||(id==='db-roll'?'roll':'bon'));
   const re=()=>{save();const l=main.querySelector('.rows'),sc=l?l.scrollTop:0;window.renderDB(id);const l2=main.querySelector('.rows');if(l2)l2.scrollTop=sc;};
   main.querySelectorAll('[data-sel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.sel;re();});
+  main.querySelectorAll('[data-psel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.psel;st.spec='';main.querySelector('.ddetail')&&(main.querySelector('.ddetail').scrollTop=0);re();});
+  const ds2=$('#dslot'); if(ds2) ds2.onchange=()=>{st.spec=ds2.value;re();};
+  main.querySelectorAll('[data-pk]').forEach(inp=>inp.oninput=()=>{
+    const k=inp.dataset.pk; if(inp.value==='') delete prolls[k]; else prolls[k]=inp.value; store.set('poolrolls',prolls);
+    const pool=POOLS.find(p=>p.id===k.split('::')[0]), r=pool&&pool.rows.find(x=>pool.id+'::'+x.n===k), g=r&&pgrade(r,inp.value), bd=inp.nextElementSibling;
+    bd.textContent=g?g.label+' '+Math.round(g.pct*100)+'%':'–'; bd.style.cssText=g?`color:${g.col};background:color-mix(in srgb,${g.col} 15%,transparent)`:'opacity:0';
+  });
   main.querySelectorAll('[data-bsel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.bsel;re();});
   main.querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{st.sort=b.dataset.sort;re();});
   main.querySelectorAll('[data-dbfav]').forEach(b=>b.onclick=()=>{const f=b.dataset.dbfav;dbFav.has(f)?dbFav.delete(f):dbFav.add(f);saveFav();re();});
@@ -150,7 +216,7 @@ window.renderDB = function(id){
   const c=$('#dcat'); if(c) c.onchange=()=>{st.cat=c.value;st.sel=null;re();};
   const sp=$('#dspec'); if(sp) sp.onchange=()=>{st.spec=sp.value;st.sel=null;re();};
   const f=$('#dfav'); if(f) f.onchange=()=>{st.fav=f.checked;re();};
-  const q=$('#dq'); if(q){let t;q.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{st.q=q.value;st.sel=null;re();const n=$('#dq');n.focus();n.setSelectionRange(n.value.length,n.value.length);},160);};}
+  const q=$('#dq'); if(q){let t;q.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{st.q=q.value;if(id!=='db-roll')st.sel=null;re();const n=$('#dq');n.focus();n.setSelectionRange(n.value.length,n.value.length);},160);};}
   const on=main.querySelector('.row.on'); if(on && !on._seen) on.scrollIntoView({block:'nearest'});
 };
 })();
