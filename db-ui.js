@@ -155,7 +155,7 @@ function rollView(){
   const k = r => pool.id+'::'+r.n;
   const body = rows.map(r=>{ const g=pgrade(r,prolls[k(r)]); const fav=dbFav.has('bon:'+r.n);
     return `<tr>
-      <td class="pn"><span class="fav ${fav?'on':''}" data-dbfav="${esc('bon:'+r.n)}">★</span><button class="lnk2" data-gobon="${esc(r.n)}">${esc(r.n)}</button>${!pool.pet&&!slot?`<div class="rsl">${r.sl.map(esc).join(', ')}</div>`:''}</td>
+      <td class="pn"><span class="fav ${fav?'on':''}" data-dbfav="${esc('bon:'+r.n)}">★</span><button class="lnk2" data-gobon="${esc(r.n)}">${esc(r.n)}</button>${!pool.pet&&!slot?`<div class="rsl">${r.sl.map(x=>`<button class="slk" data-slot="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}</td>
       <td><div class="pl3" style="margin:0">${r.t.map((t,i)=>`<span class="${i===r.t.length-1?'last':''}">${esc(t)}</span>`).join('')}</div></td>
       <td class="r"><span class="pm">${esc(r.t[r.t.length-1])}</span></td>
       <td><div class="chk"><input type="text" inputmode="decimal" placeholder="roll" data-pk="${esc(k(r))}" value="${esc(prolls[k(r)]??'')}">
@@ -166,10 +166,10 @@ function rollView(){
       <ul class="rows">${POOLS.map(p=>`<li class="row ${p===pool?'on':''}" data-psel="${esc(p.id)}">${img(p.pi,'rimg')}<span class="rn">${esc(p.n)}</span><span class="rc">${p.rows.length}</span></li>`).join('')}</ul>
     </section>
     <section class="ddetail"><article class="tip" style="max-width:none">
-      <header>${img(pool.pi,'timg')}<div><h2>${esc(pool.n)}</h2><p>${pool.rows.length} ${tr('bonusů','bonuses')}${slots.length?` · ${tr('sloty','slots')}: ${slots.map(esc).join(', ')}`:''}</p></div></header>
+      <header>${img(pool.pi,'timg')}<div><h2>${esc(pool.n)}</h2><p>${pool.rows.length} ${tr('bonusů','bonuses')}${slot?` · ${tr('na slotu','on slot')} <b>${esc(slot)}</b>: ${rows.length}`:''}</p></div></header>
+      ${slots.length?`<div class="slots"><button class="gchip ${!slot?'on':''}" data-slot="">${tr('Všechny sloty','All slots')}</button>${slots.map(x=>`<button class="gchip ${x===slot?'on':''}" data-slot="${esc(x)}">${esc(x)}<span class="pgc">${pool.rows.filter(r=>r.sl.includes(x)).length}</span></button>`).join('')}</div>`:''}
       <div class="dfilters"><div class="frow">
         <input id="dq" type="search" placeholder="${tr('Hledat bonus…','Search bonus…')}" value="${esc(st.q)}" autocomplete="off">
-        ${slots.length?`<select id="dslot"><option value="">${tr('Všechny sloty','All slots')}</option>${slots.map(x=>`<option ${x===slot?'selected':''}>${esc(x)}</option>`).join('')}</select>`:''}
       </div><div class="frow small">
         <label><input type="checkbox" id="dfav" ${st.fav?'checked':''}> ${tr('Jen oblíbené','Favourites only')}</label>
         <span class="sort">${tr('Řadit','Sort')}: <button class="${st.sort!=='max'?'on':''}" data-sort="az">${tr('název','name')}</button> <button class="${st.sort==='max'?'on':''}" data-sort="max">max</button></span>
@@ -201,7 +201,7 @@ window.renderDB = function(id){
   const re=()=>{save();const l=main.querySelector('.rows'),sc=l?l.scrollTop:0;window.renderDB(id);const l2=main.querySelector('.rows');if(l2)l2.scrollTop=sc;};
   main.querySelectorAll('[data-sel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.sel;re();});
   main.querySelectorAll('[data-psel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.psel;st.spec='';main.querySelector('.ddetail')&&(main.querySelector('.ddetail').scrollTop=0);re();});
-  const ds2=$('#dslot'); if(ds2) ds2.onchange=()=>{st.spec=ds2.value;re();};
+  main.querySelectorAll('[data-slot]').forEach(b=>b.onclick=e=>{e.stopPropagation();st.spec=b.dataset.slot;re();const d=main.querySelector('.ddetail');if(d)d.scrollTop=0;});
   main.querySelectorAll('[data-pk]').forEach(inp=>inp.oninput=()=>{
     const k=inp.dataset.pk; if(inp.value==='') delete prolls[k]; else prolls[k]=inp.value; store.set('poolrolls',prolls);
     const pool=POOLS.find(p=>p.id===k.split('::')[0]), r=pool&&pool.rows.find(x=>pool.id+'::'+x.n===k), g=r&&pgrade(r,inp.value), bd=inp.nextElementSibling;
