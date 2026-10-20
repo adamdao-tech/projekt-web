@@ -420,17 +420,100 @@ nav .upd{margin:24px 10px 0;font-size:12px}
 .ocrstat{color:var(--accent);font-size:14px;max-width:380px}
 .ocrimg{max-height:110px;max-width:260px;border-radius:4px;object-fit:contain}
 .ocrmiss{color:var(--muted);font-size:13px;margin:8px 0 0}
+/* ---------- JAZYK ---------- */
+.langsw{display:flex;gap:4px}
+.langsw .chip{padding:5px 10px;font-weight:600;letter-spacing:.5px}
+/* ---------- WIKI ---------- */
+main.wiki{scroll-behavior:smooth}
+main.wiki .wbody{max-width:980px}
+main.wiki .sec{margin:26px 0 38px;scroll-margin-top:10px}
+main.wiki .sec>h2{margin:0 0 6px;font:700 20px Georgia,serif;color:var(--gold2);padding-bottom:8px;border-bottom:1px solid var(--line)}
+main.wiki .lead{color:var(--muted);margin:6px 0 14px}
+main.wiki h3{margin:22px 0 10px;font:700 15px Georgia,serif;color:var(--text)}
+main.wiki h4{margin:0 0 8px;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--gold)}
+main.wiki p{margin:0 0 10px}main.wiki p:last-child{margin-bottom:0}
+main.wiki strong{color:var(--text)}
+main.wiki a{color:var(--gold2)}
+main.wiki .g{display:grid;gap:10px;margin:10px 0}
+main.wiki .g2{grid-template-columns:repeat(2,1fr)}main.wiki .g3{grid-template-columns:repeat(3,1fr)}main.wiki .g4{grid-template-columns:repeat(4,1fr)}
+main.wiki .pnl,main.wiki .bld{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+main.wiki .pnl p,main.wiki .pnl .mono{color:var(--muted)!important}
+main.wiki .note{margin:10px 0}
+main.wiki .note b{display:block;margin-bottom:2px;color:var(--gold2)}
+main.wiki .note.warn{border-left-color:var(--bad);background:#e2553c12}main.wiki .note.warn b{color:var(--bad)}
+main.wiki .note.info{border-left-color:var(--lightning);background:#38a8f512;color:#a9cbe6}main.wiki .note.info b{color:var(--lightning)}
+main.wiki .note.ok{border-left-color:var(--good);background:#3ecf6e12;color:#a9dcb9}main.wiki .note.ok b{color:var(--good)}
+main.wiki .note.gap{border-left-color:var(--curse);background:#a855f712;color:#cdb3ea}main.wiki .note.gap b{color:var(--curse)}
+main.wiki .tw{overflow-x:auto;margin:10px 0}
+main.wiki .tw table{min-width:520px}
+main.wiki td.nm{font-weight:600;white-space:nowrap}
+main.wiki .mono,main.wiki td.mo{font-variant-numeric:tabular-nums;color:var(--muted)}
+main.wiki td.ct{text-align:center}
+main.wiki .wrt{font-weight:700}main.wiki .wrt.hi{color:var(--gold2)}main.wiki .wrt.md{color:var(--text)}main.wiki .wrt.lo{color:var(--muted)}main.wiki .wrt.na{color:var(--line)}
+main.wiki .stp,main.wiki .lad,main.wiki .lst,main.wiki .emb{list-style:none;margin:0;padding:0}
+main.wiki .stp{counter-reset:s;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px 14px}
+main.wiki .stp li{position:relative;padding:10px 0 10px 34px;counter-increment:s;border-bottom:1px solid var(--line)}
+main.wiki .stp li:last-child{border-bottom:0}
+main.wiki .stp li::before{content:counter(s);position:absolute;left:0;top:11px;width:22px;height:22px;border-radius:50%;border:1px solid #d9a44166;color:var(--gold);font-size:11px;display:flex;align-items:center;justify-content:center}
+main.wiki .stp li b{display:block}main.wiki .stp li span{display:block;color:var(--muted);font-size:13px}
+main.wiki .lst li{display:flex;gap:9px;padding:4px 0;align-items:flex-start}
+main.wiki .lst li::before{content:'◆';color:var(--gold);opacity:.6;font-size:7px;margin-top:7px;flex-shrink:0}
+main.wiki .lst li em{font-style:normal;color:var(--muted);font-size:12px;margin-left:auto;padding-left:12px;text-align:right}
+main.wiki .lad{counter-reset:l}
+main.wiki .lad li{position:relative;padding:4px 0 4px 22px;counter-increment:l;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line)}
+main.wiki .lad li:last-child{border-bottom:0;color:var(--gold2);font-weight:600}
+main.wiki .lad li::before{content:counter(l);position:absolute;left:0;top:5px;font-size:10px;color:var(--gold)}
+main.wiki .route,main.wiki .gts{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+main.wiki .stop,main.wiki .gt{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:10px 14px;border-bottom:1px solid var(--line)}
+main.wiki .gt{grid-template-columns:70px 1fr}
+main.wiki .stop:last-child,main.wiki .gt:last-child{border-bottom:0}
+main.wiki .stop-lv,main.wiki .gt-p{color:var(--gold);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+main.wiki .stop-n,main.wiki .gt-t{font-weight:600}
+main.wiki .stop-d,main.wiki .gt-d{color:var(--muted);font-size:13px}
+main.wiki .blds{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+main.wiki .bld-c{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+main.wiki .bld-n{font-weight:700;color:var(--gold2);margin:2px 0 8px}
+main.wiki .emb li{padding:2px 0 2px 12px;font-size:13px;position:relative}
+main.wiki .emb li::before{content:'·';position:absolute;left:2px;color:var(--gold);font-weight:700}
+main.wiki .bld-x{font-size:12px;color:var(--muted);padding-top:8px;margin-top:8px;border-top:1px solid var(--line)}
+main.wiki .sts{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+main.wiki .st{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+main.wiki .st-k{font-size:11.5px;color:var(--muted)}main.wiki .st-v{font:700 18px Georgia,serif;color:var(--gold2)}
+main.wiki .chips,main.wiki .tgs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+main.wiki .chips .chip{cursor:default}
+main.wiki .chip.k{color:var(--gold2);border-color:#d9a44188}
+main.wiki .chip em{font-style:normal;color:var(--muted);font-size:11px;margin-left:5px}
+main.wiki .tg{font-size:12px;padding:3px 10px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+main.wiki .tg.n{color:var(--gold2);border-color:#d9a44166}main.wiki .tg.c{color:var(--lightning)}
+main.wiki .fig{margin:12px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+main.wiki .fig img{display:block;width:100%;height:auto}
+main.wiki .fig figcaption{padding:7px 12px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line)}
+main.wiki .figrow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+main.wiki .fig.sm{max-width:200px;flex-shrink:0}
+main.wiki kbd,main.wiki code{font-size:12px;padding:1px 6px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);color:var(--gold)}
+main.wiki .foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+@media(max-width:900px){main.wiki .g3,main.wiki .g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){main.wiki .g2,main.wiki .g3,main.wiki .g4{grid-template-columns:1fr}main.wiki .stop,main.wiki .gt{grid-template-columns:1fr;gap:2px}}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">Metin Max Rolls<small>Nihor2 · Chronicles of Jinteia</small></div>
   <label class="search"><span>⌕</span><input id="q" placeholder="Hledat bonus ve všech kategoriích…" autocomplete="off"></label>
+  <div class="langsw" id="langsw"></div>
 </header>
 <div class="wrap">
   <nav id="nav"></nav>
   <main id="main"></main>
 </div>
+<script>
+// ---------- jazyk (CZ / EN) ----------
+const LANG = (()=>{try{const v=JSON.parse(localStorage.getItem('mmr_lang'));return v==='en'?'en':'cs'}catch(e){return 'cs'}})();
+window.LANG = LANG;
+const tr = (cs,en) => LANG==='en' ? en : cs;
+const trf = o => (LANG==='en' && o && o.en!=null) ? o.en : o;
+document.documentElement.lang = LANG;
+</script>
 <script src="data.js"></script>
 <script>
 const CATS = window.CATEGORIES || [];
@@ -445,7 +528,8 @@ let favs = new Set(store.get('favs', []));
 let rolls = store.get('rolls', {});
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt = (v,u) => v.toLocaleString('cs-CZ') + (u||'');
+const LOC = LANG==='en'?'en-US':'cs-CZ';
+const fmt = (v,u) => v.toLocaleString(LOC) + (u||'');
 const key = (c,b) => c.id+'::'+b.name;
 
 function grade(b, v){
@@ -456,7 +540,7 @@ function grade(b, v){
   if(v>=b.max){label='MAX';col='var(--gold2)'}
   else if(pct>=.8){label='Top';col='var(--good)'}
   else if(pct>=.5){label='OK';col='var(--mid)'}
-  else {label='Slabé';col='var(--bad)'}
+  else {label=tr('Slabé','Weak');col='var(--bad)'}
   if(v>b.max){label='> max?';col='var(--bad)'}
   return {pct,label,col};
 }
@@ -464,11 +548,15 @@ function grade(b, v){
 function renderNav(){
   const btn=(id,label,count)=>`<button data-id="${id}" class="${state.cat===id&&!state.q?'active':''}">${label}${count!=null?`<span class="count">${count}</span>`:''}</button>`;
   $('#nav').innerHTML =
-    '<h4>Max rolly</h4>' + CATS.map(c=>btn(c.id,esc(c.name),null)).join('') +
-    (UP ? '<h4>Upgrady</h4>' + btn(UP.id,esc(UP.name),null) : '') +
+    `<h4>${tr('Max rolly','Max rolls')}</h4>` + CATS.map(c=>btn(c.id,esc(tr(c.name,c.name_en||c.name)),null)).join('') +
+    (UP ? `<h4>${tr('Upgrady','Upgrades')}</h4>` + btn(UP.id,esc(tr(UP.name,UP.name_en)),null) : '') +
     (EM ? '<h4>Heal šaman</h4>' + btn(EM.id,'Emblemy a buildy',null) : '') +
-    (window.DBNAV ? '<h4>Databáze</h4>' + window.DBNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
-    `<div class="upd">Aktualizováno: ${esc(window.LAST_UPDATE||'')}</div>`;
+    (window.DBNAV ? `<h4>${tr('Databáze','Database')}</h4>` + window.DBNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
+    (window.WIKINAV ? '<h4>Wiki</h4>' + window.WIKINAV.map(n=>btn(n.id,n.icon+' '+esc(n.label),null)).join('') : '') +
+    `<div class="upd">${tr('Aktualizováno','Updated')}: ${esc(window.LAST_UPDATE||'')}</div>`;
+  $('#langsw').innerHTML = ['cs','en'].map(l=>`<button class="chip ${LANG===l?'on':''}" data-lang="${l}">${l==='cs'?'CZ':'EN'}</button>`).join('');
+  $('#langsw').querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{ if(b.dataset.lang===LANG) return; store.set('lang',b.dataset.lang); location.reload(); });
+  $('#q').placeholder = tr('Hledat bonus ve všech kategoriích…','Search bonuses in all categories…');
   $('#nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{
     state.cat=b.dataset.id; store.set('cat',state.cat); state.q=''; $('#q').value=''; render();
   });
@@ -490,13 +578,13 @@ function renderMain(){
   const c = CATS.find(x=>x.id===state.cat) || CATS[0];
   const list = rows();
   const head = q
-    ? `<div class="title"><h1>Hledání: „${esc(q)}“</h1></div><p class="desc">${list.length} výsledků napříč všemi kategoriemi.</p>`
-    : `<div class="title"><h1>${c.icon||''} ${esc(c.name)}</h1></div><p class="desc">${esc(c.desc||'')}</p>${c.note?`<div class="note">${esc(c.note)}</div>`:''}`;
+    ? `<div class="title"><h1>${tr('Hledání','Search')}: „${esc(q)}“</h1></div><p class="desc">${list.length} ${tr('výsledků napříč všemi kategoriemi.','results across all categories.')}</p>`
+    : `<div class="title"><h1>${c.icon||''} ${esc(tr(c.name,c.name_en||c.name))}</h1></div><p class="desc">${esc(tr(c.desc||'',c.desc_en||c.desc||''))}</p>${c.note?`<div class="note">${esc(tr(c.note,c.note_en||c.note))}</div>`:''}`;
   const tb = list.map(({c:cat,b})=>{
     const k=key(cat,b), v=rolls[k];
     const g=grade(b, v===undefined?null:Number(v));
     return `<tr>
-      <td><span class="fav ${favs.has(k)?'on':''}" data-k="${esc(k)}" title="Oblíbené">★</span><span class="name ${b.color?'c-'+b.color:''}">${esc(b.name)}</span>${q?`<span class="cat">${esc(cat.name)}</span>`:''}</td>
+      <td><span class="fav ${favs.has(k)?'on':''}" data-k="${esc(k)}" title="${tr('Oblíbené','Favourites')}">★</span><span class="name ${b.color?'c-'+b.color:''}">${esc(b.name)}</span>${q?`<span class="cat">${esc(tr(cat.name,cat.name_en||cat.name))}</span>`:''}</td>
       <td class="num hide-sm">${fmt(b.min,b.unit)}</td>
       <td class="num max">${fmt(b.max,b.unit)}</td>
       <td><div class="chk">
@@ -508,10 +596,10 @@ function renderMain(){
   $('#main').innerHTML = head + `
     <div class="toolbar">
       <button class="chip ${state.sort==='az'?'on':''}" data-s="az">A–Z</button>
-      <button class="chip ${state.sort==='fav'?'on':''}" data-s="fav">Oblíbené nahoru</button>
-      <button class="chip ${state.onlyFav?'on':''}" id="of">★ Jen oblíbené</button>
-      <span class="hint">Napiš svůj roll → uvidíš, jak blízko jsi maxu</span>
-    </div>` + (list.length ? `<table><thead><tr><th>Bonus</th><th class="hide-sm">Min</th><th>Max</th><th>Kontrola rollu</th></tr></thead><tbody>${tb}</tbody></table>` : `<div class="empty">Nic nenalezeno.</div>`);
+      <button class="chip ${state.sort==='fav'?'on':''}" data-s="fav">${tr('Oblíbené nahoru','Favourites first')}</button>
+      <button class="chip ${state.onlyFav?'on':''}" id="of">★ ${tr('Jen oblíbené','Favourites only')}</button>
+      <span class="hint">${tr('Napiš svůj roll → uvidíš, jak blízko jsi maxu','Type your roll → see how close you are to max')}</span>
+    </div>` + (list.length ? `<table><thead><tr><th>Bonus</th><th class="hide-sm">Min</th><th>Max</th><th>${tr('Kontrola rollu','Roll check')}</th></tr></thead><tbody>${tb}</tbody></table>` : `<div class="empty">${tr('Nic nenalezeno.','Nothing found.')}</div>`);
 
   $('#main').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{state.sort=b.dataset.s;render()});
   $('#of').onclick=()=>{state.onlyFav=!state.onlyFav;render()};
@@ -531,7 +619,7 @@ function renderMain(){
   });
 }
 
-const nf = v => Number(v).toLocaleString('cs-CZ',{maximumFractionDigits:2});
+const nf = v => Number(v).toLocaleString(LOC,{maximumFractionDigits:2});
 function renderEmblems(){
   const B = EM.builds, bk = B[state.build] ? state.build : 'single', b = B[bk];
   const order = {core:0,good:1,skip:2}, label = {core:'Nutný',good:'Doplněk',skip:'Nepotřebný'};
@@ -567,9 +655,9 @@ function renderEmblems(){
 // ---------------- RANKY & UPGRADY ----------------
 state.utab = store.get('utab','ranks');
 state.rank = store.get('rank',11);
-const UTABS = {ranks:{name:'Ranky vybavení'}, sockets:{name:'Sockety šperků'}, mats:{name:'Kvalita a materiály'}};
+const UTABS = {ranks:{name:tr('Ranky vybavení','Equipment ranks')}, sockets:{name:tr('Sockety šperků','Jewellery sockets')}, mats:{name:tr('Kvalita a materiály','Quality & materials')}};
 const pic = (src,fb) => src ? `<img src="${src}" alt="" onerror="this.replaceWith(document.createTextNode('${fb||'•'}'))">` : (fb||'•');
-const chips = a => a.length ? a.map(x=>`<span class="src">${esc(x)}</span>`).join('') : '<span class="src none">zdroj neuveden</span>';
+const chips = a => a.length ? a.map(x=>`<span class="src">${esc(x)}</span>`).join('') : `<span class="src none">${tr('zdroj neuveden','source unknown')}</span>`;
 function renderUpgrades(){
   const t = UTABS[state.utab] ? state.utab : 'ranks', R = state.rank, M = UP.maxRank;
   let body='';
@@ -578,35 +666,37 @@ function renderUpgrades(){
       const v=r.per*R;
       return `<div class="uc">
         <div class="uh"><div class="ui big" style="--c:${r.col}">${pic(r.img,r.icon)}</div>
-          <div class="ut"><div class="us">${esc(r.slot)}</div><div class="ue">${esc(r.en)}</div></div>
+          <div class="ut"><div class="us">${esc(tr(r.slot,r.en))}</div>${LANG==='en'?'':`<div class="ue">${esc(r.en)}</div>`}</div>
           <div class="uv"><b>+${v}%</b><small>rank ${R}</small></div></div>
         <div class="ubar"><i style="width:${R/M*100}%"></i></div>
         <div class="ul"><span>Item</span><b class="gold">${esc(r.item)}</b></div>
-        <div class="ul"><span>Zvedá</span><b>${esc(r.affects)}</b></div>
-        <div class="ul"><span>Za rank</span><b>+${r.per}% · max +${r.per*M}%</b></div>
-        <div class="ul"><span>Zdroj</span><div>${chips(r.src)}${r.note?`<span class="src alt">${esc(r.note)}</span>`:''}</div></div>
+        <div class="ul"><span>${tr('Zvedá','Raises')}</span><b>${esc(r.affects)}</b></div>
+        <div class="ul"><span>${tr('Za rank','Per rank')}</span><b>+${r.per}% · max +${r.per*M}%</b></div>
+        <div class="ul"><span>${tr('Zdroj','Source')}</span><div>${chips(r.src)}${r.note?`<span class="src alt">${esc(tr(r.note,r.note_en||r.note))}</span>`:''}</div></div>
         <div class="uid">ID ${r.id}</div></div>`;}).join('');
-    body = `<div class="info"><b>Jak to funguje:</b> každý rank = <b>+1 %</b> k atributům daného slotu (Skill Booster <b>+2 %</b>). Ranky jsou 1–${M}, takže max je <b>+${M} %</b> (Booster <b>+${2*M} %</b>). 8 z 11 upgrade itemů padá z <b class="gold">Elite Portal Stone</b>.</div>
+    body = `<div class="info">${tr(`<b>Jak to funguje:</b> každý rank = <b>+1 %</b> k atributům daného slotu (Skill Booster <b>+2 %</b>). Ranky jsou 1–${M}, takže max je <b>+${M} %</b> (Booster <b>+${2*M} %</b>). 8 z 11 upgrade itemů padá z <b class="gold">Elite Portal Stone</b>.`,
+      `<b>How it works:</b> each rank = <b>+1%</b> to the attributes of that slot (Skill Booster <b>+2%</b>). Ranks go 1–${M}, so the max is <b>+${M}%</b> (Booster <b>+${2*M}%</b>). 8 of the 11 upgrade items drop from <b class="gold">Elite Portal Stone</b>.`)}</div>
       <div class="ugrid r4">${cards}</div>`;
   }
   if(t==='sockets'){
     const cols = UP.sockets.map(k=>`<div class="sc">
       <div class="sh">Socket ${k.n}</div>
-      <div class="step"><div class="sn">1 · Zpermanentnit</div>
+      <div class="step"><div class="sn">1 · ${tr('Zpermanentnit','Make permanent')}</div>
         <div class="si"><span class="sim">${pic(k.stone.img,"💠")}</span>${esc(k.stone.name)}</div>
         <div class="sb">+${UP.socketStoneBonus}% <small>base ore bonus</small></div>
         <div>${chips(k.stone.src)}</div><div class="uid">ID ${k.stone.id}</div></div>
       <div class="arrow">▼</div>
-      <div class="step"><div class="sn">2 · Rankovat (1–${M})</div>
+      <div class="step"><div class="sn">2 · ${tr('Rankovat','Rank up')} (1–${M})</div>
         <div class="si"><span class="sim">${pic(k.enigma.img,"🔺")}</span>${esc(k.enigma.name)}</div>
-        <div class="sb">+${UP.socketRankPer*R}% <small>na ranku ${R} · max +${UP.socketRankPer*M}%</small></div>
+        <div class="sb">+${UP.socketRankPer*R}% <small>${tr('na ranku','at rank')} ${R} · max +${UP.socketRankPer*M}%</small></div>
         <div class="ubar"><i style="width:${R/M*100}%"></i></div>
         <div>${chips(k.enigma.src)}</div><div class="uid">ID ${k.enigma.id}</div></div>
-      <div class="lock">${k.n>1?`🔒 Rank lze zvedat až když je Socket ${k.n-1} na ranku ${M}`:'✅ Začíná se tady'}</div>
+      <div class="lock">${k.n>1?tr(`🔒 Rank lze zvedat až když je Socket ${k.n-1} na ranku ${M}`,`🔒 Can only be ranked once Socket ${k.n-1} is at rank ${M}`):tr('✅ Začíná se tady','✅ Start here')}</div>
     </div>`).join('<div class="sarrow">➜</div>');
-    body = `<div class="info"><b>Postup:</b> ① socket šperku zpermanentníš <b class="gold">Adanosovým kamenem</b> (+${UP.socketStoneBonus} % base ore bonusu) → ② rankuješ ho <b class="gold">Triangle Enigmou</b> (+${UP.socketRankPer} % za rank, max +${UP.socketRankPer*M} %) → ③ teprve až je na ranku ${M}, můžeš rankovat další socket.</div>
+    body = `<div class="info">${tr(`<b>Postup:</b> ① socket šperku zpermanentníš <b class="gold">Adanosovým kamenem</b> (+${UP.socketStoneBonus} % base ore bonusu) → ② rankuješ ho <b class="gold">Triangle Enigmou</b> (+${UP.socketRankPer} % za rank, max +${UP.socketRankPer*M} %) → ③ teprve až je na ranku ${M}, můžeš rankovat další socket.`,
+      `<b>Steps:</b> ① make the jewellery socket permanent with an <b class="gold">Adanos's Stone</b> (+${UP.socketStoneBonus}% base ore bonus) → ② rank it up with a <b class="gold">Triangle Enigma</b> (+${UP.socketRankPer}% per rank, max +${UP.socketRankPer*M}%) → ③ only once it is at rank ${M} can you rank the next socket.`)}</div>
       <div class="srow">${cols}</div>
-      <div class="uc" style="margin-top:12px"><div class="us" style="font-size:14px">📦 Truhla → co z ní padá</div>
+      <div class="uc" style="margin-top:12px"><div class="us" style="font-size:14px">📦 ${tr('Truhla → co z ní padá','Chest → what it drops')}</div>
         <div class="chest">${(()=>{const m={};UP.sockets.forEach(k=>{k.stone.src.forEach(c=>(m[c]=m[c]||[]).push(`Socket ${k.n} · Adanos`));k.enigma.src.forEach(c=>(m[c]=m[c]||[]).push(`Socket ${k.n} · Enigma`))});
           return Object.entries(m).sort((a,b)=>b[1].length-a[1].length).map(([c,l])=>`<div class="ch"><span class="src">${esc(c)}</span><span>${l.join(', ')}</span>${l.length>1?'<b class="tag">'+l.length+'×</b>':''}</div>`).join('')})()}</div></div>`;
   }
@@ -616,25 +706,25 @@ function renderUpgrades(){
     let cum=0; const dw=[]; for(let n=1;n<=UP.dragonWater.maxGrade;n++){cum+=n+4;dw.push(`<tr><td><b>${n}</b>${n===UP.dragonWater.maxGrade?' <span class="tag">'+UP.dragonWater.gradeName+'</span>':''}</td><td>${n+4}×</td><td class="mut">${cum}×</td></tr>`)}
     const m=UP.materials, frag=m[0], inf=m[1], w=m[2], iw=m[3];
     body = `<div class="ugrid r3">
-      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#b0703a">${pic(Q.img,"📜")}</div><div class="ut"><div class="us">Kvalita itemu</div><div class="ue">${esc(Q.item)} · ID ${Q.id}</div></div></div>
-        <div class="ed2">Táhni na item → zvedne <b>Quality</b> = <b>+1 %</b> k <b>base stats</b> vybavení za každý stupeň. Zdroj: ${chips(Q.src)}</div>
-        <table class="mt"><thead><tr><th>Na kvalitu</th><th>Enhancerů</th><th>Yang</th><th>Celkem od 0</th></tr></thead><tbody>${qrows}</tbody></table>
-        <div class="ed2 mut">Vyšší kvalita = dražší krok. „Celkem“ počítá, že jdeš postupně od +0.</div></div>
-      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#7a6ae8">${pic(w.img,"💧")}</div><div class="ui big" style="--c:#4ac85a">${pic(iw.img,"💧")}</div><div class="ut"><div class="us">Ring / Belt stony</div><div class="ue">${esc(w.name)} (${w.id}) · ${esc(iw.name)} (${iw.id})</div></div></div>
-        <div class="ed2"><b>Dragon Water</b> → normální stone, <b class="inf">Infected Dragon Water</b> → infikovaný stone. Cena je stejná: krok na grade N stojí <b>N + 4</b>.</div>
-        <table class="mt"><thead><tr><th>Grade</th><th>Stojí</th><th>Celkem</th></tr></thead><tbody>${dw.join('')}</tbody></table></div>
+      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#b0703a">${pic(Q.img,"📜")}</div><div class="ut"><div class="us">${tr('Kvalita itemu','Item quality')}</div><div class="ue">${esc(Q.item)} · ID ${Q.id}</div></div></div>
+        <div class="ed2">${tr('Táhni na item → zvedne <b>Quality</b> = <b>+1 %</b> k <b>base stats</b> vybavení za každý stupeň. Zdroj:','Drag onto an item → raises <b>Quality</b> = <b>+1%</b> to the equipment <b>base stats</b> per step. Source:')} ${chips(Q.src)}</div>
+        <table class="mt"><thead><tr><th>${tr('Na kvalitu','To quality')}</th><th>${tr('Enhancerů','Enhancers')}</th><th>Yang</th><th>${tr('Celkem od 0','Total from 0')}</th></tr></thead><tbody>${qrows}</tbody></table>
+        <div class="ed2 mut">${tr('Vyšší kvalita = dražší krok. „Celkem“ počítá, že jdeš postupně od +0.','Higher quality = pricier step. “Total” assumes you go step by step from +0.')}</div></div>
+      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#7a6ae8">${pic(w.img,"💧")}</div><div class="ui big" style="--c:#4ac85a">${pic(iw.img,"💧")}</div><div class="ut"><div class="us">${tr('Ring / Belt stony','Ring / Belt stones')}</div><div class="ue">${esc(w.name)} (${w.id}) · ${esc(iw.name)} (${iw.id})</div></div></div>
+        <div class="ed2">${tr('<b>Dragon Water</b> → normální stone, <b class="inf">Infected Dragon Water</b> → infikovaný stone. Cena je stejná: krok na grade N stojí <b>N + 4</b>.','<b>Dragon Water</b> → normal stone, <b class="inf">Infected Dragon Water</b> → infected stone. Same price: the step to grade N costs <b>N + 4</b>.')}</div>
+        <table class="mt"><thead><tr><th>Grade</th><th>${tr('Stojí','Costs')}</th><th>${tr('Celkem','Total')}</th></tr></thead><tbody>${dw.join('')}</tbody></table></div>
       <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#4ac85a">${pic(frag.img,"💠")}</div><div class="ut"><div class="us">Spirit Stones</div><div class="ue">${esc(frag.name)} · ID ${frag.id}</div></div></div>
-        <div class="ed2">${esc(frag.desc)}</div>
-        <div class="sl">Kde farmit:</div><div class="srcs">${chips(frag.src)}</div>
+        <div class="ed2">${esc(tr(frag.desc,frag.desc_en||frag.desc))}</div>
+        <div class="sl">${tr('Kde farmit:','Where to farm:')}</div><div class="srcs">${chips(frag.src)}</div>
         <div class="sep"></div>
         <div class="us" style="font-size:14px;display:flex;align-items:center;gap:8px"><span class="ui" style="--c:#4ac85a">${pic(inf.img,"🦠")}</span>${esc(inf.name)} <span class="ue">ID ${inf.id}</span></div>
-        <div class="ed2">${esc(inf.desc)}</div></div>
+        <div class="ed2">${esc(tr(inf.desc,inf.desc_en||inf.desc))}</div></div>
     </div>`;
   }
   const main=$('#main'); main.className='em up';
-  main.innerHTML = `<div class="em-top"><h1>${esc(UP.name)}</h1>
+  main.innerHTML = `<div class="em-top"><h1>${esc(tr(UP.name,UP.name_en))}</h1>
       <div class="btabs">${Object.entries(UTABS).map(([k,v],i)=>`<button class="btab ${k===t?'on':''}" data-u="${k}">${v.name}<kbd>${i+1}</kbd></button>`).join('')}</div>
-      ${t!=='mats'?`<label class="rank">Tvůj rank <input type="range" min="0" max="${M}" value="${R}" id="rk"><b id="rkv">${R}</b>/${M}</label>`:''}
+      ${t!=='mats'?`<label class="rank">${tr('Tvůj rank','Your rank')} <input type="range" min="0" max="${M}" value="${R}" id="rk"><b id="rkv">${R}</b>/${M}</label>`:''}
     </div>${body}`;
   main.querySelectorAll('[data-u]').forEach(x=>x.onclick=()=>{state.utab=x.dataset.u;store.set('utab',state.utab);renderUpgrades()});
   const rk=$('#rk'); if(rk) rk.oninput=()=>{state.rank=+rk.value;store.set('rank',state.rank);renderUpgrades();$('#rk').focus()};
@@ -656,8 +746,8 @@ const PET_DEFAULT = {
 };
 let petRate = store.get('petRate', {});
 const rateOf = b => petRate[b.name] ?? PET_DEFAULT[b.name] ?? 0;
-const dots = (b, click=true) => { const r=rateOf(b); return `<span class="dots r${r}" ${click?`data-rate="${esc(b.name)}" title="Klikni a změň hodnocení"`:''}>${[1,2,3].map(i=>`<i class="${i<=r?'on':''}"></i>`).join('')}</span>`; };
-const RATE_TXT = {3:'top',2:'ok',1:'slabé',0:'neohodnoceno'};
+const dots = (b, click=true) => { const r=rateOf(b); return `<span class="dots r${r}" ${click?`data-rate="${esc(b.name)}" title="${tr('Klikni a změň hodnocení','Click to change rating')}"`:''}>${[1,2,3].map(i=>`<i class="${i<=r?'on':''}"></i>`).join('')}</span>`; };
+const RATE_TXT = {3:'top',2:'ok',1:tr('slabé','weak'),0:tr('neohodnoceno','unrated')};
 state.petView = store.get('petView', 'all');      // all | fav | check
 if(!['all','fav','check'].includes(state.petView)) state.petView='all';
 state.petGroups = store.get('petGroups', []);
@@ -670,7 +760,7 @@ const ocrState = {msg:'', img:'', miss:[]};
 const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
 let tessLoading = null;
 function loadTess(){ if(window.Tesseract) return Promise.resolve(); if(tessLoading) return tessLoading;
-  tessLoading = new Promise((ok,err)=>{ const sc=document.createElement('script'); sc.src=TESS; sc.onload=ok; sc.onerror=()=>err(new Error('Nepodařilo se načíst čtečku textu, jsi připojený k internetu?')); document.head.appendChild(sc); }); return tessLoading; }
+  tessLoading = new Promise((ok,err)=>{ const sc=document.createElement('script'); sc.src=TESS; sc.onload=ok; sc.onerror=()=>err(new Error(tr('Nepodařilo se načíst čtečku textu, jsi připojený k internetu?','Could not load the text reader, are you online?'))); document.head.appendChild(sc); }); return tessLoading; }
 function prepImage(src, thr=140){ return new Promise((ok,err)=>{ const im=new Image(); im.onload=()=>{
     const sc = Math.max(2, Math.min(4, 1800/im.width)); const cv=document.createElement('canvas'); cv.width=im.width*sc; cv.height=im.height*sc;
     const g=cv.getContext('2d'); g.imageSmoothingEnabled=true; g.drawImage(im,0,0,cv.width,cv.height);
@@ -724,7 +814,7 @@ function parseLines(text, bonuses){
 }
 async function readScreenshot(file, c){
   const url = URL.createObjectURL(file);
-  ocrState.img=url; ocrState.miss=[]; ocrState.msg='Čtu text ze screenshotu…'; renderPet(c);
+  ocrState.img=url; ocrState.miss=[]; ocrState.msg=tr('Čtu text ze screenshotu…','Reading text from the screenshot…'); renderPet(c);
   try{
     await loadTess();
     const w = await Tesseract.createWorker('eng', 1, {
@@ -737,11 +827,11 @@ async function readScreenshot(file, c){
     await w.terminate(); window.__ocrText = text;
     const {found, miss:miss0} = parseLines(text, c.bonuses);
     const miss = [...new Set(miss0)].filter(l=>!found.some(f=>norm(l).includes(norm(f.b).slice(0,8))));
-    if(!found.length){ ocrState.msg='Na obrázku jsem nenašel žádný bonus. Zkus výřez jen s tooltipem, nebo řádky vyplň ručně.'; ocrState.miss=miss; renderPet(c); return; }
+    if(!found.length){ ocrState.msg=tr('Na obrázku jsem nenašel žádný bonus. Zkus výřez jen s tooltipem, nebo řádky vyplň ručně.','No bonus found in the image. Try a crop of just the tooltip, or fill in the rows by hand.'); ocrState.miss=miss; renderPet(c); return; }
     artifact = Array.from({length:7},(_,i)=>found[i]||{b:'',v:''}); store.set('artifact',artifact);
-    ocrState.msg = `Našel jsem ${found.length} ${found.length===1?'bonus':found.length<5?'bonusy':'bonusů'}. Zkontroluj prosím, že čísla sedí.`;
+    ocrState.msg = tr(`Našel jsem ${found.length} ${found.length===1?'bonus':found.length<5?'bonusy':'bonusů'}. Zkontroluj prosím, že čísla sedí.`,`Found ${found.length} ${found.length===1?'bonus':'bonuses'}. Please check the numbers are right.`);
     ocrState.miss = miss; renderPet(c);
-  }catch(e){ ocrState.msg = e.message || 'Čtení se nepovedlo.'; renderPet(c); }
+  }catch(e){ ocrState.msg = e.message || tr('Čtení se nepovedlo.','Reading failed.'); renderPet(c); }
 }
 
 function checkView(c){
@@ -754,34 +844,34 @@ function checkView(c){
       const r = rateOf(b); if(r===3) tops++;
       const v = slot.v===''?null:Number(slot.v);
       const pct = v==null ? null : Math.max(0,Math.min(1,(v-b.min)/((b.max-b.min)||1)));
-      if(pct!=null){ sum += ({3:1,2:.55,1:0,0:0}[r])*pct; pctTxt = Math.round(pct*100)+' % z maxima'; }
-      res = r<=1 ? '<span class="v bad">Zbytečný řádek, tenhle stat ti moc nedá</span>'
-        : pct==null ? `<span class="v">Doplň hodnotu</span>`
-        : r===3 ? (pct>=.8?'<span class="v top">Výborný řádek</span>':pct>=.5?'<span class="v ok">Dobrý stat, roll by mohl být lepší</span>':'<span class="v mid">Dobrý stat, ale slabý roll</span>')
-        : (pct>=.8?'<span class="v ok">Solidní</span>':'<span class="v mid">Průměr</span>');
+      if(pct!=null){ sum += ({3:1,2:.55,1:0,0:0}[r])*pct; pctTxt = Math.round(pct*100)+tr(' % z maxima','% of max'); }
+      res = r<=1 ? `<span class="v bad">${tr('Zbytečný řádek, tenhle stat ti moc nedá','Wasted line, this stat does little for you')}</span>`
+        : pct==null ? `<span class="v">${tr('Doplň hodnotu','Enter a value')}</span>`
+        : r===3 ? (pct>=.8?`<span class="v top">${tr('Výborný řádek','Excellent line')}</span>`:pct>=.5?`<span class="v ok">${tr('Dobrý stat, roll by mohl být lepší','Good stat, roll could be better')}</span>`:`<span class="v mid">${tr('Dobrý stat, ale slabý roll','Good stat, but a weak roll')}</span>`)
+        : (pct>=.8?`<span class="v ok">${tr('Solidní','Solid')}</span>`:`<span class="v mid">${tr('Průměr','Average')}</span>`);
     }
     return `<tr><td class="cn">${i+1}.</td>
-      <td><select data-slot="${i}" class="aslot"><option value="">vyber bonus…</option>${c.bonuses.map(x=>`<option ${x.name===slot.b?'selected':''} value="${esc(x.name)}">${esc(shortName(x.name))}</option>`).join('')}</select></td>
-      <td><input data-val="${i}" class="aval" type="number" inputmode="decimal" placeholder="${b?fmt(b.min,b.unit)+' – '+fmt(b.max,b.unit):'hodnota'}" value="${esc(slot.v)}"></td>
+      <td><select data-slot="${i}" class="aslot"><option value="">${tr('vyber bonus…','pick a bonus…')}</option>${c.bonuses.map(x=>`<option ${x.name===slot.b?'selected':''} value="${esc(x.name)}">${esc(shortName(x.name))}</option>`).join('')}</select></td>
+      <td><input data-val="${i}" class="aval" type="number" inputmode="decimal" placeholder="${b?fmt(b.min,b.unit)+' – '+fmt(b.max,b.unit):tr('hodnota','value')}" value="${esc(slot.v)}"></td>
       <td>${b?dots(b,false):''}</td><td class="cp">${pctTxt}</td><td>${res}</td></tr>`;
   }).join('');
   const score = filled ? Math.round(sum/filled*100) : 0;
-  const verdict = !filled ? 'Vyber bonusy, které máš na artefaktu, a napiš jejich hodnoty.'
-    : score>=70 ? 'Top artefakt. Nech si ho a dál ho jen vylepšuj.'
-    : score>=45 ? 'Použitelný artefakt. Časem zkus přerollovat nejslabší řádky.'
-    : 'Slabý artefakt. Vyplatí se rollovat dál.';
+  const verdict = !filled ? tr('Vyber bonusy, které máš na artefaktu, a napiš jejich hodnoty.','Pick the bonuses on your artifact and enter their values.')
+    : score>=70 ? tr('Top artefakt. Nech si ho a dál ho jen vylepšuj.','Top artifact. Keep it and just keep upgrading it.')
+    : score>=45 ? tr('Použitelný artefakt. Časem zkus přerollovat nejslabší řádky.','Usable artifact. Reroll the weakest lines over time.')
+    : tr('Slabý artefakt. Vyplatí se rollovat dál.','Weak artifact. Worth rolling further.');
   return `<div class="ocr" id="ocrzone" tabindex="0">
-      <div class="ocrtxt"><p><b>Vlož screenshot artefaktu</b> přes Ctrl+V, přetáhni ho sem, nebo <label class="lnk2">vyber soubor<input type="file" id="ocrfile" accept="image/*" hidden></label>.</p>
-      <p class="smut">Stačí výřez tooltipu s bonusy. Řádky se vyplní samy, pak jen zkontroluj čísla.</p></div>
+      <div class="ocrtxt"><p>${tr('<b>Vlož screenshot artefaktu</b> přes Ctrl+V, přetáhni ho sem, nebo','<b>Paste an artifact screenshot</b> with Ctrl+V, drop it here, or')} <label class="lnk2">${tr('vyber soubor','choose a file')}<input type="file" id="ocrfile" accept="image/*" hidden></label>.</p>
+      <p class="smut">${tr('Stačí výřez tooltipu s bonusy. Řádky se vyplní samy, pak jen zkontroluj čísla.','A crop of the tooltip with the bonuses is enough. The rows fill in automatically, then just check the numbers.')}</p></div>
       <div id="ocrstat" class="ocrstat">${ocrState.msg||''}</div>
       ${ocrState.img?`<img class="ocrimg" src="${ocrState.img}" alt="">`:''}
     </div>
-    ${ocrState.miss?.length?`<p class="ocrmiss">Tyhle řádky jsem nepoznal: ${ocrState.miss.map(esc).join(' · ')}</p>`:''}
+    ${ocrState.miss?.length?`<p class="ocrmiss">${tr('Tyhle řádky jsem nepoznal:','Lines I could not recognise:')} ${ocrState.miss.map(esc).join(' · ')}</p>`:''}
   <div class="achk">
-    <table class="atab"><thead><tr><th></th><th>Bonus</th><th>Tvoje hodnota</th><th>Hodnota statu</th><th>Roll</th><th>Verdikt</th></tr></thead><tbody>${rows}</tbody></table>
+    <table class="atab"><thead><tr><th></th><th>Bonus</th><th>${tr('Tvoje hodnota','Your value')}</th><th>${tr('Hodnota statu','Stat value')}</th><th>Roll</th><th>${tr('Verdikt','Verdict')}</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="ascore"><div class="snum ${score>=70?'top':score>=45?'ok':'bad'}">${filled?score:'–'}<small>/100</small></div>
-      <div><p class="sverd">${verdict}</p><p class="smut">${tops} z ${filled} řádků jsou top staty. Skóre je průměr řádků: top stat na maximu dá 100, ok stat nejvýš 55 a slabý stat 0.</p>
-      <button class="lnk2" id="aclr">Vymazat artefakt</button></div></div>
+      <div><p class="sverd">${verdict}</p><p class="smut">${tr(`${tops} z ${filled} řádků jsou top staty. Skóre je průměr řádků: top stat na maximu dá 100, ok stat nejvýš 55 a slabý stat 0.`,`${tops} of ${filled} lines are top stats. The score is the average of the lines: a top stat at max gives 100, an ok stat at most 55 and a weak stat 0.`)}</p>
+      <button class="lnk2" id="aclr">${tr('Vymazat artefakt','Clear artifact')}</button></div></div>
   </div>`;
 }
 
@@ -793,8 +883,8 @@ function renderPet(c){
   const view = state.petView;
   const gOn = id => !state.petGroups.length || state.petGroups.includes(id);
   const match = b => !q || b.name.toLowerCase().includes(q) || shortName(b.name).toLowerCase().includes(q);
-  const star = b => `<button class="pstar ${isFav(b)?'on':''}" data-fav="${esc(key(c,b))}" title="${isFav(b)?'Odebrat z oblíbených':'Přidat do oblíbených'}">${isFav(b)?'★':'☆'}</button>`;
-  const row = b => `<div class="pr ${isFav(b)?"isfav":""} rate${rateOf(b)}" title="${esc(b.name)}, rozsah ${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}">
+  const star = b => `<button class="pstar ${isFav(b)?'on':''}" data-fav="${esc(key(c,b))}" title="${isFav(b)?tr('Odebrat z oblíbených','Remove from favourites'):tr('Přidat do oblíbených','Add to favourites')}">${isFav(b)?'★':'☆'}</button>`;
+  const row = b => `<div class="pr ${isFav(b)?"isfav":""} rate${rateOf(b)}" title="${esc(b.name)}, ${tr('rozsah','range')} ${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}">
       ${star(b)}<span class="pi">${b.ic||'•'}</span>
       <div class="pt"><span class="pn ${b.color?'c-'+b.color:''}">${esc(shortName(b.name))}</span><span class="prg">${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}</span></div>
       ${dots(b)}<div class="pm">${fmt(b.max,b.unit)}</div></div>`;
@@ -804,24 +894,24 @@ function renderPet(c){
     const src = view==='fav' ? favList : c.bonuses;
     const col = ids => ids.filter(gOn).map(id=>{ const g=gname[id], list=src.filter(b=>b.g===id&&match(b)).sort((a,b)=>rateOf(b)-rateOf(a));
       if(!list.length) return '';
-      return `<div class="pg" style="--gc:${GCOL[id]||'#888'}"><div class="pgh">${esc(g.name)}<span class="pgc">${list.length}</span></div>${list.map(row).join('')}</div>`; }).join('');
+      return `<div class="pg" style="--gc:${GCOL[id]||'#888'}"><div class="pgh">${esc(tr(g.name,g.en||g.name))}<span class="pgc">${list.length}</span></div>${list.map(row).join('')}</div>`; }).join('');
     const cols = PET_LAYOUT.map(col).filter(Boolean);
     body = cols.length ? `<div class="pcols" style="grid-template-columns:repeat(${Math.min(4,Math.max(cols.length,2))},1fr)">${cols.map(x=>`<div class="pcol">${x}</div>`).join('')}</div>`
-      : view==='fav' && !favList.length ? `<div class="pempty">Zatím nemáš oblíbené. V „Všechny bonusy“ klikni na ☆ u řádku.</div>` : `<div class="pempty">Nic nenalezeno.</div>`;
+      : view==='fav' && !favList.length ? `<div class="pempty">${tr('Zatím nemáš oblíbené. V „Všechny bonusy“ klikni na ☆ u řádku.','No favourites yet. In “All bonuses” click the ☆ on a row.')}</div>` : `<div class="pempty">${tr('Nic nenalezeno.','Nothing found.')}</div>`;
   }
   const main=$('#main'); main.className='em pet';
-  main.innerHTML = `<div class="em-top"><h1>${esc(c.name)}</h1>
+  main.innerHTML = `<div class="em-top"><h1>${esc(tr(c.name,c.name_en||c.name))}</h1>
       <div class="btabs">
-        <button class="btab ${view==='all'?'on':''}" data-pv="all">Všechny bonusy</button>
-        <button class="btab ${view==='fav'?'on':''}" data-pv="fav">Oblíbené <kbd>${favList.length}</kbd></button>
-        <button class="btab ${view==='check'?'on':''}" data-pv="check">Zkontrolovat artefakt</button>
+        <button class="btab ${view==='all'?'on':''}" data-pv="all">${tr('Všechny bonusy','All bonuses')}</button>
+        <button class="btab ${view==='fav'?'on':''}" data-pv="fav">${tr('Oblíbené','Favourites')} <kbd>${favList.length}</kbd></button>
+        <button class="btab ${view==='check'?'on':''}" data-pv="check">${tr('Zkontrolovat artefakt','Check artifact')}</button>
       </div></div>
     ${view!=='check'?`<div class="pbar">
-      <input id="pq" class="pq" placeholder="Filtrovat bonusy…" value="${esc(state.petQ)}" autocomplete="off">
-      <button class="gchip ${!state.petGroups.length?'on':''}" data-g="">Všechny skupiny</button>
-      ${c.groups.map(g=>`<button class="gchip ${state.petGroups.includes(g.id)?'on':''}" data-g="${g.id}" style="--gc:${GCOL[g.id]}">${esc(g.name)}</button>`).join('')}
+      <input id="pq" class="pq" placeholder="${tr('Filtrovat bonusy…','Filter bonuses…')}" value="${esc(state.petQ)}" autocomplete="off">
+      <button class="gchip ${!state.petGroups.length?'on':''}" data-g="">${tr('Všechny skupiny','All groups')}</button>
+      ${c.groups.map(g=>`<button class="gchip ${state.petGroups.includes(g.id)?'on':''}" data-g="${g.id}" style="--gc:${GCOL[g.id]}">${esc(tr(g.name,g.en||g.name))}</button>`).join('')}
     </div>
-    <p class="rlegend"><span class="dots r3"><i class="on"></i><i class="on"></i><i class="on"></i></span> top stat <span class="dots r2"><i class="on"></i><i class="on"></i><i></i></span> ok <span class="dots r1"><i class="on"></i><i></i><i></i></span> slabé. Tečky jsou můj návrh pro PvM, kliknutím na ně si je přenastavíš.${Object.keys(petRate).length?` <button class="lnk2" id="rreset">Vrátit můj návrh</button>`:''}</p>`:''}
+    <p class="rlegend"><span class="dots r3"><i class="on"></i><i class="on"></i><i class="on"></i></span> top stat <span class="dots r2"><i class="on"></i><i class="on"></i><i></i></span> ok <span class="dots r1"><i class="on"></i><i></i><i></i></span> ${tr('slabé. Tečky jsou můj návrh pro PvM, kliknutím na ně si je přenastavíš.','weak. The dots are my suggestion for PvM, click them to change.')}${Object.keys(petRate).length?` <button class="lnk2" id="rreset">${tr('Vrátit můj návrh','Restore my suggestion')}</button>`:''}</p>`:''}
     ${body}`;
   const re = ()=>{ const sc=main.scrollTop; renderPet(c); main.scrollTop=sc; };
   main.querySelectorAll('[data-pv]').forEach(x=>x.onclick=()=>{state.petView=x.dataset.pv;store.set('petView',state.petView);re()});
@@ -853,12 +943,14 @@ document.addEventListener('keydown',e=>{
   if(EM&&state.cat===EM.id){const k=Object.keys(EM.builds)[+e.key-1]; if(k){state.build=k;store.set('build',k);renderEmblems()}}
   if(UP&&state.cat===UP.id){const k=Object.keys(UTABS)[+e.key-1]; if(k){state.utab=k;store.set('utab',k);renderUpgrades()}}
 });
-function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
+function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('wiki-') && window.renderWiki){ if(nq) return window.renderWiki(state.cat); } if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
 $('#q').oninput=e=>{state.q=e.target.value;render();$('#q').focus()};
 render();
 </script>
 <script src="db.js"></script>
 <script src="db-ui.js"></script>
+<script src="wiki/wiki-data.js"></script>
+<script src="wiki.js"></script>
 <script>render();</script>
 </body>
 </html>

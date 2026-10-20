@@ -4,22 +4,25 @@
 //  Nové věci přidávej jako další objekt do pole CATEGORIES.
 //  color: fire | curse | lightning | magic | poison (barva bonusu)
 // ============================================================
-window.LAST_UPDATE = "2026-10-19 19:10";
+window.LAST_UPDATE = "2026-10-20 13:20";
 
 window.CATEGORIES = [
   {
     id: "pet-artefakty",
     name: "Pet artefakty",
+    name_en: "Pet artifacts",
     icon: "🐾",
     desc: "Bonusy, které se můžou rollnout na pet artefaktech, a jejich rozsah min → max.",
+    desc_en: "Bonuses that can roll on pet artifacts and their min → max range.",
     note: "Mezi „Curse Damage“ a „Def Grade Bonus“ může chybět řádek (screenshoty na sebe úplně nenavazovaly).",
+    note_en: "A row may be missing between “Curse Damage” and “Def Grade Bonus” (the screenshots did not fully overlap).",
     groups: [
-      { id:"utok", icon:"⚔️", name:"Útok" },
-      { id:"cc", icon:"🌀", name:"Šance na efekt" },
-      { id:"obrana", icon:"🛡️", name:"Obrana & sustain" },
-      { id:"elem", icon:"✨", name:"Elementy & magie" },
-      { id:"farm", icon:"💰", name:"Farm & utility" },
-      { id:"strong", icon:"🎯", name:"Strong against" }
+      { id:"utok", icon:"⚔️", name:"Útok", en:"Attack" },
+      { id:"cc", icon:"🌀", name:"Šance na efekt", en:"Effect chance" },
+      { id:"obrana", icon:"🛡️", name:"Obrana & sustain", en:"Defense & sustain" },
+      { id:"elem", icon:"✨", name:"Elementy & magie", en:"Elements & magic" },
+      { id:"farm", icon:"💰", name:"Farm & utility", en:"Farm & utility" },
+      { id:"strong", icon:"🎯", name:"Strong against", en:"Strong against" }
     ],
     bonuses: [
       { name: "% Chance for EXP Bonus",           min: 1,   max: 20,   unit: "%", g: "farm", ic: "📈" },
@@ -73,6 +76,7 @@ window.CATEGORIES = [
 window.UPGRADES = {
   id: "ranky-upgrady",
   name: "Ranky a upgrady",
+  name_en: "Ranks & upgrades",
   icon: "📈",
   maxRank: 11,
   // Ranky vybavení – per = bonus za 1 rank (v %)
@@ -87,7 +91,7 @@ window.UPGRADES = {
     { slot:"Ring of Blessing",      en:"Blessed Ring",             item:"Red Jewel",                 id:299007, img:"icons/blessedring.png", per:1, affects:"Equipment attributes",    src:["Elite Portal Stone"], icon:"🔴", col:"#e8503c" },
     { slot:"Pet vybavení",          en:"Pet Equipment",            item:"Pet Trophy",                id:299008, img:"icons/pettrophy.png", per:1, affects:"Pet artifact attributes", src:[], icon:"🏆", col:"#c8a05a" },
     { slot:"Sigil",                 en:"Sigil",                    item:"Soulforged Hammer",         id:299009, img:"icons/sigil.png", per:1, affects:"Original attribute value",src:[], icon:"🔨", col:"#d8a838" },
-    { slot:"Skill Booster",         en:"Skill Booster",            item:"Booster Folio",             id:250100, img:"icons/booster.png", per:2, affects:"Scaling percentage values", src:[], icon:"📘", col:"#5a7ae8", note:"Používá se na Crafting Benchi" }
+    { slot:"Skill Booster",         en:"Skill Booster",            item:"Booster Folio",             id:250100, img:"icons/booster.png", per:2, affects:"Scaling percentage values", src:[], icon:"📘", col:"#5a7ae8", note:"Používá se na Crafting Benchi", note_en:"Used at the Crafting Bench" }
   ],
   // Sockety šperků – krok 1 zpermanentnit, krok 2 rankovat
   sockets: [
@@ -112,12 +116,13 @@ window.UPGRADES = {
   materials: [
     { name:"Fragment of Spirit Stones", type:"Spirit Stones", id:2337786, img:"icons/spiritfrag.png",
       desc:"Surovina ze spirit stonů. Na Crafting Benchi stojí 1 pokus o infekci 100 ks.",
+      desc_en:"Material from spirit stones. One infection attempt at the Crafting Bench costs 100 pcs.",
       src:["Metin Stone of Spirit Stones","Galen","Metin Stone of Asprenus","Large Portal Stone","Mystical Portal Stone","Elite Portal Stone","Map of Etelascil (Normal)","Map of Etelascil (Heroic)","Map of Etelascil (Mythic)","Map of Etelascil (Deadly)"] },
     { name:"Infected Fragment of Spiritstones", type:"Infected Spirit Stones", id:2337789, img:"icons/infectedfrag.png",
-      desc:"Surovina z infikovaného spirit stonu – infekce v ní přežívá.", src:[] },
+      desc:"Surovina z infikovaného spirit stonu – infekce v ní přežívá.", desc_en:"Material from an infected spirit stone – the infection survives in it.", src:[] },
     { name:"Dragon Water", type:"Ring / Belt Stones", id:86286, img:"icons/dragonwater.png",
-      desc:"Zvedá grade NEinfikovaného ring/belt stonu o 1.", src:[] },
+      desc:"Zvedá grade NEinfikovaného ring/belt stonu o 1.", desc_en:"Raises the grade of a NON-infected ring/belt stone by 1.", src:[] },
     { name:"Infected Dragon Water", type:"Infected Ring / Belt Stones", id:86287, img:"icons/infdragonwater.png",
-      desc:"Zvedá grade INFIKOVANÉHO ring/belt stonu o 1.", src:[] }
+      desc:"Zvedá grade INFIKOVANÉHO ring/belt stonu o 1.", desc_en:"Raises the grade of an INFECTED ring/belt stone by 1.", src:[] }
   ]
 };
