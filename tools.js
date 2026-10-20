@@ -181,9 +181,21 @@ function evalRow(l){
   const p = guessPool(l); if(!p) return {p:null};
   const r = rowIn(p,l.b,CK.slot); if(!r) return {p:null};
   if(p.pet){ const pct=clamp((num(l.v)-num(r.t[0]))/((num(r.t[1])-num(r.t[0]))||1),0,1); return {p,r,tier:{ti:null,tn:null,pct,over:num(l.v)>num(r.t[1])},exact:true}; }
-  return {p,r,tier:tierOf(r,l.v),exact:exactTier(r,l.v)};
+  return {p,r,tier:tierOf(r,l.v),exact:exactTier(r,l.v),qa:qualityOf(p,r,l.v,CK.slot)};
 }
 const FAM = p => !p ? 'base' : p.pet ? 'pet' : p.id==='Godly' ? 'godly' : p.id==='Magic Word' ? 'word' : /6\/7/.test(p.id) ? 'six' : 'main';
+// žebříček enchantů: Basic → Divine → Exalted → Exalted + Divine (zvlášť pro hlavní bonusy a 6/7)
+const LADDER = { main:['Normal','Divine','Exalted','Exalted + Divine'], six:['6/7','Divine 6/7','Exalted 6/7','Exalted + Divine 6/7'] };
+const SRCNAME = ['Basic','Divine','Exalted','Exalted + Divine'];
+const ladderOf = p => p && (LADDER.main.includes(p.id) ? LADDER.main : LADDER.six.includes(p.id) ? LADDER.six : null);
+const srcIdx = p => { const L=ladderOf(p); return L ? L.indexOf(p.id) : -1; };
+// strop = nejvyšší hodnota, kterou daný bonus na daném slotu může mít v celém žebříčku (např. Basic 10 % → Divine až 30 %)
+function ceilOf(p, bonus, slot){
+  const L=ladderOf(p); let best=null, bp=null;
+  for(const id of (L||[p.id])){ const pp=poolById(id); const r=pp&&rowIn(pp,bonus,slot); if(!r) continue; const v=num(r.t[r.t.length-1]); if(best==null||v>best){ best=v; bp=pp; } }
+  return {v:best, p:bp};
+}
+const qualityOf = (p, row, v, slot) => { const c=ceilOf(p,row.n,slot); const x=num(v); return {q: c.v ? clamp(x/c.v,0,1) : 0, ceil:c.v, ceilP:c.p, unit:unitOf(row.t[row.t.length-1])}; };
 const FAMNAME = {main:T('Bonusy','Bonuses'), six:T('Bonusy 6/7','6/7 bonuses'), godly:'Godly Attribute', word:'Magic Word', pet:T('Pet artefakt','Pet artifact'), base:T('Nepoznané / základní staty','Unrecognised / base stats')};
 const qcol = t => !t ? 'var(--muted)' : t.over ? 'var(--bad)' : t.pct>=.999 ? 'var(--gold2)' : t.pct>=.8 ? 'var(--good)' : t.pct>=.5 ? 'var(--mid)' : 'var(--bad)';
 const fmtV = (v,u) => (Number(v).toLocaleString(LOC))+(u||'');
@@ -191,11 +203,15 @@ const fmtV = (v,u) => (Number(v).toLocaleString(LOC))+(u||'');
 function ckLine(l,i,e){
   const u = e&&e.r ? unitOf(e.r.t[e.r.t.length-1]) : '';
   const t = e&&e.exact!==false ? e.tier : null;
-  const pips = t && t.tn ? `<span class="pips" style="--c:${qcol(t)}">${Array.from({length:t.tn},(_,j)=>`<i class="${j<=t.ti?'on':''}"></i>`).join('')}</span>` : t ? `<span class="pips pct" style="--c:${qcol(t)}"><i style="width:${t.pct*100}%"></i></span>` : '';
-  const tag = !e||!e.p ? `<span class="ttag dim">?</span>` : e.exact===false ? `<span class="ttag dim" title="${T('Hodnota není přesný tier – asi základní stat itemu','Not an exact tier – probably a base stat')}">~</span>` : `<span class="ttag" style="--c:${qcol(t)}">${t.over?'!':t.ti!=null?`T${t.ti+1}`:Math.round(t.pct*100)+'%'}</span>`;
+  const qa = e&&e.qa&&t ? e.qa : null, qv = qa ? qa.q : t ? t.pct : 0;
+  const qc = !t ? 'var(--muted)' : t.over ? 'var(--bad)' : qv>=.999 ? 'var(--gold2)' : qv>=.75 ? 'var(--good)' : qv>=.4 ? 'var(--mid)' : 'var(--bad)';
+  const pips = t ? `<span class="pips pct" style="--c:${qc}" title="${qa?T(`${Math.round(qv*100)} % ze stropu ${fmtN(qa.ceil)}${qa.unit} (${qa.ceilP?qa.ceilP.n:''})`,`${Math.round(qv*100)}% of the cap ${fmtN(qa.ceil)}${qa.unit} (${qa.ceilP?qa.ceilP.n:''})`):''}"><i style="width:${Math.max(4,qv*100)}%"></i></span>` : '';
+  const si = e&&e.p ? srcIdx(e.p) : -1;
+  const src = si>=0 && t ? `<span class="tsrc s${si}">${SRCNAME[si]}</span>` : '';
+  const tag = !e||!e.p ? `<span class="ttag dim">?</span>` : e.exact===false ? `<span class="ttag dim" title="${T('Hodnota není přesný tier – asi základní stat itemu','Not an exact tier – probably a base stat')}">~</span>` : `<span class="ttag" style="--c:${qc}">${t.over?'!':t.ti!=null?`T${t.ti+1}`:Math.round(t.pct*100)+'%'}</span>`;
   const maxv = e&&e.r ? e.r.t[e.r.t.length-1] : '';
   return `<button class="tline ${ckEdit===i?'edit':''}" data-li="${i}" title="${T('Klikni pro úpravu','Click to edit')}">
-      <span class="tn">${esc(l.b)}</span><span class="tv">${l.v!==''?'+'+esc(fmtV(l.v,u)):'—'}</span>${tag}${pips}<span class="tmax">${maxv?T('max ','max ')+esc(maxv):''}</span>
+      <span class="tn">${esc(l.b)}</span><span class="tv">${l.v!==''?'+'+esc(fmtV(l.v,u)):'—'}</span>${tag}${pips}<span class="tmax">${src}${qa&&qa.ceil?`${T('strop','cap')} ${esc(fmtN(qa.ceil)+qa.unit)}${qa.ceilP&&qa.ceilP!==e.p?` <i>(${esc(SRCNAME[srcIdx(qa.ceilP)]||qa.ceilP.n)})</i>`:''}`:maxv?T('max ','max ')+esc(maxv):''}</span>
       <span class="tpc" data-ckb="${esc(l.b)}" data-ckp="${esc(e&&e.p?e.p.id:'')}" data-ckt="${t&&t.ti!=null?t.ti:''}"></span>
     </button>` + (ckEdit===i ? ckEditor(l,i,e) : '');
 }
@@ -215,8 +231,12 @@ function checkerView(){
   const pet = CK.mode==='__pet';
   const ev = CK.rows.map(evalRow);
   let sum=0, filled=0, maxed=0;
-  ev.forEach(e=>{ if(e&&e.p&&e.exact!==false){ filled++; sum+=e.tier.pct; if(e.tier.pct>=.999) maxed++; } });
+  let weak=null;
+  ev.forEach((e,i)=>{ if(e&&e.p&&e.exact!==false){ const q=e.qa?e.qa.q:e.tier.pct; filled++; sum+=q; if(q>=.999) maxed++; if(e.qa&&(!weak||q<weak.q)) weak={q,i,e}; } });
   const score = filled ? Math.round(sum/filled*100) : 0;
+  const tip = weak && weak.q<.999 ? (()=>{ const e=weak.e, l=CK.rows[weak.i], si=srcIdx(e.p), ci=srcIdx(e.qa.ceilP);
+      const up = ci>si ? T(`lepší enchant (${SRCNAME[ci]}) jde až na ${fmtN(e.qa.ceil)}${e.qa.unit}`,`a better enchant (${SRCNAME[ci]}) goes up to ${fmtN(e.qa.ceil)}${e.qa.unit}`) : T(`max je ${fmtN(e.qa.ceil)}${e.qa.unit}`,`max is ${fmtN(e.qa.ceil)}${e.qa.unit}`);
+      return T(`Nejvíc získáš na <b>${esc(l.b)}</b> (+${esc(l.v)}${e.qa.unit}${si>=0?', '+SRCNAME[si]:''}) – ${up}.`,`Biggest gain: <b>${esc(l.b)}</b> (+${esc(l.v)}${e.qa.unit}${si>=0?', '+SRCNAME[si]:''}) – ${up}.`); })() : '';
   const verdict = score>=85 ? T('Skoro maxnutý. Nech si ho.','Almost maxed. Keep it.')
     : score>=65 ? T('Dobrý item. Přetoč jen nejslabší řádky.','Good item. Reroll only the weakest lines.')
     : score>=40 ? T('Průměr. Máš-li orby, toč dál.','Average. Keep rolling if you have orbs.')
@@ -252,13 +272,14 @@ function checkerView(){
       <aside class="ckverd">
         <div class="vscore" style="--c:${score>=65?'var(--good)':score>=40?'var(--mid)':'var(--bad)'}">${filled?score:'–'}</div>
         <p class="vtext">${filled?verdict:T('Doplň hodnoty řádků.','Fill in the line values.')}</p>
-        ${filled?`<p class="vsub">${T(`${maxed} z ${filled} řádků na maximu`,`${maxed} of ${filled} lines maxed`)}</p>`:''}
+        ${filled?`<p class="vsub">${T(`${maxed} z ${filled} řádků na úplném stropu`,`${maxed} of ${filled} lines at the absolute cap`)}</p>`:''}
+        ${tip&&!pet?`<p class="vtip">${tip}</p>`:''}
         <div class="vact">
           ${!pet&&filled?`<button class="tbtn" id="cksend" ${ckSent.has(key)?'disabled':''}>${ckSent.has(key)?T('Přidáno do statistik','Added to stats'):T('Přidat do statistik','Add to stats')}</button>`:''}
           ${filled?`<button class="tbtn ghost" id="cktob">${T('Vložit do buildu','Add to build')}</button>`:''}
           <button class="lnk2" id="ckclr">${T('Začít znovu','Start over')}</button>
         </div>
-        <p class="vnote">${T('T = tier rollu, čárky ukazují, kolik tierů zbývá do maxima. Klikni na řádek, když chceš opravit číslo nebo zdroj.','T = roll tier, the marks show how many tiers are left to max. Click a line to fix the value or source.')}</p>
+        <p class="vnote">${T('Skóre bere v potaz enchant: max z Basic je jen zlomek toho, co dá Divine, Exalted nebo Exalted + Divine. Pruh ukazuje, kolik % ze stropu daného bonusu máš, T = tier v rámci enchantu. Klikni na řádek pro opravu čísla nebo zdroje.','The score accounts for the enchant: a Basic max is only a fraction of what Divine, Exalted or Exalted + Divine can give. The bar shows how close you are to the cap of that bonus, T = tier within the enchant. Click a line to fix the value or source.')}</p>
       </aside>`:''}
     </div>`;
   const re=()=>{ const sc=main.scrollTop; checkerView(); main.scrollTop=sc; };
@@ -393,15 +414,15 @@ function emblemOptions(spec, sel){
   return `<option value="">${T('— prázdné —','— empty —')}</option>`+Object.entries(groups).map(([g,l])=>`<optgroup label="${esc(g)}">${l.map(e=>`<option value="${esc(e.id)}" ${e.id===sel?'selected':''}>${esc(e.n)}</option>`).join('')}</optgroup>`).join('');
 }
 const BEDIT = new Set();
-function lineRead(name, valTxt, ti, tn, pct){
-  const c = pct>=.999?'var(--gold2)':pct>=.6?'var(--good)':pct>=.3?'var(--mid)':'var(--bad)';
-  const pips = tn ? `<span class="pips" style="--c:${c}">${Array.from({length:tn},(_,j)=>`<i class="${j<=ti?'on':''}"></i>`).join('')}</span>` : `<span class="pips pct" style="--c:${c}"><i style="width:${Math.round(pct*100)}%"></i></span>`;
-  return `<div class="bro"><span class="bron">${esc(name)}</span><b style="color:${c}">+${esc(valTxt)}</b>${tn?`<em>T${ti+1}/${tn}</em>`:'<em></em>'}${pips}</div>`;
+function lineRead(name, valTxt, ti, tn, pct, si){
+  const c = pct>=.999?'var(--gold2)':pct>=.75?'var(--good)':pct>=.4?'var(--mid)':'var(--bad)';
+  const pips = `<span class="pips pct" style="--c:${c}" title="${Math.round(pct*100)} %"><i style="width:${Math.max(4,Math.round(pct*100))}%"></i></span>`;
+  return `<div class="bro"><span class="bron">${esc(name)}${si>=0?` <span class="tsrc s${si}">${SRCNAME[si]}</span>`:''}</span><b style="color:${c}">+${esc(valTxt)}</b>${tn?`<em>T${ti+1}/${tn}</em>`:'<em></em>'}${pips}</div>`;
 }
 function slotRead(b, s){
   const st=slotState(b,s.k), p=poolById(st.pool);
   const it=D.equip.find(e=>e.id===st.item);
-  const lines=st.lines.map(l=>{ const lp=poolById(l.p)||p; const r=lp?.rows.find(x=>x.n===l.b); if(!r) return ''; const tn=r.t.length; return lineRead(r.n, r.t[l.ti], l.ti, tn, tn>1?l.ti/(tn-1):1); }).join('');
+  const lines=st.lines.map(l=>{ const lp=poolById(l.p)||p; const r=lp?.rows.find(x=>x.n===l.b); if(!r) return ''; const tn=r.t.length; return lineRead(r.n, r.t[l.ti], l.ti, tn, qualityOf(lp,r,r.t[l.ti],s.k).q, srcIdx(lp)); }).join('');
   const has = it || st.lines.length;
   return `<div class="bcard rd ${has?'':'empty'}" data-slot="${esc(s.k)}" data-open="${esc(s.k)}" role="button" tabindex="0">
     <div class="bch">${it?img(it.i,'bimg'):`<span class="bimg ph">${esc(slotName(s).slice(0,2))}</span>`}<div class="bct"><b>${esc(slotName(s))}</b><span class="smut">${it?esc(it.n):(SHARED?T('prázdné','empty'):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot'))}</span></div>
