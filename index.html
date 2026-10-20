@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metin Max Rolls</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0f12; --panel:#15181d; --panel2:#1b1f26; --line:#262b33;
+  --text:#e6e2d6; --muted:#8b8f98; --gold:#d9a441; --gold2:#f3cf7a;
+  --fire:#ff5a1f; --curse:#a855f7; --lightning:#38a8f5; --magic:#22e0e6; --poison:#3ee03e;
+  --good:#3ecf6e; --mid:#e2b33c; --bad:#e2553c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
+body{display:flex;flex-direction:column;height:100vh;background:radial-gradient(1200px 500px at 50% -200px,#2a1f0c55,transparent),var(--bg);min-height:100vh}
+header{display:flex;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font:700 20px/1 Georgia,serif;letter-spacing:.5px;color:var(--gold2);text-shadow:0 0 18px #d9a44155}
+.logo small{display:block;font:500 11px/1.6 "Segoe UI",sans-serif;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.search{margin-left:auto;position:relative;flex:0 1 340px}
+.search input{width:100%;padding:10px 12px 10px 34px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--text);font:inherit;outline:none}
+.search input:focus{border-color:var(--gold)}
+.search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.wrap{display:grid;grid-template-columns:230px 1fr;flex:1;min-height:0}
+nav,main{overflow:auto}
+nav{border-right:1px solid var(--line);padding:16px 10px}
+nav h4{margin:4px 12px 10px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+nav button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;margin-bottom:4px;background:none;border:1px solid transparent;border-radius:8px;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+nav button:hover{background:var(--panel)}
+nav button.active{background:var(--panel2);border-color:#d9a44155;color:var(--gold2)}
+nav button .count{margin-left:auto;font-size:11px;color:var(--muted);background:var(--bg);padding:1px 7px;border-radius:10px}
+nav .upd{margin:20px 12px 0;font-size:11px;color:var(--muted)}
+main{padding:22px 28px 40px;min-width:0}
+.title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.title h1{margin:0;font:700 24px Georgia,serif;color:var(--gold2)}
+.desc{color:var(--muted);margin:6px 0 4px}
+.note{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--mid);background:#e2b33c12;color:#d8c592;font-size:12.5px;border-radius:0 6px 6px 0}
+.toolbar{display:flex;gap:8px;margin:18px 0 10px;flex-wrap:wrap;align-items:center}
+.chip{padding:6px 12px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--muted);cursor:pointer;font:inherit;font-size:12.5px}
+.chip.on{color:var(--gold2);border-color:#d9a44188}
+.hint{margin-left:auto;font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th{text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--line)}
+td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#ffffff06}
+.name{font-weight:600}
+.fav{cursor:pointer;color:#555;margin-right:8px;user-select:none}
+.fav.on{color:var(--gold)}
+.c-fire{color:var(--fire)}.c-curse{color:var(--curse)}.c-lightning{color:var(--lightning)}.c-magic{color:var(--magic)}.c-poison{color:var(--poison)}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.max{color:var(--gold2);font-weight:700;font-size:15px}
+.cat{font-size:11px;color:var(--muted);display:block}
+.chk{display:flex;align-items:center;gap:10px}
+.chk input{width:78px;padding:6px 8px;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--text);font:inherit;outline:none}
+.chk input:focus{border-color:var(--gold)}
+.bar{flex:1;min-width:70px;height:6px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:4px;transition:width .2s}
+.badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;min-width:64px;text-align:center}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+/* ---------- DATABÁZE ---------- */
+main.db{display:flex;flex-direction:column;padding:18px 24px 0;overflow:hidden}
+.dhead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.dhead h1{margin:0;font:600 24px/1.1 var(--head);color:var(--text);letter-spacing:.2px}
+.cnt{color:var(--muted);font-size:14px}
+.dsplit{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:28px;flex:1;min-height:0}
+.dlist{display:flex;flex-direction:column;min-height:0}
+.dfilters{display:flex;flex-direction:column;gap:8px;padding-bottom:10px}
+.dfilters input[type=search],.dfilters select{width:100%;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:6px;color:var(--text);font:inherit;outline:none}
+.dfilters input:focus,.dfilters select:focus{border-color:var(--accent)}
+.frow{display:flex;gap:8px}
+.frow.small{justify-content:space-between;font-size:13px;color:var(--muted);align-items:center}
+.frow label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.sort button{background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;padding:0 2px}
+.sort button.on{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.rows{list-style:none;margin:0;padding:0;overflow:auto;flex:1;border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:10px;padding:6px 8px;cursor:pointer;border-radius:4px}
+.row:hover{background:var(--panel)}
+.row.on{background:var(--sel)}
+.rimg{width:26px;height:26px;object-fit:contain;flex:none}
+.noimg{display:inline-block;background:var(--panel2);border-radius:4px}
+.rn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc{color:var(--muted);font-size:12px;white-space:nowrap}
+.rstar{color:var(--max);font-size:12px}
+.grp{padding:14px 8px 4px;color:var(--muted);font-size:13px}
+.none{padding:20px 8px;color:var(--muted)}
+.ddetail{overflow:auto;min-height:0;padding-bottom:30px}
+.dempty{color:var(--muted);padding:40px 0}
+.tip{max-width:760px}
+.tip header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.tip header>div{flex:1}
+.timg{width:56px;height:56px;object-fit:contain;flex:none}
+.tip h2{margin:0;font:600 26px/1.15 var(--head);color:var(--name)}
+.tip header p{margin:4px 0 0;color:var(--muted)}
+.tid{margin-left:10px;color:#5d6470;font-size:12px}
+.favbtn{background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.favbtn:hover{color:var(--text)}
+.favbtn.on{color:var(--max);border-color:color-mix(in srgb,var(--max) 50%,transparent)}
+.tspec{color:var(--accent);margin:0 0 12px}
+.tval{margin:0 0 14px;color:var(--text);background:var(--panel);padding:10px 12px;border-radius:6px}
+.tstats{display:grid;grid-template-columns:max-content 1fr;gap:4px 24px;margin:0 0 16px}
+.tstats dt{color:var(--accent)}.tstats dd{margin:0;font-variant-numeric:tabular-nums}
+.tdesc{line-height:1.6;color:#c6cbd3;max-width:68ch}
+.rng{color:var(--max);font-variant-numeric:tabular-nums}
+.tip h3,.favs h3{font:600 15px var(--head);margin:22px 0 8px;color:var(--text)}
+.tip h3 span{color:var(--muted);font-weight:400}
+.links{display:flex;flex-wrap:wrap;gap:4px 6px}
+.lnk{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:3px 8px 3px 3px;border-radius:4px;color:var(--text);font:inherit;font-size:13.5px;cursor:pointer}
+.lnk:hover:not([disabled]){background:var(--panel);color:var(--accent)}
+.lnk[disabled]{cursor:default;color:var(--muted)}
+.li{width:22px;height:22px;object-fit:contain;flex:none}
+.lnk2{background:none;border:0;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:0}
+.lnk2:hover{text-decoration:underline}
+.ptab{width:100%;border-collapse:collapse;background:none;border:0;border-radius:0;margin-top:8px}
+.ptab th{background:none;text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--muted);font-weight:500;padding:6px 10px;border-bottom:1px solid var(--line)}
+.ptab td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}
+.ptab .pn{white-space:nowrap}.ptab .pn .li{vertical-align:middle;margin-right:6px}
+.ptab .ps{color:var(--muted)}
+.ptab .pt{color:#aab1bd;font-variant-numeric:tabular-nums}.ptab .pt i{color:#4d535e;font-style:normal}
+.ptab .r{text-align:right}
+.pm{color:var(--max);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.plist{list-style:none;margin:8px 0 0;padding:0}
+.plist li{padding:12px 0;border-top:1px solid var(--line)}
+.pl1{display:flex;align-items:center;gap:8px;font-size:15px}
+.pl1 .pm{margin-left:auto;font-size:15px}
+.pl2{color:var(--muted);font-size:13px;margin:3px 0 7px 30px}
+.pl3{display:flex;flex-wrap:wrap;gap:4px;margin-left:30px}
+.pl3 span{font-size:13px;font-variant-numeric:tabular-nums;color:#aab1bd;background:var(--panel);padding:2px 8px;border-radius:4px}
+.pl3 span.last{color:var(--max);background:color-mix(in srgb,var(--max) 14%,transparent)}
+.cls{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;overflow:auto;padding-bottom:30px}
+.cls h2{display:flex;align-items:center;gap:10px;font:600 22px var(--head);margin:0 0 6px}
+.cimg{width:36px;height:36px;object-fit:contain}
+.cls h3{display:flex;justify-content:space-between;align-items:baseline;font:600 15px var(--head);color:var(--accent);margin:18px 0 6px}
+.cls ul{list-style:none;margin:0;padding:0}
+.cls li{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
+.cls li p{margin:2px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+.favs{overflow:auto;padding-bottom:30px}
+@media (max-width:1300px){.cls{grid-template-columns:1fr 1fr}}
+@media (max-width:800px){.dsplit,.cls{grid-template-columns:1fr}main.db{overflow:auto}}
+/* ---------- PET kompakt ---------- */
+.pcols{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px;align-items:start}
+.pcol{display:flex;flex-direction:column;gap:14px}
+.pg{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--gc);border-radius:10px;padding:4px 6px 6px}
+.pgh{font:700 15px "Segoe UI",sans-serif;color:var(--gc);padding:8px 8px 8px;display:flex;gap:8px;align-items:center;text-transform:uppercase;letter-spacing:.8px}
+.pgc{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600;background:var(--bg);padding:1px 8px;border-radius:10px}
+.pr{display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:7px}
+.pr:nth-child(even){background:#ffffff05}
+.pr:hover{background:color-mix(in srgb,var(--gc) 12%,transparent)}
+.pi{width:28px;height:28px;flex:none;display:grid;place-items:center;font-size:15px;border-radius:7px;background:color-mix(in srgb,var(--gc) 14%,transparent)}
+.pt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.pn{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prg{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pm{font-size:19px;font-weight:800;color:var(--gold2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pchk{display:flex;align-items:center;gap:6px}
+.pin{width:64px;padding:4px 6px;background:var(--bg);border:1px solid var(--line);border-radius:5px;color:var(--text);font:inherit;font-size:13px;outline:none;text-align:right}
+.pin:focus{border-color:var(--gold)}
+.pmx{font-size:12px;color:var(--gold2);font-weight:700;white-space:nowrap}
+.pbg{font-size:11px;font-weight:800;min-width:34px;text-align:right}
+.pr .pstar{margin-right:-4px}
+.pstar{background:none;border:0;cursor:pointer;font-size:17px;color:#4a505a;padding:0 2px;line-height:1;width:20px;flex:none}
+.pstar:hover{color:var(--gold2);transform:scale(1.15)}
+.pstar.on{color:var(--gold)}
+.pr.isfav{background:#d9a44114 !important;box-shadow:inset 2px 0 0 var(--gold)}
+.pr.isfav .pn:not([class*="c-"]){color:var(--gold2)}
+.pbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.pq{padding:7px 10px;width:200px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--text);font:inherit;font-size:13px;outline:none}
+.pq:focus{border-color:var(--gold)}
+.gchip{padding:6px 12px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--muted);cursor:pointer;font:600 12.5px "Segoe UI",sans-serif}
+.gchip:hover{color:var(--text)}
+.gchip.on{color:var(--gc,var(--gold2));border-color:var(--gc,var(--gold));background:color-mix(in srgb,var(--gc,#d9a441) 12%,var(--panel))}
+.gchip.clr{margin-left:auto;color:#c97a6a}
+.ptiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:14px}
+.ptile{position:relative;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--gc);border-radius:12px;padding:14px 14px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.ptile .pstar{position:absolute;right:10px;top:10px;font-size:20px}
+.pti{width:40px;height:40px;display:grid;place-items:center;font-size:22px;border-radius:10px;background:color-mix(in srgb,var(--gc) 16%,transparent);margin-bottom:4px}
+.ptn{font-weight:700;font-size:15px}
+.ptg{font-size:11px;color:var(--gc);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.ptm{font-size:30px;font-weight:800;color:var(--gold2);line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.ptile .pchk{margin-top:6px}
+.pempty{margin-top:60px;text-align:center;color:var(--muted);font-size:15px;line-height:1.8}
+.phint{color:var(--muted);font-size:13px}.phint b{color:var(--gold2)}
+.pnote{margin-top:12px;font-size:12px;color:var(--muted)}
+.legend b{font-size:11px}
+.ui img{width:100%;height:100%;object-fit:contain}
+.ui.big{width:42px;height:42px;padding:3px}
+.sim{display:inline-grid;place-items:center;width:28px;height:28px;margin-right:6px;vertical-align:middle}
+.sim img{width:28px;height:28px;object-fit:contain}
+.si{display:flex;align-items:center}
+.eico.img{background:none;box-shadow:none;width:32px;height:32px}
+.eico.img img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 0 6px var(--tc))}
+@media (max-width:1500px){.pcols{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:700px){.pcols{grid-template-columns:1fr}}
+/* ---------- UPGRADY ---------- */
+.gold{color:var(--gold2)}.mut{color:var(--muted)}.inf{color:#5ee06a}
+.rank{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:6px 14px;border-radius:8px}
+.rank input{accent-color:var(--gold);width:180px}
+.rank b{color:var(--gold2);font-size:18px;min-width:20px;text-align:right}
+.info{margin:12px 0;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:13px;color:#c9c3b3}
+.ugrid{display:grid;gap:10px;flex:1;min-height:0}
+.ugrid.r4{grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr}
+.ugrid.r3{grid-template-columns:repeat(3,1fr);align-items:start;margin-top:12px}
+.uc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;position:relative}
+.uc.tall{overflow:auto}
+.uh{display:flex;align-items:center;gap:10px}
+.ui{width:34px;height:34px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:17px;background:color-mix(in srgb,var(--c) 22%,var(--bg));border:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
+.ut{min-width:0;flex:1}
+.us{font-weight:700;font-size:15px;line-height:1.15}
+.ue{font-size:11px;color:var(--muted)}
+.uv{text-align:right;line-height:1}
+.uv b{font-size:22px;color:var(--gold2);display:block}
+.uv small{font-size:10px;color:var(--muted)}
+.ubar{height:4px;background:var(--bg);border-radius:3px;overflow:hidden;margin:2px 0}
+.ubar i{display:block;height:100%;background:linear-gradient(90deg,#8a6a20,var(--gold2))}
+.ul{display:grid;grid-template-columns:62px 1fr;gap:6px;font-size:12.5px;align-items:baseline}
+.ul>span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.ul b{font-weight:600}
+.uid{position:absolute;right:10px;bottom:6px;font-size:10px;color:#555b66}
+.src{display:inline-block;white-space:nowrap;font-size:11.5px;padding:1px 8px;margin:1px 4px 1px 0;border-radius:10px;background:#3ecf6e14;color:#5ee08a;border:1px solid #3ecf6e40}
+.src.none{background:none;color:var(--muted);border-color:var(--line)}
+.src.alt{background:#5a7ae818;color:#9fb2ff;border-color:#5a7ae850}
+.srow{display:flex;gap:6px;align-items:flex-start;min-height:0}
+.sarrow{align-self:center;color:var(--gold);font-size:18px}
+.sc{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.sh{font:700 17px Georgia,serif;color:var(--gold2);text-align:center;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.step{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px 18px;display:flex;flex-direction:column;gap:4px}
+.sn{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700}
+.si{font-weight:700;font-size:14px}
+.sb{font-size:20px;font-weight:800;color:var(--gold2)}
+.sb small{font-size:11px;color:var(--muted);font-weight:500}
+.arrow{text-align:center;color:var(--gold);font-size:12px;line-height:1}
+.lock{margin-top:auto;font-size:11.5px;color:var(--muted);text-align:center;padding:6px;border-top:1px dashed var(--line)}
+.ed2{font-size:12.5px;color:#b9b4a7;line-height:1.4}
+.mt{width:100%;border-collapse:collapse;background:none;border:0;font-size:13px}
+.mt th{padding:5px 8px;font-size:10.5px}
+.mt td{padding:4px 8px;border-bottom:1px solid var(--line)}
+.tag{font-size:10px;padding:1px 6px;border-radius:8px;background:#d9a44122;color:var(--gold2);border:1px solid #d9a44166;margin-left:4px}
+.sl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:4px}
+.chest{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 16px;margin-top:4px}.ch{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#c9c3b3}
+.sep{border-top:1px solid var(--line);margin:6px 0}
+@media (max-width:1300px){.ugrid.r4{grid-template-columns:repeat(3,1fr)}.srow{flex-wrap:wrap}.sc{flex:1 1 30%}.sarrow{display:none}}
+@media (max-width:900px){.ugrid.r4,.ugrid.r3{grid-template-columns:1fr 1fr;grid-auto-rows:auto}}
+@media (max-width:600px){.ugrid.r4,.ugrid.r3{grid-template-columns:1fr}.sc{flex:1 1 100%}}
+nav h4{margin-top:18px}nav h4:first-child{margin-top:4px}
+/* ---------- EMBLEMY ---------- */
+main.em{padding:14px 22px 14px;display:flex;flex-direction:column}
+.em-top{display:flex;align-items:center;gap:18px;flex-wrap:wrap;min-height:42px}
+.em-top h1{margin:0;font:700 21px Georgia,serif;color:var(--gold2)}
+.btabs{display:flex;gap:6px}
+.btab{padding:8px 16px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--text);font:600 14px "Segoe UI",sans-serif;cursor:pointer}
+.btab kbd{font:500 10px monospace;color:var(--muted);margin-left:6px;border:1px solid var(--line);border-radius:3px;padding:0 4px}
+.btab.on{background:linear-gradient(#2a2110,#1e1a10);border-color:var(--gold);color:var(--gold2)}
+.legend{margin-left:auto;display:flex;gap:12px;font-size:11.5px;color:var(--muted);align-items:center}
+.legend b{font-size:10px;padding:2px 7px;border-radius:9px}
+.summary{margin:8px 0 10px;color:#c9c3b3;font-size:13px}
+.egrid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:10px;flex:1;min-height:0}
+.ecard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 14px;display:flex;flex-direction:column;gap:5px;overflow:hidden;min-height:0}
+.ecard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tc)}
+.ecard.aura{--tc:#2f9bf0}.ecard.claw{--tc:#e64aa7}
+.ecard.core{border-color:#d9a44166;box-shadow:0 0 0 1px #d9a44122 inset}
+.ecard.skip{opacity:.38}
+.ecard.skip:hover{opacity:.8}
+.eh{display:flex;align-items:center;gap:8px}
+.eico{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;background:radial-gradient(circle at 35% 30%,#fff6,transparent 55%),var(--tc);box-shadow:0 0 10px var(--tc)}
+.en{font-weight:700;font-size:14.5px;line-height:1.15}
+.et{font-size:10.5px;color:var(--muted)}
+.pb{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.6px;padding:3px 8px;border-radius:9px;white-space:nowrap}
+.pb.core{background:#d9a44122;color:var(--gold2);border:1px solid #d9a44188}
+.pb.good{background:#3ecf6e18;color:var(--good);border:1px solid #3ecf6e55}
+.pb.skip{background:#ffffff08;color:var(--muted);border:1px solid var(--line)}
+.ed{font-size:12px;color:var(--muted);line-height:1.3}
+.efx{font-size:11px;color:#8fa6b8}
+.rl{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 8px;border-radius:6px;background:#0d0f1288}
+.rl .rt{flex:1;color:#a7a59e}
+.rl .rr{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.rl .rb{font-variant-numeric:tabular-nums;font-weight:800;color:var(--text);white-space:nowrap;min-width:62px;text-align:right}
+.rl .dir{font-size:10px;color:var(--muted)}
+.rl.f{background:#d9a44114;outline:1px solid #d9a44155}
+.rl.f .rt{color:var(--text);font-weight:600}
+.rl.f .rb{color:var(--gold2)}
+.rl.f .rt::before{content:"★ ";color:var(--gold)}
+.rl.nf{opacity:.55}
+.em-foot{margin-top:8px;font-size:11px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+@media (max-height:820px){.ed,.efx{display:none}.ecard{gap:4px;padding:8px 10px 8px 12px}.summary{margin:6px 0 8px}}
+@media (max-width:1300px){.egrid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:900px){.egrid{grid-template-columns:1fr 1fr;grid-auto-rows:auto}body{height:auto}.wrap{min-height:0}}
+@media (max-width:600px){.egrid{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .wrap{grid-template-columns:1fr}
+  nav{border-right:0;border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;padding:10px}
+  nav h4,nav .upd{display:none}
+  nav button{width:auto;white-space:nowrap;margin:0}
+  main{padding:16px}
+  .search{flex:1 1 100%}
+  .hide-sm{display:none}
+}
+
+/* ---------- KLIDNĚJŠÍ VZHLED (globálně) ---------- */
+:root{
+  --bg:#1a1d22; --panel:#21252c; --panel2:#2a2f37; --line:#2d323a; --sel:#2b3340;
+  --text:#dde1e7; --muted:#8a919c; --accent:#8db4e8; --name:#f0d58c; --max:#e9c46a;
+  --gold:#e9c46a; --gold2:#e9c46a;
+  --head:"Barlow Semi Condensed","Barlow","Segoe UI",sans-serif;
+}
+html,body{font:15px/1.5 "Barlow","Segoe UI",system-ui,sans-serif}
+body{background:var(--bg)}
+header{padding:12px 24px}
+.logo{font:600 19px/1 var(--head);color:var(--text);text-shadow:none;letter-spacing:.2px}
+.logo small{font:400 12px/1.6 "Barlow",sans-serif;letter-spacing:0;text-transform:none}
+.search input{border-radius:6px;padding:8px 12px 8px 32px}
+.search input:focus{border-color:var(--accent)}
+nav{padding:14px 8px;background:#1d2026}
+nav h4,nav h4:first-child{margin:18px 10px 4px;font:500 12.5px "Barlow",sans-serif;letter-spacing:0;text-transform:none;color:var(--muted)}
+nav h4:first-child{margin-top:2px}
+nav button{padding:6px 10px;margin-bottom:1px;border-radius:5px;border:0;font-size:14.5px;color:#c3c8d0}
+nav button:hover{background:var(--panel);color:var(--text)}
+nav button.active{background:var(--sel);color:var(--text);border:0}
+nav button .count{background:none;padding:0;font-size:12px;color:#5f6672}
+nav .upd{margin:24px 10px 0;font-size:12px}
+.em-top h1,.title h1{font:600 24px/1.1 var(--head);color:var(--text)}
+.btab{border-radius:6px;font:500 14px "Barlow",sans-serif;padding:6px 14px;background:transparent}
+.btab.on{background:var(--sel);border-color:var(--sel);color:var(--text)}
+.btab kbd{border:0;color:#646b77}
+.gchip{border-radius:6px;font:500 13px "Barlow",sans-serif;background:transparent}
+.gchip.on{background:var(--sel)!important;color:var(--text)!important;border-color:var(--sel)!important}
+.pgh,.sn,.ul>span,.sl,.pb,.ptg,th{text-transform:none!important;letter-spacing:0!important}
+.pg,.uc,.sc,.ecard,.ptile{border-radius:8px}
+.pg{border-top-width:2px}
+.pgh{font:600 15px var(--head)}
+.pm,.ptm,.uv b,.sb,.rl .rb,.max{color:var(--max)}
+.ecard.core{box-shadow:none}
+.info,.note{border-radius:6px}
+
+/* klidnější pet artefakty */
+.pg{border:0;border-top:0;background:transparent;padding:0}
+.pgh{color:var(--text);padding:0 8px 6px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.pgh::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--gc);margin-right:2px}
+.pgc{background:none;color:#5f6672}
+.pr{padding:4px 8px;border-radius:4px}
+.pr:nth-child(even){background:transparent}
+.pr:hover{background:var(--panel)}
+.pi{background:none;width:22px;font-size:14px;filter:saturate(.6)}
+.pn{font-weight:500}
+.prg{color:#69707b}
+.pm{font-size:16px;font-weight:600}
+.pr .pstar{opacity:0}
+.pr:hover .pstar,.pr .pstar.on{opacity:1}
+.pr.isfav{background:transparent!important;box-shadow:none}
+.pr.isfav .pn:not([class*="c-"]){color:var(--text)}
+.pbar .gchip{border-color:transparent}
+.pnote{color:#69707b}
+/* klidnější emblemy buildy */
+.ecard{background:transparent;border:0;border-left:2px solid var(--tc);border-radius:0;padding:4px 14px 8px}
+.ecard::before{display:none}
+.ecard.core{border-color:var(--tc)}
+.ecard.skip{opacity:.35}
+.eico.img img{filter:none}
+.en{font-weight:600;font-size:15.5px}
+.pb{background:none!important;border:0!important;font-weight:600;font-size:11.5px;padding:0}
+.pb.core{color:var(--max)}.pb.good{color:var(--good)}.pb.skip{color:var(--muted)}
+.legend .pb{margin-right:2px}
+.rl{background:transparent;padding:3px 0;border-bottom:1px solid var(--line);border-radius:0}
+.rl.f{background:transparent;outline:0}
+.rl.f .rt::before{content:""}
+.rl.f .rt{color:var(--text);font-weight:500}
+.rl.nf{opacity:.45}
+.ed{color:#9aa1ac}
+.efx{color:#7d8592}
+.summary{color:var(--muted)}
+/* upgrady */
+.uc,.sc{background:transparent;border-color:var(--line)}
+.step{background:var(--panel);border:0}
+.info{background:transparent;border:0;border-left:2px solid var(--line);color:var(--muted)}
+.ui{background:none!important;border:0!important}
+.src{background:none;border:0;color:#7fc79a;padding:0;margin-right:10px}
+.src.none{color:var(--muted)}
+.src.alt{background:none;border:0;color:var(--accent)}
+
+.ugrid.r4{gap:0 28px}
+.uc{border:0;border-top:1px solid var(--line);border-radius:0;padding:14px 2px}
+.ubar{height:2px;background:var(--panel2)}
+.ubar i{background:var(--muted)}
+.ul b.gold{color:var(--text)}
+.uv b{font-size:20px;font-weight:600}
+.uid{color:#4b515b}
+.sc{border:0;padding:0 4px}
+.sh{font:600 17px var(--head);color:var(--text);border:0}
+.sb{font-size:18px;font-weight:600}
+.arrow,.sarrow{color:#4b515b}
+.info b.gold{color:var(--text)}
+
+.dots{display:inline-flex;gap:3px;padding:4px;cursor:pointer;border-radius:4px;flex:none}
+.dots:hover{background:var(--panel2)}
+.dots i{width:7px;height:7px;border-radius:50%;background:#3a404a}
+.dots.r3 i.on{background:#6fd08c}.dots.r2 i.on{background:#e0c060}.dots.r1 i.on{background:#c07a6a}
+.pr.rate1 .pn,.pr.rate1 .pm{opacity:.55}
+.rlegend{color:var(--muted);font-size:13px;margin:10px 0 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rlegend .dots{cursor:default}.rlegend .dots:hover{background:none}
+.achk{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:36px;margin-top:20px;align-items:start;max-width:1400px}
+.atab{border:0;background:none;border-radius:0}
+.atab th{background:none;font-size:12.5px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);padding:6px 10px}
+.atab td{padding:8px 10px;border-bottom:1px solid var(--line);font-size:14px}
+.atab .cn{color:var(--muted);width:24px}
+.atab select,.atab input{width:100%;padding:7px 9px;background:var(--panel);border:1px solid var(--line);border-radius:6px;color:var(--text);font:inherit;outline:none}
+.atab select{min-width:220px}.atab input{width:150px}
+.atab select:focus,.atab input:focus{border-color:var(--accent)}
+.cp{color:var(--muted);white-space:nowrap}
+.v{color:var(--muted)}.v.top{color:#6fd08c}.v.ok{color:#a8d48a}.v.mid{color:#e0c060}.v.bad{color:#d08a7a}
+.ascore{display:flex;flex-direction:column;gap:10px;position:sticky;top:0}
+.snum{font:600 64px/1 var(--head);color:var(--muted)}.snum small{font-size:20px;color:var(--muted);margin-left:4px}
+.snum.top{color:#6fd08c}.snum.ok{color:#e0c060}.snum.bad{color:#d08a7a}
+.sverd{font-size:17px;margin:0;color:var(--text)}
+.smut{color:var(--muted);font-size:13px;margin:0;line-height:1.5}
+@media (max-width:1100px){.achk{grid-template-columns:1fr}}
+
+.ocr{display:flex;align-items:center;gap:20px;margin-top:18px;padding:16px 18px;border:1px dashed #3a404a;border-radius:8px;max-width:1400px;outline:none}
+.ocr.over,.ocr:focus{border-color:var(--accent)}
+.ocrtxt{flex:1}.ocrtxt p{margin:0 0 3px}
+.ocrstat{color:var(--accent);font-size:14px;max-width:380px}
+.ocrimg{max-height:110px;max-width:260px;border-radius:4px;object-fit:contain}
+.ocrmiss{color:var(--muted);font-size:13px;margin:8px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Metin Max Rolls<small>Nihor2 · Chronicles of Jinteia</small></div>
+  <label class="search"><span>⌕</span><input id="q" placeholder="Hledat bonus ve všech kategoriích…" autocomplete="off"></label>
+</header>
+<div class="wrap">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<script src="data.js"></script>
+<script>
+const CATS = window.CATEGORIES || [];
+const EM = null; // buildy heal šamana odstraněny
+const UP = window.UPGRADES || null;
+const store = {
+  get(k,d){try{const v=localStorage.getItem('mmr_'+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('mmr_'+k,JSON.stringify(v))}catch(e){}}
+};
+let state = {cat: store.get('cat', CATS[0]?.id), q:'', sort:'az', onlyFav:false};
+let favs = new Set(store.get('favs', []));
+let rolls = store.get('rolls', {});
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = (v,u) => v.toLocaleString('cs-CZ') + (u||'');
+const key = (c,b) => c.id+'::'+b.name;
+
+function grade(b, v){
+  if(v===''||v==null||isNaN(v)) return null;
+  const p = b.max===b.min ? 1 : (v-b.min)/(b.max-b.min);
+  const pct = Math.max(0,Math.min(1,p));
+  let label,col;
+  if(v>=b.max){label='MAX';col='var(--gold2)'}
+  else if(pct>=.8){label='Top';col='var(--good)'}
+  else if(pct>=.5){label='OK';col='var(--mid)'}
+  else {label='Slabé';col='var(--bad)'}
+  if(v>b.max){label='> max?';col='var(--bad)'}
+  return {pct,label,col};
+}
+
+function renderNav(){
+  const btn=(id,label,count)=>`<button data-id="${id}" class="${state.cat===id&&!state.q?'active':''}">${label}${count!=null?`<span class="count">${count}</span>`:''}</button>`;
+  $('#nav').innerHTML =
+    '<h4>Max rolly</h4>' + CATS.map(c=>btn(c.id,esc(c.name),null)).join('') +
+    (UP ? '<h4>Upgrady</h4>' + btn(UP.id,esc(UP.name),null) : '') +
+    (EM ? '<h4>Heal šaman</h4>' + btn(EM.id,'Emblemy a buildy',null) : '') +
+    (window.DBNAV ? '<h4>Databáze</h4>' + window.DBNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
+    `<div class="upd">Aktualizováno: ${esc(window.LAST_UPDATE||'')}</div>`;
+  $('#nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    state.cat=b.dataset.id; store.set('cat',state.cat); state.q=''; $('#q').value=''; render();
+  });
+}
+
+function rows(){
+  let list=[];
+  const q=state.q.trim().toLowerCase();
+  const cats = q ? CATS : CATS.filter(c=>c.id===state.cat);
+  cats.forEach(c=>c.bonuses.forEach(b=>{ if(!q || b.name.toLowerCase().includes(q)) list.push({c,b}); }));
+  if(state.onlyFav) list=list.filter(r=>favs.has(key(r.c,r.b)));
+  if(state.sort==='az') list.sort((a,b)=>a.b.name.localeCompare(b.b.name));
+  if(state.sort==='fav') list.sort((a,b)=>(favs.has(key(b.c,b.b))-favs.has(key(a.c,a.b)))||a.b.name.localeCompare(b.b.name));
+  return list;
+}
+
+function renderMain(){
+  const q=state.q.trim();
+  const c = CATS.find(x=>x.id===state.cat) || CATS[0];
+  const list = rows();
+  const head = q
+    ? `<div class="title"><h1>Hledání: „${esc(q)}“</h1></div><p class="desc">${list.length} výsledků napříč všemi kategoriemi.</p>`
+    : `<div class="title"><h1>${c.icon||''} ${esc(c.name)}</h1></div><p class="desc">${esc(c.desc||'')}</p>${c.note?`<div class="note">${esc(c.note)}</div>`:''}`;
+  const tb = list.map(({c:cat,b})=>{
+    const k=key(cat,b), v=rolls[k];
+    const g=grade(b, v===undefined?null:Number(v));
+    return `<tr>
+      <td><span class="fav ${favs.has(k)?'on':''}" data-k="${esc(k)}" title="Oblíbené">★</span><span class="name ${b.color?'c-'+b.color:''}">${esc(b.name)}</span>${q?`<span class="cat">${esc(cat.name)}</span>`:''}</td>
+      <td class="num hide-sm">${fmt(b.min,b.unit)}</td>
+      <td class="num max">${fmt(b.max,b.unit)}</td>
+      <td><div class="chk">
+        <input type="number" inputmode="decimal" placeholder="roll" data-k="${esc(k)}" value="${v??''}">
+        <div class="bar hide-sm"><i style="width:${g?g.pct*100:0}%;background:${g?g.col:'transparent'}"></i></div>
+        <span class="badge" style="${g?`color:${g.col};background:color-mix(in srgb,${g.col} 15%,transparent)`:'opacity:0'}">${g?g.label+' '+Math.round(g.pct*100)+'%':'–'}</span>
+      </div></td></tr>`;
+  }).join('');
+  $('#main').innerHTML = head + `
+    <div class="toolbar">
+      <button class="chip ${state.sort==='az'?'on':''}" data-s="az">A–Z</button>
+      <button class="chip ${state.sort==='fav'?'on':''}" data-s="fav">Oblíbené nahoru</button>
+      <button class="chip ${state.onlyFav?'on':''}" id="of">★ Jen oblíbené</button>
+      <span class="hint">Napiš svůj roll → uvidíš, jak blízko jsi maxu</span>
+    </div>` + (list.length ? `<table><thead><tr><th>Bonus</th><th class="hide-sm">Min</th><th>Max</th><th>Kontrola rollu</th></tr></thead><tbody>${tb}</tbody></table>` : `<div class="empty">Nic nenalezeno.</div>`);
+
+  $('#main').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{state.sort=b.dataset.s;render()});
+  $('#of').onclick=()=>{state.onlyFav=!state.onlyFav;render()};
+  $('#main').querySelectorAll('.fav').forEach(f=>f.onclick=()=>{
+    const k=f.dataset.k; favs.has(k)?favs.delete(k):favs.add(k); store.set('favs',[...favs]); render();
+  });
+  $('#main').querySelectorAll('input[data-k]').forEach(inp=>inp.oninput=()=>{
+    const k=inp.dataset.k;
+    if(inp.value==='') delete rolls[k]; else rolls[k]=inp.value;
+    store.set('rolls',rolls);
+    const [cid,name]=k.split('::'); const b=CATS.find(c=>c.id===cid).bonuses.find(x=>x.name===name);
+    const g=grade(b, inp.value===''?null:Number(inp.value));
+    const row=inp.closest('.chk'), bar=row.querySelector('.bar i'), badge=row.querySelector('.badge');
+    bar.style.width=(g?g.pct*100:0)+'%'; bar.style.background=g?g.col:'transparent';
+    badge.textContent=g?g.label+' '+Math.round(g.pct*100)+'%':'–';
+    badge.style.cssText=g?`color:${g.col};background:color-mix(in srgb,${g.col} 15%,transparent)`:'opacity:0';
+  });
+}
+
+const nf = v => Number(v).toLocaleString('cs-CZ',{maximumFractionDigits:2});
+function renderEmblems(){
+  const B = EM.builds, bk = B[state.build] ? state.build : 'single', b = B[bk];
+  const order = {core:0,good:1,skip:2}, label = {core:'Nutný',good:'Doplněk',skip:'Nepotřebný'};
+  const list = EM.emblems.map((e,i)=>({e,i,p:b.prio[e.id]||'skip'})).sort((x,y)=>order[x.p]-order[y.p]||x.i-y.i);
+  const cards = list.map(({e,p})=>{
+    const focus = b.focus[e.id]||[];
+    const rolls = e.rolls.map((r,ri)=>{
+      const best = r.better==='low'?r.min:r.max, isF = focus.includes(ri);
+      return `<div class="rl ${isF?'f':(p==='skip'?'':'nf')}"><span class="rt">${esc(r.t)}</span>
+        <span class="rr">${nf(r.min)}–${nf(r.max)}</span>
+        <span class="rb">${nf(best)}${esc(r.u)} <span class="dir">${r.better==='low'?'▼':'▲'}</span></span></div>`;
+    }).join('');
+    return `<div class="ecard ${e.tree} ${p}" title="ID ${e.gid}">
+      <div class="eh"><div class="eico ${e.img?'img':''}">${e.img?pic(e.img):(e.type==='Skill'?'⚡':'✦')}</div>
+        <div><div class="en">${esc(e.name)}</div><div class="et">${e.type} · ${esc(EM.trees[e.tree])}</div></div>
+        <span class="pb ${p}">${label[p]}</span></div>
+      <div class="ed">${esc(e.desc)}</div>
+      ${(e.fixed||[]).map(f=>`<div class="efx">• ${esc(f)}</div>`).join('')}
+      ${rolls}
+    </div>`;
+  }).join('');
+  const main=$('#main'); main.className='em';
+  main.innerHTML = `
+    <div class="em-top"><h1>Heal šaman: emblemy</h1>
+      <div class="btabs">${Object.entries(B).map(([k,v],i)=>`<button class="btab ${k===bk?'on':''}" data-b="${k}">${esc(v.name)}<kbd>${i+1}</kbd></button>`).join('')}</div>
+      <div class="legend"><span>Světlé řádky jsou rolly, na kterých v buildu záleží. Číslo vpravo je max, ▲ vyšší je lepší, ▼ nižší je lepší.</span></div>
+    </div>
+    <div class="summary">${esc(b.summary)}</div>
+    <div class="egrid">${cards}</div>`;
+  main.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>{state.build=x.dataset.b;store.set('build',state.build);renderEmblems()});
+}
+
+// ---------------- RANKY & UPGRADY ----------------
+state.utab = store.get('utab','ranks');
+state.rank = store.get('rank',11);
+const UTABS = {ranks:{name:'Ranky vybavení'}, sockets:{name:'Sockety šperků'}, mats:{name:'Kvalita a materiály'}};
+const pic = (src,fb) => src ? `<img src="${src}" alt="" onerror="this.replaceWith(document.createTextNode('${fb||'•'}'))">` : (fb||'•');
+const chips = a => a.length ? a.map(x=>`<span class="src">${esc(x)}</span>`).join('') : '<span class="src none">zdroj neuveden</span>';
+function renderUpgrades(){
+  const t = UTABS[state.utab] ? state.utab : 'ranks', R = state.rank, M = UP.maxRank;
+  let body='';
+  if(t==='ranks'){
+    const cards = UP.ranks.map(r=>{
+      const v=r.per*R;
+      return `<div class="uc">
+        <div class="uh"><div class="ui big" style="--c:${r.col}">${pic(r.img,r.icon)}</div>
+          <div class="ut"><div class="us">${esc(r.slot)}</div><div class="ue">${esc(r.en)}</div></div>
+          <div class="uv"><b>+${v}%</b><small>rank ${R}</small></div></div>
+        <div class="ubar"><i style="width:${R/M*100}%"></i></div>
+        <div class="ul"><span>Item</span><b class="gold">${esc(r.item)}</b></div>
+        <div class="ul"><span>Zvedá</span><b>${esc(r.affects)}</b></div>
+        <div class="ul"><span>Za rank</span><b>+${r.per}% · max +${r.per*M}%</b></div>
+        <div class="ul"><span>Zdroj</span><div>${chips(r.src)}${r.note?`<span class="src alt">${esc(r.note)}</span>`:''}</div></div>
+        <div class="uid">ID ${r.id}</div></div>`;}).join('');
+    body = `<div class="info"><b>Jak to funguje:</b> každý rank = <b>+1 %</b> k atributům daného slotu (Skill Booster <b>+2 %</b>). Ranky jsou 1–${M}, takže max je <b>+${M} %</b> (Booster <b>+${2*M} %</b>). 8 z 11 upgrade itemů padá z <b class="gold">Elite Portal Stone</b>.</div>
+      <div class="ugrid r4">${cards}</div>`;
+  }
+  if(t==='sockets'){
+    const cols = UP.sockets.map(k=>`<div class="sc">
+      <div class="sh">Socket ${k.n}</div>
+      <div class="step"><div class="sn">1 · Zpermanentnit</div>
+        <div class="si"><span class="sim">${pic(k.stone.img,"💠")}</span>${esc(k.stone.name)}</div>
+        <div class="sb">+${UP.socketStoneBonus}% <small>base ore bonus</small></div>
+        <div>${chips(k.stone.src)}</div><div class="uid">ID ${k.stone.id}</div></div>
+      <div class="arrow">▼</div>
+      <div class="step"><div class="sn">2 · Rankovat (1–${M})</div>
+        <div class="si"><span class="sim">${pic(k.enigma.img,"🔺")}</span>${esc(k.enigma.name)}</div>
+        <div class="sb">+${UP.socketRankPer*R}% <small>na ranku ${R} · max +${UP.socketRankPer*M}%</small></div>
+        <div class="ubar"><i style="width:${R/M*100}%"></i></div>
+        <div>${chips(k.enigma.src)}</div><div class="uid">ID ${k.enigma.id}</div></div>
+      <div class="lock">${k.n>1?`🔒 Rank lze zvedat až když je Socket ${k.n-1} na ranku ${M}`:'✅ Začíná se tady'}</div>
+    </div>`).join('<div class="sarrow">➜</div>');
+    body = `<div class="info"><b>Postup:</b> ① socket šperku zpermanentníš <b class="gold">Adanosovým kamenem</b> (+${UP.socketStoneBonus} % base ore bonusu) → ② rankuješ ho <b class="gold">Triangle Enigmou</b> (+${UP.socketRankPer} % za rank, max +${UP.socketRankPer*M} %) → ③ teprve až je na ranku ${M}, můžeš rankovat další socket.</div>
+      <div class="srow">${cols}</div>
+      <div class="uc" style="margin-top:12px"><div class="us" style="font-size:14px">📦 Truhla → co z ní padá</div>
+        <div class="chest">${(()=>{const m={};UP.sockets.forEach(k=>{k.stone.src.forEach(c=>(m[c]=m[c]||[]).push(`Socket ${k.n} · Adanos`));k.enigma.src.forEach(c=>(m[c]=m[c]||[]).push(`Socket ${k.n} · Enigma`))});
+          return Object.entries(m).sort((a,b)=>b[1].length-a[1].length).map(([c,l])=>`<div class="ch"><span class="src">${esc(c)}</span><span>${l.join(', ')}</span>${l.length>1?'<b class="tag">'+l.length+'×</b>':''}</div>`).join('')})()}</div></div>`;
+  }
+  if(t==='mats'){
+    const Q=UP.quality; let ce=0,cy=0;
+    const qrows=Q.steps.map(x=>{ce+=x.enh;cy+=x.yang;return `<tr><td><b>+${x.to}</b></td><td>${x.enh}×</td><td>${x.yang} kk</td><td class="mut">${ce}× · ${cy} kk</td></tr>`}).join('');
+    let cum=0; const dw=[]; for(let n=1;n<=UP.dragonWater.maxGrade;n++){cum+=n+4;dw.push(`<tr><td><b>${n}</b>${n===UP.dragonWater.maxGrade?' <span class="tag">'+UP.dragonWater.gradeName+'</span>':''}</td><td>${n+4}×</td><td class="mut">${cum}×</td></tr>`)}
+    const m=UP.materials, frag=m[0], inf=m[1], w=m[2], iw=m[3];
+    body = `<div class="ugrid r3">
+      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#b0703a">${pic(Q.img,"📜")}</div><div class="ut"><div class="us">Kvalita itemu</div><div class="ue">${esc(Q.item)} · ID ${Q.id}</div></div></div>
+        <div class="ed2">Táhni na item → zvedne <b>Quality</b> = <b>+1 %</b> k <b>base stats</b> vybavení za každý stupeň. Zdroj: ${chips(Q.src)}</div>
+        <table class="mt"><thead><tr><th>Na kvalitu</th><th>Enhancerů</th><th>Yang</th><th>Celkem od 0</th></tr></thead><tbody>${qrows}</tbody></table>
+        <div class="ed2 mut">Vyšší kvalita = dražší krok. „Celkem“ počítá, že jdeš postupně od +0.</div></div>
+      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#7a6ae8">${pic(w.img,"💧")}</div><div class="ui big" style="--c:#4ac85a">${pic(iw.img,"💧")}</div><div class="ut"><div class="us">Ring / Belt stony</div><div class="ue">${esc(w.name)} (${w.id}) · ${esc(iw.name)} (${iw.id})</div></div></div>
+        <div class="ed2"><b>Dragon Water</b> → normální stone, <b class="inf">Infected Dragon Water</b> → infikovaný stone. Cena je stejná: krok na grade N stojí <b>N + 4</b>.</div>
+        <table class="mt"><thead><tr><th>Grade</th><th>Stojí</th><th>Celkem</th></tr></thead><tbody>${dw.join('')}</tbody></table></div>
+      <div class="uc tall"><div class="uh"><div class="ui big" style="--c:#4ac85a">${pic(frag.img,"💠")}</div><div class="ut"><div class="us">Spirit Stones</div><div class="ue">${esc(frag.name)} · ID ${frag.id}</div></div></div>
+        <div class="ed2">${esc(frag.desc)}</div>
+        <div class="sl">Kde farmit:</div><div class="srcs">${chips(frag.src)}</div>
+        <div class="sep"></div>
+        <div class="us" style="font-size:14px;display:flex;align-items:center;gap:8px"><span class="ui" style="--c:#4ac85a">${pic(inf.img,"🦠")}</span>${esc(inf.name)} <span class="ue">ID ${inf.id}</span></div>
+        <div class="ed2">${esc(inf.desc)}</div></div>
+    </div>`;
+  }
+  const main=$('#main'); main.className='em up';
+  main.innerHTML = `<div class="em-top"><h1>${esc(UP.name)}</h1>
+      <div class="btabs">${Object.entries(UTABS).map(([k,v],i)=>`<button class="btab ${k===t?'on':''}" data-u="${k}">${v.name}<kbd>${i+1}</kbd></button>`).join('')}</div>
+      ${t!=='mats'?`<label class="rank">Tvůj rank <input type="range" min="0" max="${M}" value="${R}" id="rk"><b id="rkv">${R}</b>/${M}</label>`:''}
+    </div>${body}`;
+  main.querySelectorAll('[data-u]').forEach(x=>x.onclick=()=>{state.utab=x.dataset.u;store.set('utab',state.utab);renderUpgrades()});
+  const rk=$('#rk'); if(rk) rk.oninput=()=>{state.rank=+rk.value;store.set('rank',state.rank);renderUpgrades();$('#rk').focus()};
+}
+
+// ---------------- PET ARTEFAKTY (kompaktní) ----------------
+const shortName = n => n.replace('Strong against ','vs. ').replace('Resistance against ','Res. vs ').replace('Resistance to ','Res. vs ').replace('Average Damage Resistance','AVG Resistance').replace('% Chance for piercing Hits','Piercing chance').replace('% Chance for EXP Bonus','EXP Bonus chance').replace('% increased Item-Drop','Item-Drop').replace('Chance of critical hit','Critical chance').replace('Average Damage (AVG)','AVG Damage');
+const PET_LAYOUT = [['utok','cc'],['obrana'],['elem','farm'],['strong']];
+const GCOL = {utok:'#ff6b4a',cc:'#2fd4c4',obrana:'#4aa8ff',elem:'#b77cff',farm:'#46d17a',strong:'#e8b93c'};
+// výchozí hodnocení (můj návrh pro PvM: farmení + bossové). 3 = top, 2 = ok, 1 = slabé
+const PET_DEFAULT = {
+  'Strong against Monsters':3,'Strong against Metinstones':3,'Strong against Portals':3,'Average Damage (AVG)':3,'Skill Damage (SD)':3,
+  'Attack value':3,'Chance of critical hit':3,'% Chance for piercing Hits':3,'% increased Item-Drop':3,
+  'Attack Speed':2,'Casting Speed':2,'Skill Speed':2,'Max. HP':2,'Resistance to Monsters':2,'Magical Power':2,'Universality':2,'% Chance for EXP Bonus':2,
+  'Burn Damage':2,'Curse Damage':2,'Lightning Damage':2,'Poison Damage':2,
+  'Strong against Animal':1,'Strong against Devils':1,'Strong against Esoteric':1,'Strong against Half Humans':1,'Strong against Orcs':1,'Strong against Undead':1,
+  'Armor':1,'Def Grade Bonus':1,'Max. SP':1,'Thorns':1,'Chance to Stun':1,'Poisoning chance':1,'Slowing chance':1,'HP gain on hit':1,'SP gain on hit':1,
+  'Resistance against critical hits':1,'Resistance against piercing hits':1,'Resistance against Skill Damage':1,'Average Damage Resistance':1,'Lightspeed Factor':1
+};
+let petRate = store.get('petRate', {});
+const rateOf = b => petRate[b.name] ?? PET_DEFAULT[b.name] ?? 0;
+const dots = (b, click=true) => { const r=rateOf(b); return `<span class="dots r${r}" ${click?`data-rate="${esc(b.name)}" title="Klikni a změň hodnocení"`:''}>${[1,2,3].map(i=>`<i class="${i<=r?'on':''}"></i>`).join('')}</span>`; };
+const RATE_TXT = {3:'top',2:'ok',1:'slabé',0:'neohodnoceno'};
+state.petView = store.get('petView', 'all');      // all | fav | check
+if(!['all','fav','check'].includes(state.petView)) state.petView='all';
+state.petGroups = store.get('petGroups', []);
+state.petQ = '';
+let artifact = store.get('artifact', Array.from({length:7},()=>({b:'',v:''})));
+
+
+// ---------- čtení screenshotu (OCR) ----------
+const ocrState = {msg:'', img:'', miss:[]};
+const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+let tessLoading = null;
+function loadTess(){ if(window.Tesseract) return Promise.resolve(); if(tessLoading) return tessLoading;
+  tessLoading = new Promise((ok,err)=>{ const sc=document.createElement('script'); sc.src=TESS; sc.onload=ok; sc.onerror=()=>err(new Error('Nepodařilo se načíst čtečku textu, jsi připojený k internetu?')); document.head.appendChild(sc); }); return tessLoading; }
+function prepImage(src, thr=140){ return new Promise((ok,err)=>{ const im=new Image(); im.onload=()=>{
+    const sc = Math.max(2, Math.min(4, 1800/im.width)); const cv=document.createElement('canvas'); cv.width=im.width*sc; cv.height=im.height*sc;
+    const g=cv.getContext('2d'); g.imageSmoothingEnabled=true; g.drawImage(im,0,0,cv.width,cv.height);
+    const d=g.getImageData(0,0,cv.width,cv.height), a=d.data;
+    for(let i=0;i<a.length;i+=4){ const m=Math.max(a[i],a[i+1],a[i+2]); const v = m>thr ? 0 : 255; a[i]=a[i+1]=a[i+2]=v; }
+    g.putImageData(d,0,0); ok(cv); }; im.onerror=err; im.src=src; }); }
+const norm = t => t.toLowerCase().replace(/[^a-z]/g,'');
+const bigr = t => { const r=[]; for(let i=0;i<t.length-1;i++) r.push(t.slice(i,i+2)); return r; };
+const dice = (a,b) => { const A=bigr(a),B=bigr(b); if(!A.length||!B.length) return 0; const m=new Map(); A.forEach(x=>m.set(x,(m.get(x)||0)+1)); let n=0; B.forEach(x=>{const c=m.get(x); if(c){n++;m.set(x,c-1);}}); return 2*n/(A.length+B.length); };
+// názvy, jak je píše hra (EN/DE/zkrácené) -> název v databázi
+const OCR_ALIAS = {
+  'portaldamage':'Strong against Portals','portalschaden':'Strong against Portals','strongagainstportal':'Strong against Portals',
+  'blitzschaden':'Lightning Damage','lightningdamage':'Lightning Damage','feuerschaden':'Burn Damage','brandschaden':'Burn Damage',
+  'fluchschaden':'Curse Damage','giftschaden':'Poison Damage','magischekraft':'Magical Power',
+  'metinschaden':'Strong against Metinstones','stonedamage':'Strong against Metinstones','metindamage':'Strong against Metinstones',
+  'monsterschaden':'Strong against Monsters','monsterdamage':'Strong against Monsters','starkgegenmonster':'Strong against Monsters',
+  'durchschnittsschaden':'Average Damage (AVG)','averagedamage':'Average Damage (AVG)','avg':'Average Damage (AVG)',
+  'fertigkeitsschaden':'Skill Damage (SD)','skilldamage':'Skill Damage (SD)','sd':'Skill Damage (SD)',
+  'angriffswert':'Attack value','attackvalue':'Attack value','angriffsgeschwindigkeit':'Attack Speed','zaubergeschwindigkeit':'Casting Speed',
+  'kritischertreffer':'Chance of critical hit','criticalhit':'Chance of critical hit','durchbohrendertreffer':'% Chance for piercing Hits','piercinghit':'% Chance for piercing Hits',
+  'maxtp':'Max. HP','maxhp':'Max. HP','maxmp':'Max. SP','maxsp':'Max. SP','itemdrop':'% increased Item-Drop','expbonus':'% Chance for EXP Bonus',
+  'skillspeed':'Skill Speed','fertigkeitsgeschwindigkeit':'Skill Speed','slowingchance':'Slowing chance','verlangsamung':'Slowing chance'
+};
+function parseLines(text, bonuses){
+  const found=[], miss=[];
+  const byName = Object.fromEntries(bonuses.map(b=>[b.name,b]));
+  const names = bonuses.map(b=>({b, k:norm(b.name)}));
+  const aliasList = Object.entries(OCR_ALIAS).map(([k,n])=>({b:byName[n],k})).filter(x=>x.b);
+  const pool = names.concat(aliasList);
+  for(let raw of text.split('\n')){
+    const line = raw.trim();
+    const m = line.match(/^(.*?[A-Za-z].*?)\s*\+?\s*(\d{1,3}(?:[ .,]\d{3})+|\d+(?:[.,]\d+)?)\s*(%?)/);
+    if(!m) continue;
+    const words = m[1].replace(/[^A-Za-zÀ-ž%. ]/g,' ').split(/\s+/).filter(w=>w.length>1);
+    if(!words.length) continue;
+    let best=null, bs=0;
+    for(let k=1;k<=Math.min(6,words.length);k++){            // zkoušíme posledních k slov (před nimi bývá smetí)
+      const w = norm(words.slice(-k).join(' ')); if(w.length<3) continue;
+      for(const n of pool){ const sc = dice(w,n.k) + (w===n.k?0.3:0); if(sc>bs){bs=sc;best=n.b;} }
+    }
+    const hasPct = m[3]==='%';
+    if(best && bs>=0.62){
+      if(best.unit==='%' && !hasPct && Number(m[2])<=3) continue;   // základní stat itemu (např. Poison Damage +1), ne roll
+      if(found.some(f=>f.b===best.name)) continue;
+      const v = Number(m[2].replace(/[ .,](?=\d{3}\b)/g,'').replace(',','.'));
+      if(!(v>=best.min && v<=best.max)) continue;   // mimo rozsah = špatně přečteno nebo jiný item
+      found.push({b:best.name, v:String(v)});
+    } else if(hasPct && words.join('').length>5) miss.push(line.replace(/^[^A-Za-z%]+/,''));
+  }
+  return {found:found.slice(0,7), miss};
+}
+async function readScreenshot(file, c){
+  const url = URL.createObjectURL(file);
+  ocrState.img=url; ocrState.miss=[]; ocrState.msg='Čtu text ze screenshotu…'; renderPet(c);
+  try{
+    await loadTess();
+    const w = await Tesseract.createWorker('eng', 1, {
+      workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+      corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',
+      langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int' });
+    // dva průchody: běžný práh a vyšší práh (pomůže, když je za tooltipem světlé UI)
+    let text='';
+    for(const thr of [140, 200]){ const cv = await prepImage(url, thr); const { data } = await w.recognize(cv); text += data.text + '\n'; }
+    await w.terminate(); window.__ocrText = text;
+    const {found, miss:miss0} = parseLines(text, c.bonuses);
+    const miss = [...new Set(miss0)].filter(l=>!found.some(f=>norm(l).includes(norm(f.b).slice(0,8))));
+    if(!found.length){ ocrState.msg='Na obrázku jsem nenašel žádný bonus. Zkus výřez jen s tooltipem, nebo řádky vyplň ručně.'; ocrState.miss=miss; renderPet(c); return; }
+    artifact = Array.from({length:7},(_,i)=>found[i]||{b:'',v:''}); store.set('artifact',artifact);
+    ocrState.msg = `Našel jsem ${found.length} ${found.length===1?'bonus':found.length<5?'bonusy':'bonusů'}. Zkontroluj prosím, že čísla sedí.`;
+    ocrState.miss = miss; renderPet(c);
+  }catch(e){ ocrState.msg = e.message || 'Čtení se nepovedlo.'; renderPet(c); }
+}
+
+function checkView(c){
+  const byName = Object.fromEntries(c.bonuses.map(b=>[b.name,b]));
+  let sum=0, filled=0, tops=0;
+  const rows = artifact.map((slot,i)=>{
+    const b = byName[slot.b]; let res='', pctTxt='';
+    if(b){
+      filled++;
+      const r = rateOf(b); if(r===3) tops++;
+      const v = slot.v===''?null:Number(slot.v);
+      const pct = v==null ? null : Math.max(0,Math.min(1,(v-b.min)/((b.max-b.min)||1)));
+      if(pct!=null){ sum += ({3:1,2:.55,1:0,0:0}[r])*pct; pctTxt = Math.round(pct*100)+' % z maxima'; }
+      res = r<=1 ? '<span class="v bad">Zbytečný řádek, tenhle stat ti moc nedá</span>'
+        : pct==null ? `<span class="v">Doplň hodnotu</span>`
+        : r===3 ? (pct>=.8?'<span class="v top">Výborný řádek</span>':pct>=.5?'<span class="v ok">Dobrý stat, roll by mohl být lepší</span>':'<span class="v mid">Dobrý stat, ale slabý roll</span>')
+        : (pct>=.8?'<span class="v ok">Solidní</span>':'<span class="v mid">Průměr</span>');
+    }
+    return `<tr><td class="cn">${i+1}.</td>
+      <td><select data-slot="${i}" class="aslot"><option value="">vyber bonus…</option>${c.bonuses.map(x=>`<option ${x.name===slot.b?'selected':''} value="${esc(x.name)}">${esc(shortName(x.name))}</option>`).join('')}</select></td>
+      <td><input data-val="${i}" class="aval" type="number" inputmode="decimal" placeholder="${b?fmt(b.min,b.unit)+' – '+fmt(b.max,b.unit):'hodnota'}" value="${esc(slot.v)}"></td>
+      <td>${b?dots(b,false):''}</td><td class="cp">${pctTxt}</td><td>${res}</td></tr>`;
+  }).join('');
+  const score = filled ? Math.round(sum/filled*100) : 0;
+  const verdict = !filled ? 'Vyber bonusy, které máš na artefaktu, a napiš jejich hodnoty.'
+    : score>=70 ? 'Top artefakt. Nech si ho a dál ho jen vylepšuj.'
+    : score>=45 ? 'Použitelný artefakt. Časem zkus přerollovat nejslabší řádky.'
+    : 'Slabý artefakt. Vyplatí se rollovat dál.';
+  return `<div class="ocr" id="ocrzone" tabindex="0">
+      <div class="ocrtxt"><p><b>Vlož screenshot artefaktu</b> přes Ctrl+V, přetáhni ho sem, nebo <label class="lnk2">vyber soubor<input type="file" id="ocrfile" accept="image/*" hidden></label>.</p>
+      <p class="smut">Stačí výřez tooltipu s bonusy. Řádky se vyplní samy, pak jen zkontroluj čísla.</p></div>
+      <div id="ocrstat" class="ocrstat">${ocrState.msg||''}</div>
+      ${ocrState.img?`<img class="ocrimg" src="${ocrState.img}" alt="">`:''}
+    </div>
+    ${ocrState.miss?.length?`<p class="ocrmiss">Tyhle řádky jsem nepoznal: ${ocrState.miss.map(esc).join(' · ')}</p>`:''}
+  <div class="achk">
+    <table class="atab"><thead><tr><th></th><th>Bonus</th><th>Tvoje hodnota</th><th>Hodnota statu</th><th>Roll</th><th>Verdikt</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="ascore"><div class="snum ${score>=70?'top':score>=45?'ok':'bad'}">${filled?score:'–'}<small>/100</small></div>
+      <div><p class="sverd">${verdict}</p><p class="smut">${tops} z ${filled} řádků jsou top staty. Skóre je průměr řádků: top stat na maximu dá 100, ok stat nejvýš 55 a slabý stat 0.</p>
+      <button class="lnk2" id="aclr">Vymazat artefakt</button></div></div>
+  </div>`;
+}
+
+function renderPet(c){
+  const gname = Object.fromEntries(c.groups.map(g=>[g.id,g]));
+  const q = state.petQ.trim().toLowerCase();
+  const isFav = b => favs.has(key(c,b));
+  const favList = c.bonuses.filter(isFav);
+  const view = state.petView;
+  const gOn = id => !state.petGroups.length || state.petGroups.includes(id);
+  const match = b => !q || b.name.toLowerCase().includes(q) || shortName(b.name).toLowerCase().includes(q);
+  const star = b => `<button class="pstar ${isFav(b)?'on':''}" data-fav="${esc(key(c,b))}" title="${isFav(b)?'Odebrat z oblíbených':'Přidat do oblíbených'}">${isFav(b)?'★':'☆'}</button>`;
+  const row = b => `<div class="pr ${isFav(b)?"isfav":""} rate${rateOf(b)}" title="${esc(b.name)}, rozsah ${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}">
+      ${star(b)}<span class="pi">${b.ic||'•'}</span>
+      <div class="pt"><span class="pn ${b.color?'c-'+b.color:''}">${esc(shortName(b.name))}</span><span class="prg">${fmt(b.min,b.unit)} – ${fmt(b.max,b.unit)}</span></div>
+      ${dots(b)}<div class="pm">${fmt(b.max,b.unit)}</div></div>`;
+  let body;
+  if(view==='check'){ body = checkView(c); }
+  else {
+    const src = view==='fav' ? favList : c.bonuses;
+    const col = ids => ids.filter(gOn).map(id=>{ const g=gname[id], list=src.filter(b=>b.g===id&&match(b)).sort((a,b)=>rateOf(b)-rateOf(a));
+      if(!list.length) return '';
+      return `<div class="pg" style="--gc:${GCOL[id]||'#888'}"><div class="pgh">${esc(g.name)}<span class="pgc">${list.length}</span></div>${list.map(row).join('')}</div>`; }).join('');
+    const cols = PET_LAYOUT.map(col).filter(Boolean);
+    body = cols.length ? `<div class="pcols" style="grid-template-columns:repeat(${Math.min(4,Math.max(cols.length,2))},1fr)">${cols.map(x=>`<div class="pcol">${x}</div>`).join('')}</div>`
+      : view==='fav' && !favList.length ? `<div class="pempty">Zatím nemáš oblíbené. V „Všechny bonusy“ klikni na ☆ u řádku.</div>` : `<div class="pempty">Nic nenalezeno.</div>`;
+  }
+  const main=$('#main'); main.className='em pet';
+  main.innerHTML = `<div class="em-top"><h1>${esc(c.name)}</h1>
+      <div class="btabs">
+        <button class="btab ${view==='all'?'on':''}" data-pv="all">Všechny bonusy</button>
+        <button class="btab ${view==='fav'?'on':''}" data-pv="fav">Oblíbené <kbd>${favList.length}</kbd></button>
+        <button class="btab ${view==='check'?'on':''}" data-pv="check">Zkontrolovat artefakt</button>
+      </div></div>
+    ${view!=='check'?`<div class="pbar">
+      <input id="pq" class="pq" placeholder="Filtrovat bonusy…" value="${esc(state.petQ)}" autocomplete="off">
+      <button class="gchip ${!state.petGroups.length?'on':''}" data-g="">Všechny skupiny</button>
+      ${c.groups.map(g=>`<button class="gchip ${state.petGroups.includes(g.id)?'on':''}" data-g="${g.id}" style="--gc:${GCOL[g.id]}">${esc(g.name)}</button>`).join('')}
+    </div>
+    <p class="rlegend"><span class="dots r3"><i class="on"></i><i class="on"></i><i class="on"></i></span> top stat <span class="dots r2"><i class="on"></i><i class="on"></i><i></i></span> ok <span class="dots r1"><i class="on"></i><i></i><i></i></span> slabé. Tečky jsou můj návrh pro PvM, kliknutím na ně si je přenastavíš.${Object.keys(petRate).length?` <button class="lnk2" id="rreset">Vrátit můj návrh</button>`:''}</p>`:''}
+    ${body}`;
+  const re = ()=>{ const sc=main.scrollTop; renderPet(c); main.scrollTop=sc; };
+  main.querySelectorAll('[data-pv]').forEach(x=>x.onclick=()=>{state.petView=x.dataset.pv;store.set('petView',state.petView);re()});
+  main.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>{
+    const id=x.dataset.g;
+    if(!id) state.petGroups=[]; else { const i=state.petGroups.indexOf(id); i>=0?state.petGroups.splice(i,1):state.petGroups.push(id); if(state.petGroups.length===c.groups.length) state.petGroups=[]; }
+    store.set('petGroups',state.petGroups); re();
+  });
+  main.querySelectorAll('[data-fav]').forEach(x=>x.onclick=e=>{e.stopPropagation();const k=x.dataset.fav;favs.has(k)?favs.delete(k):favs.add(k);store.set('favs',[...favs]);re()});
+  main.querySelectorAll('[data-rate]').forEach(x=>x.onclick=e=>{e.stopPropagation();const n=x.dataset.rate,b=c.bonuses.find(y=>y.name===n);const r=(rateOf(b)%3)+1;petRate[n]=r;if(PET_DEFAULT[n]===r)delete petRate[n];store.set('petRate',petRate);re()});
+  const rr=$('#rreset'); if(rr) rr.onclick=()=>{petRate={};store.set('petRate',petRate);re()};
+  const pq=$('#pq'); if(pq) pq.oninput=()=>{state.petQ=pq.value;re();const n=$('#pq');n.focus();n.setSelectionRange(n.value.length,n.value.length)};
+  main.querySelectorAll('.aslot').forEach(sel=>sel.onchange=()=>{artifact[+sel.dataset.slot]={b:sel.value,v:''};store.set('artifact',artifact);re()});
+  main.querySelectorAll('.aval').forEach(inp=>inp.onchange=()=>{artifact[+inp.dataset.val].v=inp.value;store.set('artifact',artifact);re()});
+  main.querySelectorAll('.aval').forEach(inp=>inp.onkeydown=e=>{if(e.key==='Enter'){inp.blur()}});
+  const ac=$('#aclr'); if(ac) ac.onclick=()=>{artifact=Array.from({length:7},()=>({b:'',v:''}));store.set('artifact',artifact);ocrState.img='';ocrState.msg='';ocrState.miss=[];re()};
+  const z=$('#ocrzone');
+  if(z){
+    const take = f => { if(f && f.type.startsWith('image/')) readScreenshot(f,c); };
+    $('#ocrfile').onchange=e=>take(e.target.files[0]);
+    z.ondragover=e=>{e.preventDefault();z.classList.add('over')}; z.ondragleave=()=>z.classList.remove('over');
+    z.ondrop=e=>{e.preventDefault();z.classList.remove('over');take(e.dataTransfer.files[0])};
+    document.onpaste = e => { if(state.petView!=='check'||state.cat!==c.id) return; const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/')); if(it){e.preventDefault();take(it.getAsFile());} };
+  }
+}
+state.build = store.get('build','single');
+document.addEventListener('keydown',e=>{
+  if(state.q||e.target.tagName==='INPUT'&&e.target.type!=='range') return;
+  if(EM&&state.cat===EM.id){const k=Object.keys(EM.builds)[+e.key-1]; if(k){state.build=k;store.set('build',k);renderEmblems()}}
+  if(UP&&state.cat===UP.id){const k=Object.keys(UTABS)[+e.key-1]; if(k){state.utab=k;store.set('utab',k);renderUpgrades()}}
+});
+function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
+$('#q').oninput=e=>{state.q=e.target.value;render();$('#q').focus()};
+render();
+</script>
+<script src="db.js"></script>
+<script src="db-ui.js"></script>
+<script>render();</script>
+</body>
+</html>
