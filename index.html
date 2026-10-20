@@ -778,6 +778,14 @@ html[data-theme] .logo{text-shadow:0 1px 0 #000}
 .bro b{font-weight:600;text-align:right}
 .bro em{font-style:normal;font-size:11px;color:var(--muted);text-align:right}
 .bdone{align-self:flex-end;background:var(--gold);color:var(--btntx,#1a1105);border:0;border-radius:4px;padding:5px 14px;font:600 13px 'Barlow',sans-serif;cursor:pointer}
+
+.shbox{background:var(--panel);border:1px solid color-mix(in srgb,var(--gold) 50%,transparent);border-radius:8px;padding:12px 14px;margin:-4px 0 16px;display:flex;flex-direction:column;gap:8px}
+.shtop{display:flex;align-items:center;justify-content:space-between}
+.shtop b{color:var(--gold2);font-weight:600}
+.shrow{display:flex;gap:8px;flex-wrap:wrap}
+.shrow input{flex:1;min-width:220px;background:var(--inbg,var(--bg));border:1px solid var(--line);border-radius:5px;color:var(--text);font:13px ui-monospace,Consolas,monospace;padding:7px 10px;outline:none}
+.shrow a.tbtn{text-decoration:none;display:inline-flex;align-items:center}
+.shbox .smut{margin:0}
 </style>
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("mmr_theme")||"gold"}catch(e){document.documentElement.dataset.theme="gold"}</script>
 </head>

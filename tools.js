@@ -377,6 +377,7 @@ function importPanel(){
 //  PLÁNOVAČ BUILDU
 // =====================================================================
 let BTAB = store.get('btab','build');
+let SHARE = null;   // {url, short, copied} – poslední vytvořený odkaz
 function emblemOptions(spec, sel){
   const groups={};
   D.emblems.forEach(e=>{ const forSpec = e.sp&&e.sp.length; if(forSpec && (!spec || !e.sp.includes(spec))) return; const g = forSpec ? T('Emblemy classy','Class emblems')+(e.set!=null&&D.emblemSets[e.set]?' · '+D.emblemSets[e.set]:'') : e.t; (groups[g] ||= []).push(e); });
@@ -394,7 +395,7 @@ function slotRead(b, s){
   const lines=st.lines.map(l=>{ const lp=poolById(l.p)||p; const r=lp?.rows.find(x=>x.n===l.b); if(!r) return ''; const tn=r.t.length; return lineRead(r.n, r.t[l.ti], l.ti, tn, tn>1?l.ti/(tn-1):1); }).join('');
   const has = it || st.lines.length;
   return `<div class="bcard rd ${has?'':'empty'}" data-slot="${esc(s.k)}" data-open="${esc(s.k)}" role="button" tabindex="0">
-    <div class="bch">${it?img(it.i,'bimg'):`<span class="bimg ph">${esc(slotName(s).slice(0,2))}</span>`}<div class="bct"><b>${esc(slotName(s))}</b><span class="smut">${it?esc(it.n):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot')}</span></div>
+    <div class="bch">${it?img(it.i,'bimg'):`<span class="bimg ph">${esc(slotName(s).slice(0,2))}</span>`}<div class="bct"><b>${esc(slotName(s))}</b><span class="smut">${it?esc(it.n):(SHARED?T('prázdné','empty'):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot'))}</span></div>
       ${st.rank?`<span class="brk">R${st.rank}</span>`:''}</div>
     ${p?`<span class="bpool">${esc(p.n)}</span>`:''}
     ${lines?`<div class="brl">${lines}</div>`:''}
@@ -404,7 +405,7 @@ function petRead(b){
   const st=b.pet;
   const lines=(st.lines||[]).map(l=>{ const r=PET.rows.find(x=>x.n===l.b); if(!r||l.v==='') return ''; const a=num(r.t[0]), z=num(r.t[1]); const pct=clamp((num(l.v)-a)/((z-a)||1),0,1); return lineRead(r.n, l.v+unitOf(r.t[1]), 0, 0, pct); }).join('');
   return `<div class="bcard rd pet ${lines?'':'empty'}" data-slot="__pet" data-open="__pet" role="button" tabindex="0">
-    <div class="bch"><span class="bimg ph">🐾</span><div class="bct"><b>${T('Pet artefakt','Pet artifact')}</b><span class="smut">${lines?T('hodnoty rollů','roll values'):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot')}</span></div>${st.rank?`<span class="brk">R${st.rank}</span>`:''}</div>
+    <div class="bch"><span class="bimg ph">🐾</span><div class="bct"><b>${T('Pet artefakt','Pet artifact')}</b><span class="smut">${lines?T('hodnoty rollů','roll values'):(SHARED?T('prázdné','empty'):T('prázdné – klikni nebo vlož screenshot','empty – click or paste a screenshot'))}</span></div>${st.rank?`<span class="brk">R${st.rank}</span>`:''}</div>
     ${lines?`<div class="brl">${lines}</div>`:''}
   </div>`;
 }
@@ -473,7 +474,10 @@ function buildView(){
       <div class="btabs"><button class="btab ${BTAB==='build'?'on':''}" data-bt="build">${T('Build','Build')}</button><button class="btab ${BTAB==='cost'?'on':''}" data-bt="cost">${T('Náklady','Costs')}</button></div></div>
     ${SHARED?`<div class="shared">🔗 ${T('Prohlížíš sdílený build','You are viewing a shared build')} <b>${esc(b.name)}</b><button class="tbtn" id="bkeep">${T('Uložit k sobě','Save to my builds')}</button><button class="lnk2" id="bclose">${T('Zavřít','Close')}</button></div>`
     :`<div class="bbar"><input id="bname" value="${esc(b.name)}" maxlength="60"><select id="bpick">${myList.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>
-      <button class="tbtn ghost" id="bnew">${T('+ Nový','+ New')}</button><button class="tbtn ghost" id="bdup">${T('Duplikovat','Duplicate')}</button><button class="tbtn" id="bshare">🔗 ${T('Sdílet odkaz','Share link')}</button><button class="lnk2" id="bdel">${T('Smazat','Delete')}</button></div>`}
+      <button class="tbtn ghost" id="bnew">${T('+ Nový','+ New')}</button><button class="tbtn ghost" id="bdup">${T('Duplikovat','Duplicate')}</button><button class="tbtn" id="bshare">🔗 ${T('Sdílet odkaz','Share link')}</button><button class="lnk2" id="bdel">${T('Smazat','Delete')}</button></div>
+      ${SHARE?`<div class="shbox"><div class="shtop"><b>${SHARE.copied?T('✓ Odkaz zkopírován – vlož ho třeba na Discord','✓ Link copied – paste it e.g. on Discord'):T('Odkaz na build','Build link')}</b><button class="bx" id="shx" title="${T('Zavřít','Close')}">×</button></div>
+        <div class="shrow"><input id="shurl" readonly value="${esc(SHARE.url)}"><button class="tbtn" id="shcopy">${T('Kopírovat','Copy')}</button><a class="tbtn ghost" href="${esc(SHARE.url)}" target="_blank" rel="noopener">${T('Otevřít','Open')}</a></div>
+        <p class="smut">${SHARE.short?T('Kdo odkaz otevře, uvidí build jen pro čtení a může si ho uložit k sobě. Když build změníš, vytvoř nový odkaz.','Anyone with the link sees the build read-only and can save a copy. Create a new link after changes.'):T('Krátký odkaz se teď nepodařil, tohle je dlouhá verze (funguje stejně).','Short link failed, this is the long version (works the same).')}</p></div>`:''}`}
     ${BTAB==='cost' ? costView(b) : `<div class="bgrid">
       <div>
         ${SHARED?'':importPanel()}
@@ -498,7 +502,17 @@ function buildView(){
     $('#bnew').onclick=()=>{ const nb=emptyBuild(); nb.name=T('Build ','Build ')+(Object.keys(BUILDS).length+1); BUILDS[nb.id]=nb; CUR=nb.id; persist(); re(); };
     $('#bdup').onclick=()=>{ const nb=JSON.parse(JSON.stringify(b)); nb.id=uid(); nb.name=b.name+T(' (kopie)',' (copy)'); BUILDS[nb.id]=nb; CUR=nb.id; persist(); re(); };
     $('#bdel').onclick=()=>{ if(!confirm(T(`Smazat build „${b.name}“?`,`Delete build “${b.name}”?`))) return; delete BUILDS[b.id]; CUR=Object.keys(BUILDS)[0]||null; persist(); re(); };
-    $('#bshare').onclick=()=>{ const url=location.origin+location.pathname+'#build='+enc(compact(b)); navigator.clipboard?.writeText(url); $('#bshare').textContent=T('✓ Odkaz zkopírován','✓ Link copied'); setTimeout(()=>{const x=$('#bshare'); if(x) x.textContent='🔗 '+T('Sdílet odkaz','Share link');},1800); };
+    $('#bshare').onclick=async()=>{
+      const bt=$('#bshare'); bt.disabled=true; bt.textContent=T('Vytvářím odkaz…','Creating link…');
+      const base=location.origin+location.pathname; let url, short=true;
+      try{ const r=await fetch('/api/share',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({data:JSON.stringify(compact(b))})}); const d=await r.json(); if(!r.ok||!d.id) throw new Error(d.error||r.status); url=base+'#b='+d.id; }
+      catch(e){ url=base+'#build='+enc(compact(b)); short=false; }
+      SHARE={url,short}; let ok=false; try{ await navigator.clipboard.writeText(url); ok=true; }catch(e){}
+      SHARE.copied=ok; re();
+    };
+    const sx=$('#shx'); if(sx) sx.onclick=()=>{ SHARE=null; re(); };
+    const sc=$('#shcopy'); if(sc) sc.onclick=async()=>{ const i=$('#shurl'); i.select(); let ok=false; try{ await navigator.clipboard.writeText(i.value); ok=true; }catch(e){ try{ ok=document.execCommand('copy'); }catch(_){} } sc.textContent=ok?T('✓ Zkopírováno','✓ Copied'):T('Označ a zkopíruj ručně','Select and copy manually'); };
+    const su=$('#shurl'); if(su) su.onfocus=()=>su.select();
   }
   if(BTAB==='cost'){
     main.querySelectorAll('[data-tg]').forEach(inp=>inp.onchange=()=>{ const v=clamp(parseInt(inp.value)||0,0,UPG.maxRank); if(inp.dataset.tg==='__pet') b.pet.target=v; else slotState(b,inp.dataset.tg).target=v; persist(); re(); });
@@ -549,9 +563,19 @@ window.openPetCheck = () => { CK.mode='__pet'; CK.rows=[]; CK.item=''; ckEdit=nu
 window.petCheckFile = f => { if(!f||!f.type.startsWith('image/')||ckOcr.busy) return; window.openPetCheck(); ckOCR(f, ()=>render()); };
 window.renderTool = id => id==='tool-build' ? buildView() : checkerView();
 
-// sdílený build z odkazu
-if(location.hash.startsWith('#build=')){
-  try{ SHARED=expand(dec(location.hash.slice(7))); state.cat='tool-build'; BTAB='build'; }catch(e){}
+// sdílený build z odkazu (#b=krátké id nebo #build=dlouhá data); funguje i při vložení do stejné záložky
+async function openSharedFromHash(){
+  const h=location.hash; let o=null;
+  if(h.startsWith('#build=')){ try{ o=dec(h.slice(7)); }catch(e){} }
+  else if(h.startsWith('#b=')){ try{ const r=await fetch('/api/share?id='+encodeURIComponent(h.slice(3))); const d=await r.json(); if(r.ok&&d.data) o=JSON.parse(d.data); else alertShare(d.error); }catch(e){ alertShare(e.message); } }
+  else return false;
   history.replaceState(null,'',location.pathname+location.search);
+  if(!o) return false;
+  SHARED=expand(o); SHARE=null; BEDIT.clear(); state.cat='tool-build'; store.set('cat','tool-build'); BTAB='build'; state.q=''; const qi=$('#q'); if(qi) qi.value='';
+  render(); return true;
 }
+function alertShare(msg){ state.cat='tool-build'; render(); const m=$('#main'); if(m) m.insertAdjacentHTML('afterbegin',`<div class="shared">⚠ ${T('Sdílený build se nepodařilo načíst','Could not load the shared build')}${msg?' – '+esc(msg):''}</div>`); }
+if(location.hash.startsWith('#build=')){ try{ SHARED=expand(dec(location.hash.slice(7))); state.cat='tool-build'; BTAB='build'; }catch(e){} history.replaceState(null,'',location.pathname+location.search); }
+else if(location.hash.startsWith('#b=')) setTimeout(openSharedFromHash,0);
+window.addEventListener('hashchange', openSharedFromHash);
 })();

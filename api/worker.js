@@ -10,6 +10,8 @@ const schema = env => ready ||= env.DB.batch([
   env.DB.prepare('CREATE TABLE IF NOT EXISTS rolls (id INTEGER PRIMARY KEY AUTOINCREMENT, pool TEXT NOT NULL, slot TEXT, bonus TEXT NOT NULL, ti INTEGER NOT NULL, tn INTEGER NOT NULL, day TEXT NOT NULL, ih TEXT NOT NULL)'),
   env.DB.prepare('CREATE INDEX IF NOT EXISTS rolls_pool ON rolls(pool)'),
   env.DB.prepare('CREATE INDEX IF NOT EXISTS rolls_ih ON rolls(ih, day)'),
+  env.DB.prepare('CREATE TABLE IF NOT EXISTS shares (id TEXT PRIMARY KEY, h TEXT NOT NULL UNIQUE, data TEXT NOT NULL, created INTEGER NOT NULL, day TEXT NOT NULL, ih TEXT NOT NULL)'),
+  env.DB.prepare('CREATE INDEX IF NOT EXISTS shares_ih ON shares(ih, day)'),
 ]).catch(e => { ready = null; throw e; });
 
 async function ipHash(req, day) {
@@ -49,6 +51,32 @@ export default {
         if ((used?.c || 0) + rows.length > 300) return json({ error: 'Dnešní limit vyčerpán, díky! Zkus to zítra.' }, 429);
         await env.DB.batch(rows.map(r => env.DB.prepare('INSERT INTO rolls (pool,slot,bonus,ti,tn,day,ih) VALUES (?,?,?,?,?,?,?)').bind(b.pool, b.slot || null, r.b, r.ti, r.tn, day, ih)));
         return json({ ok: true, saved: rows.length });
+      }
+      if (url.pathname === '/api/share' && req.method === 'POST') {
+        const b = await req.json().catch(() => null);
+        if (!b || !str(b.data, 60000)) return json({ error: 'Neplatná data' }, 400);
+        try { JSON.parse(b.data); } catch { return json({ error: 'Neplatná data' }, 400); }
+        const hb = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(b.data)));
+        const h = [...hb].map(x => x.toString(16).padStart(2, '0')).join('');
+        const ex = await env.DB.prepare('SELECT id FROM shares WHERE h=?').bind(h).first();
+        if (ex) return json({ id: ex.id });
+        const day = new Date().toISOString().slice(0, 10), ih = await ipHash(req, day);
+        const used = await env.DB.prepare('SELECT count(*) AS c FROM shares WHERE ih=? AND day=?').bind(ih, day).first();
+        if ((used?.c || 0) >= 100) return json({ error: 'Dnešní limit odkazů vyčerpán.' }, 429);
+        const A = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        for (let n = 0; n < 5; n++) {
+          const r = crypto.getRandomValues(new Uint8Array(8)); const id = [...r].map(x => A[x % A.length]).join('');
+          try { await env.DB.prepare('INSERT INTO shares (id,h,data,created,day,ih) VALUES (?,?,?,?,?,?)').bind(id, h, b.data, Date.now(), day, ih).run(); return json({ id }); }
+          catch (e) { if (!/UNIQUE/i.test(String(e))) throw e; const again = await env.DB.prepare('SELECT id FROM shares WHERE h=?').bind(h).first(); if (again) return json({ id: again.id }); }
+        }
+        return json({ error: 'Zkus to znovu' }, 500);
+      }
+      if (url.pathname === '/api/share' && req.method === 'GET') {
+        const id = url.searchParams.get('id') || '';
+        if (!/^[A-Za-z0-9]{6,12}$/.test(id)) return json({ error: 'id' }, 400);
+        const r = await env.DB.prepare('SELECT data FROM shares WHERE id=?').bind(id).first();
+        if (!r) return json({ error: 'Odkaz neexistuje' }, 404);
+        return json({ data: r.data }, 200, { 'cache-control': 'public, max-age=3600' });
       }
       return json({ error: 'not found' }, 404);
     } catch (e) {
