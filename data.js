@@ -4,7 +4,7 @@
 //  Nové věci přidávej jako další objekt do pole CATEGORIES.
 //  color: fire | curse | lightning | magic | poison (barva bonusu)
 // ============================================================
-window.LAST_UPDATE = "2026-10-20 20:05";
+window.LAST_UPDATE = "2026-10-20 20:15";
 
 window.CATEGORIES = [
   {

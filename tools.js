@@ -161,15 +161,14 @@ async function ckOCR(file, rerender){
   try{
     await loadTess();
     const w = await Tesseract.createWorker('eng',1,{workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int'});
-    let best=[], item=null;
-    for(const thr of [140,110,170]){
-      const cv=await prepImage(url,thr); const {data}=await w.recognize(cv);
-      item = item || detectItem(data.text);
-      if(item && CK.mode!=='__pet') CK.slot=item.slot;
-      const found=parseItemText(data.text, CK.mode==='__pet' ? PET.rows.map(r=>r.n) : ckNames());
-      if(found.length>best.length) best=found;
-    }
+    const texts=[];
+    for(const thr of [140,110,170]){ const cv=await prepImage(url,thr); const {data}=await w.recognize(cv); texts.push(data.text); }
     await w.terminate();
+    // sám pozná, jestli je to item (→ slot) nebo pet artefakt, bez ohledu na předchozí režim
+    const res=classifyShot(texts); let item=null, best;
+    if(res.kind==='slot'){ if(CK.mode==='__pet') CK.mode='auto'; CK.slot=res.slot; item=res.item?{item:res.item,slot:res.slot}:null; best=res.rows; }
+    else if(res.kind==='pet'){ CK.mode='__pet'; best=res.rows; }
+    else best=bestParse(texts, CK.mode==='__pet' ? PET.rows.map(r=>r.n) : ckNames());
     ckOcr.busy=false; ckEdit=null;
     CK.item = item ? item.item.id : '';
     if(!best.length){ ckOcr.msg=T('Na obrázku jsem nenašel žádný bonus. Zkus celý tooltip bez ořezu, nebo přidej řádky ručně.','No bonus found. Try the whole tooltip or add lines by hand.'); saveCK(); return rerender(); }
