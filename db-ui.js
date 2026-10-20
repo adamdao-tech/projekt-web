@@ -158,6 +158,7 @@ function rollView(){
       <td class="pn"><span class="fav ${fav?'on':''}" data-dbfav="${esc('bon:'+r.n)}">★</span><button class="lnk2" data-gobon="${esc(r.n)}">${esc(r.n)}</button>${!pool.pet&&!slot?`<div class="rsl">${r.sl.map(x=>`<button class="slk" data-slot="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}</td>
       <td><div class="pl3" style="margin:0">${r.t.map((t,i)=>`<span class="${i===r.t.length-1?'last':''}">${esc(t)}</span>`).join('')}</div></td>
       <td class="r"><span class="pm">${esc(r.t[r.t.length-1])}</span></td>
+      <td class="cst" data-cst="${esc(r.n)}"></td>
       <td><div class="chk"><input type="text" inputmode="decimal" placeholder="roll" data-pk="${esc(k(r))}" value="${esc(prolls[k(r)]??'')}">
         <span class="badge" style="${g?`color:${g.col};background:color-mix(in srgb,${g.col} 15%,transparent)`:'opacity:0'}">${g?g.label+' '+Math.round(g.pct*100)+'%':'–'}</span></div></td></tr>`; }).join('');
   return `<div class="dhead"><h1>${tr('Točení bonusů','Bonus rolls')}</h1><span class="cnt">${tr('Vyber, čím točíš, a uvidíš všechny bonusy a jejich max.','Pick what you roll with and see every bonus and its max.')}</span></div>
@@ -174,7 +175,7 @@ function rollView(){
         <label><input type="checkbox" id="dfav" ${st.fav?'checked':''}> ${tr('Jen oblíbené','Favourites only')}</label>
         <span class="sort">${tr('Řadit','Sort')}: <button class="${st.sort!=='max'?'on':''}" data-sort="az">${tr('název','name')}</button> <button class="${st.sort==='max'?'on':''}" data-sort="max">max</button></span>
       </div></div>
-      ${rows.length?`<table class="ptab"><thead><tr><th>Bonus</th><th>${tr('Tiery (min → max)','Tiers (min → max)')}</th><th class="r">Max</th><th>${tr('Tvůj roll','Your roll')}</th></tr></thead><tbody>${body}</tbody></table>`:`<p class="dempty">${tr('Nic tomu neodpovídá.','Nothing matches.')}</p>`}
+      ${rows.length?`<table class="ptab"><thead><tr><th>Bonus</th><th>${tr('Tiery (min → max)','Tiers (min → max)')}</th><th class="r">Max</th><th title="${tr('Rozložení tierů podle rollů, které nahráli hráči','Tier distribution from rolls submitted by players')}">${tr('Komunita','Community')}</th><th>${tr('Tvůj roll','Your roll')}</th></tr></thead><tbody>${body}</tbody></table>`:`<p class="dempty">${tr('Nic tomu neodpovídá.','Nothing matches.')}</p>`}
     </article></section>
   </div>`;
 }
@@ -187,6 +188,7 @@ function favView(){
   return `<div class="dhead"><h1>${tr('Oblíbené','Favourites')}</h1></div><div class="favs">${groups.join('')||`<p class="dempty">${tr('Zatím tu nic není. Otevři libovolný item, emblem nebo bonus a klikni na „Přidat do oblíbených“.','Nothing here yet. Open any item, emblem or bonus and click “Add to favourites”.')}</p>`}</div>`;
 }
 
+window.DBX = {D, img, POOLS, num, pgrade, S, save, findByName, SPECS};
 window.DBNAV = [
   {id:'db-items',label:tr('Itemy','Items')},{id:'db-equip',label:tr('Vybavení','Equipment')},{id:'db-emb',label:tr('Emblemy','Emblems')},
   {id:'db-bon',label:tr('Bonusy a tiery','Bonuses & tiers')},{id:'db-roll',label:tr('Točení bonusů','Bonus rolls')},{id:'db-cls',label:tr('Classy a skilly','Classes & skills')},{id:'db-fav',label:tr('Oblíbené','Favourites')},
@@ -221,6 +223,7 @@ window.renderDB = function(id){
   const re=()=>{save();const l=main.querySelector('.rows'),sc=l?l.scrollTop:0;window.renderDB(id);const l2=main.querySelector('.rows');if(l2)l2.scrollTop=sc;};
   main.querySelectorAll('[data-sel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.sel;re();});
   main.querySelectorAll('[data-psel]').forEach(r=>r.onclick=()=>{st.sel=r.dataset.psel;st.spec='';main.querySelector('.ddetail')&&(main.querySelector('.ddetail').scrollTop=0);re();});
+  if(id==='db-roll' && window.fillCommunity){ const pl=POOLS.find(p=>p.id===st.sel)||POOLS[0]; window.fillCommunity(main, pl); }
   main.querySelectorAll('[data-slot]').forEach(b=>b.onclick=e=>{e.stopPropagation();st.spec=b.dataset.slot;re();const d=main.querySelector('.ddetail');if(d)d.scrollTop=0;});
   main.querySelectorAll('[data-pk]').forEach(inp=>inp.oninput=()=>{
     const k=inp.dataset.pk; if(inp.value==='') delete prolls[k]; else prolls[k]=inp.value; store.set('poolrolls',prolls);

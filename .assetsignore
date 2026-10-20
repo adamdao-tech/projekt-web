@@ -1,0 +1,7 @@
+api/
+wrangler.jsonc
+README.md
+.git
+.wrangler
+node_modules
+.dev.vars

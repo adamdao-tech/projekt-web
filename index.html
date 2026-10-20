@@ -434,6 +434,92 @@ main .sh{text-align:left;font:600 12px "Segoe UI",sans-serif;letter-spacing:1.4p
 .sbtn:hover{border-color:#d9a44188;color:var(--gold2)}
 .sbtn img{width:20px;height:20px;object-fit:contain}
 .sbtn small{color:var(--muted);font-size:11.5px}
+
+/* ---------- NÁSTROJE ---------- */
+main.tool{padding:18px 26px 40px}
+main.tool .em-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+main.tool .em-top h1{margin:0;font:700 24px Georgia,serif;color:var(--gold2)}
+.tsub{color:var(--muted);font-size:13.5px}
+.tl{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:600;margin:16px 0 7px}
+.tchips{display:flex;flex-wrap:wrap;gap:6px}
+.tchips .gchip{display:inline-flex;align-items:center;gap:6px}
+.gi{width:18px;height:18px;object-fit:contain}
+.tbtn{background:var(--gold);color:#1a1205;border:0;border-radius:8px;padding:8px 14px;font:600 13.5px "Segoe UI",sans-serif;cursor:pointer}
+.tbtn:hover{background:var(--gold2)} .tbtn:disabled{opacity:.55;cursor:default}
+.tbtn.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line)} .tbtn.ghost:hover{border-color:#d9a44188}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+/* kontrola itemu */
+.ckgrid{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:16px;align-items:start}
+.ckrows{display:grid;gap:8px;margin-top:12px}
+.ckrow{display:grid;grid-template-columns:22px minmax(180px,1.4fr) 110px minmax(170px,1fr);gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.ckrow .cn{color:var(--muted);font-size:12px}
+.ckrow select,.ckrow input,.bsel,.bline select,.bline input,.bbar input,.bbar select,.xadd input,.tg input,.price{background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--text);font:inherit;font-size:13px;padding:6px 8px;outline:none;min-width:0}
+.ckrow select:focus,.ckrow input:focus,.bsel:focus,.bline select:focus,.bline input:focus,.price:focus{border-color:var(--gold)}
+.ckres{display:flex;align-items:center;gap:8px;min-width:0}
+.tbadge{font:800 12px "Segoe UI",sans-serif;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent);border-radius:6px;padding:3px 8px;white-space:nowrap}
+.tbar{flex:1;height:6px;background:var(--bg);border-radius:4px;overflow:hidden;min-width:40px}
+.tbar i{display:block;height:100%}
+.cpc{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.cpc small,td[data-cst] small{color:var(--muted);font-size:11px}
+.cktiers{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:3px}
+.cktiers span{font-size:11px;color:#8d939d;background:var(--bg);border-radius:4px;padding:1px 6px}
+.cktiers span.on{color:var(--gold2);background:color-mix(in srgb,var(--gold) 18%,transparent);font-weight:700}
+.ckside{position:sticky;top:10px}
+.ckside .snum{font-size:46px}
+.ckact{display:flex;flex-direction:column;gap:8px;margin-top:14px;align-items:flex-start}
+.hist{display:inline-flex;align-items:flex-end;gap:1px;height:18px;width:54px;vertical-align:middle}
+.hist i{flex:1;background:#4a4f58;border-radius:1px 1px 0 0;min-height:2px}
+.hist i:last-child{background:var(--gold)}
+.hist i.me{background:var(--good)}
+td[data-cst]{white-space:nowrap}
+/* build */
+.bbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 6px}
+.bbar #bname{font:700 15px "Segoe UI",sans-serif;width:220px}
+.shared{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:color-mix(in srgb,var(--gold) 10%,var(--panel));border:1px solid #d9a44166;border-radius:10px;padding:10px 14px;margin:8px 0}
+.bgrid{display:grid;grid-template-columns:1fr 290px;gap:18px;align-items:start}
+.bgrid>*,.ckgrid>*,.cgrid>*{min-width:0}
+.emslot select{width:100%}
+.bcard select,.bcard input{max-width:100%}
+.bsum{position:sticky;top:10px;max-height:calc(100vh - 140px);overflow:auto}
+.bsum .ptab td{padding:5px 6px;font-size:13px}
+.emgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.emslot{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 9px}
+.emslot.on{border-color:#d9a44166}
+.emslot select{flex:1;min-width:0;background:transparent;border:0;color:var(--text);font:inherit;font-size:13px;outline:none}
+.emslot select option,.emslot select optgroup{background:var(--panel)}
+.eimg{width:30px;height:30px;object-fit:contain;flex:none}
+.eimg.ph,.bimg.ph{display:grid;place-items:center;background:var(--panel2);border-radius:7px;color:var(--muted);font-size:12px;font-weight:700}
+.bcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.bcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 11px;display:flex;flex-direction:column;gap:7px}
+.bch{display:flex;align-items:center;gap:9px}
+.bimg{width:34px;height:34px;object-fit:contain;flex:none}
+.bct{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.bct b{font-size:13.5px;color:var(--gold2)}
+.bct .bsel{width:100%}
+.bsel.full{width:100%}
+.brank{display:flex;align-items:center;gap:4px;font:700 12px "Segoe UI",sans-serif;color:var(--muted)}
+.brank input{width:46px;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--gold2);font:700 13px "Segoe UI",sans-serif;padding:4px 5px;text-align:center}
+.blines{display:flex;flex-direction:column;gap:5px}
+.bline{display:grid;grid-template-columns:1fr 112px 22px;gap:5px}
+.bline select,.bline input{width:100%}
+.bx{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:0}
+.bx:hover{color:var(--bad)}
+.badd{background:none;border:1px dashed var(--line);border-radius:7px;color:var(--muted);font:inherit;font-size:12.5px;padding:5px;cursor:pointer}
+.badd:hover{color:var(--gold2);border-color:#d9a44188}
+/* náklady */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin-top:10px}
+.tgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.tg{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px}
+.tg span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tg b{color:var(--muted);font-size:12px}
+.tg input{width:52px;text-align:center}
+.xadd{display:flex;gap:6px}
+.xadd #xn{flex:1}.xadd #xq{width:70px}
+.ctab .price{width:110px}
+.ctab td{vertical-align:middle}
+.ctotal{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:8px;padding-top:12px}
+.ctotal b{font-size:24px;color:var(--gold2);font-variant-numeric:tabular-nums}
+@media(max-width:1000px){.ckgrid,.bgrid,.cgrid{grid-template-columns:1fr}.ckside,.bsum{position:static;max-height:none}.ckrow{grid-template-columns:22px 1fr 90px}.ckres{grid-column:2/-1}.emgrid{grid-template-columns:repeat(2,1fr)}}
 /* ---------- JAZYK ---------- */
 .langsw{display:flex;gap:4px}
 .langsw .chip{padding:5px 10px;font-weight:600;letter-spacing:.5px}
@@ -493,6 +579,7 @@ function renderNav(){
   $('#nav').innerHTML =
     `<h4>${tr('Max rolly','Max rolls')}</h4>` + CATS.map(c=>btn(c.id,esc(tr(c.name,c.name_en||c.name)),null)).join('') +
     (UP ? `<h4>${tr('Upgrady','Upgrades')}</h4>` + btn(UP.id,esc(tr(UP.name,UP.name_en)),null) : '') +
+    (window.TOOLNAV ? `<h4>${tr('Nástroje','Tools')}</h4>` + window.TOOLNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
     (EM ? '<h4>Heal šaman</h4>' + btn(EM.id,'Emblemy a buildy',null) : '') +
     (window.DBNAV ? `<h4>${tr('Databáze','Database')}</h4>` + window.DBNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
     `<div class="upd">${tr('Aktualizováno','Updated')}: ${esc(window.LAST_UPDATE||'')}</div>`;
@@ -886,12 +973,13 @@ document.addEventListener('keydown',e=>{
   if(EM&&state.cat===EM.id){const k=Object.keys(EM.builds)[+e.key-1]; if(k){state.build=k;store.set('build',k);renderEmblems()}}
   if(UP&&state.cat===UP.id){const k=Object.keys(UTABS)[+e.key-1]; if(k){state.utab=k;store.set('utab',k);renderUpgrades()}}
 });
-function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
+function render(){ renderNav(); const nq=!state.q.trim(); if(String(state.cat).startsWith('tool-') && window.renderTool){ if(nq) return window.renderTool(state.cat); } if(String(state.cat).startsWith('db-') && window.renderDB){ if(nq) return window.renderDB(state.cat); } if(EM && state.cat===EM.id && nq) renderEmblems(); else if(UP && state.cat===UP.id && nq) renderUpgrades(); else if(nq && CATS.find(c=>c.id===state.cat)?.groups) renderPet(CATS.find(c=>c.id===state.cat)); else { $('#main').className=''; renderMain(); } }
 $('#q').oninput=e=>{state.q=e.target.value;render();$('#q').focus()};
 render();
 </script>
 <script src="db.js"></script>
 <script src="db-ui.js"></script>
+<script src="tools.js"></script>
 <script>render();</script>
 </body>
 </html>
