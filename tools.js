@@ -139,7 +139,7 @@ function parseItemText(text, names){
   const out=[]; let godly=false;
   for(let raw of text.split('\n')){
     let line = raw.trim(); if(!line) continue;
-    if(/godly\s*attrib/i.test(line)){ godly=true; continue; }
+    if(/[a-z]?od[l1i]y\s*a[tf]{1,2}r?[il1]b/i.test(line)){ godly=true; continue; }
     if(/[\[(]\s*[Q@0O]\s*[:;+]|\bQ\s*[:;]/.test(line) || /pl\s*v?l|quality|from\s+p/i.test(line)) continue;   // základní staty [Q: …]
     if(/\s[-–]\s/.test(line)) continue;                 // rozsahy „560 - 570“
     line = line.replace(/\[[^\]]*\]?/g,' ').replace(/\([^)]*\)?/g,' ');
@@ -168,7 +168,7 @@ async function ckOCR(file, rerender){
     const res=classifyShot(texts); let item=null, best;
     if(res.kind==='slot'){ if(CK.mode==='__pet') CK.mode='auto'; CK.slot=res.slot; item=res.item?{item:res.item,slot:res.slot}:null; best=res.rows; }
     else if(res.kind==='pet'){ CK.mode='__pet'; best=res.rows; }
-    else best=bestParse(texts, CK.mode==='__pet' ? PET.rows.map(r=>r.n) : ckNames());
+    else best=bestParse(texts, CK.mode==='__pet' ? PET.rows.map(r=>r.n) : ckNames(), CK.mode==='__pet' ? '__pet' : CK.slot);
     ckOcr.busy=false; ckEdit=null;
     CK.item = item ? item.item.id : '';
     if(!best.length){ ckOcr.msg=T('Na obrázku jsem nenašel žádný bonus. Zkus celý tooltip bez ořezu, nebo přidej řádky ručně.','No bonus found. Try the whole tooltip or add lines by hand.'); saveCK(); return rerender(); }
@@ -306,14 +306,24 @@ function poolForLine(b, v, slot, godly){
   const cand=itemPools().map(p=>[p,rowIn(p,b,slot)]).filter(x=>x[1]);
   return (cand.find(([p,r])=>exactTier(r,v)) || cand.find(([p,r])=>inRange(r,v)) || [null])[0];
 }
-function bestParse(texts, names){ let best=[]; texts.forEach(t=>{ const f=parseItemText(t,names); if(f.length>best.length) best=f; }); return best; }
+// vybere nejlepší čtení: body za řádky, jejichž hodnota sedí na skutečný tier (šum z OCR dostane mínus)
+function lineScore(r, slot){
+  if(slot==='__pet'){ const row=PET.rows.find(x=>x.n===r.b); return row&&inRange(row,r.v)?2:-2; }
+  let best=-2; for(const p of itemPools()){ const row=rowIn(p,r.b,slot); if(!row) continue; if(exactTier(row,r.v)) return 3; if(inRange(row,r.v)) best=Math.max(best,0); }
+  return best;
+}
+function bestParse(texts, names, slot){
+  let best=[], bs=-1e9;
+  texts.forEach(t=>{ const f=parseItemText(t,names); const sc=slot ? f.reduce((a,r)=>a+lineScore(r,slot),0) : f.length; if(sc>bs){ bs=sc; best=f; } });
+  return best;
+}
 // rozpozná jeden screenshot: {kind:'slot'|'pet'|'unk', slot, item, rows}
 function classifyShot(texts, forceSlot){
-  if(forceSlot==='__pet') return {kind:'pet', rows:bestParse(texts, PET.rows.map(r=>r.n))};
+  if(forceSlot==='__pet') return {kind:'pet', rows:bestParse(texts, PET.rows.map(r=>r.n), '__pet')};
   let det=null; for(const t of texts){ det=detectItem(t); if(det) break; }
   const slot = forceSlot || det?.slot;
-  if(slot) return {kind:'slot', slot, item:det&&det.slot===slot?det.item:null, rows:bestParse(texts, slotNamesFor(slot))};
-  const petRows=bestParse(texts, PET.rows.map(r=>r.n));
+  if(slot) return {kind:'slot', slot, item:det&&det.slot===slot?det.item:null, rows:bestParse(texts, slotNamesFor(slot), slot)};
+  const petRows=bestParse(texts, PET.rows.map(r=>r.n), '__pet');
   if(petRows.length>=2 || texts.some(t=>/artifact|artefakt/i.test(t))) return {kind:'pet', rows:petRows};
   return {kind:'unk', rows:[]};
 }
@@ -560,6 +570,7 @@ window.TOOLNAV = [
 ];
 window.openPetCheck = () => { CK.mode='__pet'; CK.rows=[]; CK.item=''; ckEdit=null; saveCK(); state.cat='tool-check'; store.set('cat','tool-check'); state.q=''; render(); };
 window.petCheckFile = f => { if(!f||!f.type.startsWith('image/')||ckOcr.busy) return; window.openPetCheck(); ckOCR(f, ()=>render()); };
+window.__ckdbg = {classifyShot, parseItemText};
 window.renderTool = id => id==='tool-build' ? buildView() : checkerView();
 
 // sdílený build z odkazu (#b=krátké id nebo #build=dlouhá data); funguje i při vložení do stejné záložky
