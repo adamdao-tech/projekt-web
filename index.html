@@ -540,17 +540,17 @@ td[data-cst]{white-space:nowrap}
 }
 html,body{font-family:'Barlow',system-ui,sans-serif;font-size:14.5px}
 body{background:
-  radial-gradient(900px 420px at 18% -160px,rgba(201,162,74,.10),transparent 70%),
+  radial-gradient(900px 420px at 18% -160px,color-mix(in srgb,var(--gold) 10%,transparent),transparent 70%),
   repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 2px,transparent 2px 7px),
   var(--bg)}
 header{border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(143,108,61,.25)}
-.logo{font:400 23px/1 var(--head);letter-spacing:.6px;color:var(--gold2);text-shadow:0 1px 0 #000,0 0 22px rgba(201,162,74,.25)}
+.logo{font:400 23px/1 var(--head);letter-spacing:.6px;color:var(--gold2);text-shadow:0 1px 0 #000,0 0 22px color-mix(in srgb,var(--gold) 25%,transparent)}
 .logo small{font-family:'Barlow',sans-serif;letter-spacing:.4px;text-transform:none;font-size:12px;color:var(--muted)}
 nav{background:linear-gradient(180deg,rgba(0,0,0,.18),transparent 140px)}
 nav h4{font:400 13px var(--head);letter-spacing:.5px;text-transform:none;color:var(--bronze2);margin:14px 12px 6px}
 nav button{border-radius:4px;padding:8px 12px;margin-bottom:1px;border:0;border-left:2px solid transparent;color:#d8cdb6}
-nav button:hover{background:rgba(201,162,74,.06);color:var(--text)}
-nav button.active{background:linear-gradient(90deg,rgba(201,162,74,.14),transparent);border:0!important;border-left:2px solid var(--gold)!important;border-left-color:var(--gold);color:var(--gold2)!important}
+nav button:hover{background:color-mix(in srgb,var(--gold) 6%,transparent);color:var(--text)}
+nav button.active{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 14%,transparent),transparent);border:0!important;border-left:2px solid var(--gold)!important;border-left-color:var(--gold);color:var(--gold2)!important}
 .title h1,.em-top h1,main.tool h1,.dhead h1,.cktop h1{font:400 26px var(--head)!important;color:var(--gold2);letter-spacing:.3px}
 th{font:600 11.5px 'Barlow',sans-serif;letter-spacing:.3px;text-transform:none;color:var(--bronze2)}
 table{border-color:var(--line);border-radius:6px}
@@ -577,7 +577,7 @@ main.tool.ck{padding:22px 28px 50px}
 .ckleft{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;min-height:260px;padding:22px;border:1px dashed var(--bronze);border-radius:6px;background:rgba(0,0,0,.25);cursor:pointer;text-align:center;color:var(--muted);transition:border-color .15s,background .15s}
 .ckmain.has .drop{min-height:140px;padding:12px}
-.drop:hover,.drop.over,.drop:focus-visible{border-color:var(--gold2);background:rgba(201,162,74,.06);outline:none}
+.drop:hover,.drop.over,.drop:focus-visible{border-color:var(--gold2);background:color-mix(in srgb,var(--gold) 6%,transparent);outline:none}
 .drop img{max-width:100%;max-height:300px;object-fit:contain;border-radius:3px;opacity:.9}
 .ckmain.has .drop img{max-height:180px}
 .drop .dtxt{font-size:15px;line-height:1.5}
@@ -602,7 +602,7 @@ main.tool.ck{padding:22px 28px 50px}
 .tsec.godly .tsech{color:var(--godly)}
 .tsec.six .tsech{color:var(--six)}
 .tline{display:grid;grid-template-columns:1fr auto 30px 70px;grid-template-rows:auto auto;column-gap:8px;align-items:center;width:100%;background:none;border:0;border-radius:2px;padding:3px 4px;margin:0 -4px;color:#e9e2cf;font:inherit;font-size:13px;text-align:left;cursor:pointer}
-.tline:hover,.tline.edit{background:rgba(201,162,74,.08)}
+.tline:hover,.tline.edit{background:color-mix(in srgb,var(--gold) 8%,transparent)}
 .tline:focus-visible{outline:1px solid var(--gold2)}
 .tsec.six .tn,.tsec.six .tv{color:var(--six)}
 .tsec.godly .tn,.tsec.godly .tv{color:var(--godly)}
@@ -642,11 +642,11 @@ main.tool.ck{padding:22px 28px 50px}
 @media(max-width:760px){.ckmain.has{grid-template-columns:1fr}.ckverd{position:static;border-left:0;padding:0}}
 
 /* ---------- sjednocení barev (jedna teplá paleta) ---------- */
-body{background:radial-gradient(1000px 420px at 20% -180px,rgba(207,167,90,.07),transparent 70%),var(--bg)!important}
-.note{border-left-color:var(--gold)!important;background:rgba(207,167,90,.06)!important;color:var(--muted)!important}
-.info{background:rgba(207,167,90,.05)!important;border-color:var(--line)!important;color:var(--muted)}
+body{background:radial-gradient(1000px 420px at 20% -180px,color-mix(in srgb,var(--gold) 7%,transparent),transparent 70%),var(--bg)!important}
+.note{border-left-color:var(--gold)!important;background:color-mix(in srgb,var(--gold) 6%,transparent)!important;color:var(--muted)!important}
+.info{background:color-mix(in srgb,var(--gold) 5%,transparent)!important;border-color:var(--line)!important;color:var(--muted)}
 .inf{color:var(--gold2)!important}
-.src{background:rgba(207,167,90,.08)!important;color:var(--gold2)!important;border-color:transparent!important}
+.src{background:color-mix(in srgb,var(--gold) 8%,transparent)!important;color:var(--gold2)!important;border-color:transparent!important}
 .src.alt,.src.none{background:var(--panel2)!important;color:var(--muted)!important}
 .ui,.ui.big{--c:var(--gold)!important}
 .ubar i{background:linear-gradient(90deg,var(--bronze),var(--gold2))!important}
@@ -671,7 +671,7 @@ main.pet2{padding:24px 30px 50px;max-width:1100px}
 .plseg{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .plseg button{background:none;border:0;border-right:1px solid var(--line);color:var(--muted);font:inherit;font-size:13.5px;padding:7px 12px;cursor:pointer}
 .plseg button:last-child{border-right:0}
-.plseg button:hover{color:var(--text);background:rgba(207,167,90,.05)}
+.plseg button:hover{color:var(--text);background:color-mix(in srgb,var(--gold) 5%,transparent)}
 .plseg button.on{background:var(--sel);color:var(--gold2)}
 .plfav{margin-left:auto;background:none;border:1px solid var(--line);border-radius:4px;color:var(--muted);font:inherit;font-size:13.5px;padding:7px 12px;cursor:pointer}
 .plfav span{color:var(--dim,#6f6458);margin-left:4px}
@@ -683,7 +683,7 @@ main.pet2{padding:24px 30px 50px;max-width:1100px}
 .plsh span{color:var(--muted);font-size:13px;flex:1}
 .plsh em{font-style:normal;color:var(--muted);font-size:13px}
 .plr{display:grid;grid-template-columns:30px minmax(0,1fr) 150px 80px 64px;align-items:center;gap:12px;padding:9px 6px;border-bottom:1px solid rgba(58,49,40,.55)}
-.plr:hover{background:rgba(207,167,90,.035)}
+.plr:hover{background:color-mix(in srgb,var(--gold) 3.5%,transparent)}
 .plstar{background:none;border:0;color:#6f6458;font-size:17px;cursor:pointer;padding:0;line-height:1}
 .plstar.on,.plstar:hover{color:var(--gold2)}
 .pln{min-width:0}
@@ -700,12 +700,34 @@ main.pet2{padding:24px 30px 50px;max-width:1100px}
 button:focus:not(:focus-visible),.row:focus:not(:focus-visible){outline:none}
 button:focus-visible{outline:1px solid var(--gold2);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- barevné motivy (5 možností, vyšší kontrast) ---------- */
+html[data-theme=gold]{--bg:#0d0a07;--panel:#191410;--panel2:#241d16;--line:#4a3c2c;--bronze2:#d1ad6e;--text:#f8f1e3;--muted:#c4b49b;--gold:#e8b95a;--gold2:#ffdc94;--sel:#2e241a;--inbg:#060403;--navtx:#ece2cc;--btntx:#1a1105}
+html[data-theme=night]{--bg:#080c14;--panel:#101827;--panel2:#18233a;--line:#2f4166;--bronze2:#8fb4e8;--text:#eef4ff;--muted:#a9b8d2;--gold:#4ea8ff;--gold2:#a8d5ff;--good:#7fd1ff;--mid:#7d9cc4;--bad:#ff7f7f;--sel:#17243c;--inbg:#04070d;--navtx:#dbe6f8;--btntx:#03101f}
+html[data-theme=emerald]{--bg:#06100c;--panel:#0d1b15;--panel2:#14281f;--line:#2b4b3d;--bronze2:#7fd0aa;--text:#ecfaf2;--muted:#a2c6b4;--gold:#34d995;--gold2:#a3f2cc;--good:#6ff0b4;--mid:#88b8a0;--bad:#ff8a7a;--sel:#13281e;--inbg:#030806;--navtx:#d8f0e3;--btntx:#02160d}
+html[data-theme=blood]{--bg:#0f0607;--panel:#1c0d0f;--panel2:#2a1416;--line:#55292d;--bronze2:#f09a9d;--text:#fff1f1;--muted:#d2abad;--gold:#ff4f58;--gold2:#ffb3b6;--good:#ff9fa4;--mid:#c98d90;--bad:#ff6b4a;--sel:#2e1416;--inbg:#070203;--navtx:#f6dcdd;--btntx:#1f0204}
+html[data-theme=contrast]{--bg:#000;--panel:#0e0e0e;--panel2:#1c1c1c;--line:#5a5a5a;--bronze2:#ffe14d;--text:#fff;--muted:#d6d6d6;--gold:#ffd400;--gold2:#fff07a;--good:#fff07a;--mid:#d6d6d6;--bad:#ff6b6b;--six:#d7b8ff;--godly:#9fe0ff;--sel:#262626;--inbg:#000;--navtx:#fff;--btntx:#000}
+html[data-theme] .search input,html[data-theme] .teditor select,html[data-theme] .teditor input{background:var(--inbg)!important}
+html[data-theme] nav button{color:var(--navtx)}
+html[data-theme] nav button.active{color:var(--gold2)!important}
+html[data-theme] .tbtn{background:var(--gold)!important;color:var(--btntx)!important;border-color:var(--gold)!important;text-shadow:none}
+html[data-theme] .tbtn:hover{background:var(--gold2)!important}
+html[data-theme] .ttip{border-color:color-mix(in srgb,var(--gold) 45%,transparent)}
+html[data-theme] .tline{color:var(--text)}
+html[data-theme] .ttiers span.on{color:var(--btntx)}
+html[data-theme] .logo{text-shadow:0 1px 0 #000}
+.thsw{display:flex;gap:5px;align-items:center;margin-right:6px}
+.thsw button{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;box-shadow:0 0 0 1px rgba(255,255,255,.25) inset}
+.thsw button.on{border-color:var(--text)}
+@media(max-width:700px){.thsw button{width:16px;height:16px}}
 </style>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("mmr_theme")||"gold"}catch(e){document.documentElement.dataset.theme="gold"}</script>
 </head>
 <body>
 <header>
   <div class="logo">Metin Max Rolls<small>Nihor2 · Chronicles of Jinteia</small></div>
   <label class="search"><span>⌕</span><input id="q" placeholder="Hledat bonus ve všech kategoriích…" autocomplete="off"></label>
+  <div class="thsw" id="thsw"></div>
   <div class="langsw" id="langsw"></div>
 </header>
 <div class="wrap">
@@ -760,6 +782,10 @@ function renderNav(){
     (EM ? '<h4>Heal šaman</h4>' + btn(EM.id,'Emblemy a buildy',null) : '') +
     (window.DBNAV ? `<h4>${tr('Databáze','Database')}</h4>` + window.DBNAV.map(n=>btn(n.id,n.label,null)).join('') : '') +
     `<div class="upd">${tr('Aktualizováno','Updated')}: ${esc(window.LAST_UPDATE||'')}</div>`;
+  const THEMES=[['gold','Zlatá','Gold','#e8b95a'],['night','Noc','Night','#4ea8ff'],['emerald','Smaragd','Emerald','#34d995'],['blood','Rudá','Crimson','#ff4f58'],['contrast','Vysoký kontrast','High contrast','#ffd400']];
+  const curTh=document.documentElement.dataset.theme;
+  $('#thsw').innerHTML=THEMES.map(t=>`<button class="${curTh===t[0]?'on':''}" data-th="${t[0]}" title="${tr(t[1],t[2])}" aria-label="${tr(t[1],t[2])}" style="background:${t[3]}"></button>`).join('');
+  $('#thsw').querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.theme=b.dataset.th;try{localStorage.setItem('mmr_theme',b.dataset.th)}catch(e){}$('#thsw').querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x===b));});
   $('#langsw').innerHTML = ['cs','en'].map(l=>`<button class="chip ${LANG===l?'on':''}" data-lang="${l}">${l==='cs'?'CZ':'EN'}</button>`).join('');
   $('#langsw').querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{ if(b.dataset.lang===LANG) return; store.set('lang',b.dataset.lang); location.reload(); });
   $('#q').placeholder = tr('Hledat bonus ve všech kategoriích…','Search bonuses in all categories…');
@@ -940,7 +966,7 @@ function renderUpgrades(){
 // ---------------- PET ARTEFAKTY (kompaktní) ----------------
 const shortName = n => n.replace('Strong against ','vs. ').replace('Resistance against ','Res. vs ').replace('Resistance to ','Res. vs ').replace('Average Damage Resistance','AVG Resistance').replace('% Chance for piercing Hits','Piercing chance').replace('% Chance for EXP Bonus','EXP Bonus chance').replace('% increased Item-Drop','Item-Drop').replace('Chance of critical hit','Critical chance').replace('Average Damage (AVG)','AVG Damage');
 const PET_LAYOUT = [['utok','cc'],['obrana'],['elem','farm'],['strong']];
-const GCOL = {utok:'#cfa75a',cc:'#cfa75a',obrana:'#cfa75a',elem:'#cfa75a',farm:'#cfa75a',strong:'#cfa75a'};
+const GCOL = {utok:'var(--gold)',cc:'var(--gold)',obrana:'var(--gold)',elem:'var(--gold)',farm:'var(--gold)',strong:'var(--gold)'};
 // výchozí hodnocení (můj návrh pro PvM: farmení + bossové). 3 = top, 2 = ok, 1 = slabé
 const PET_DEFAULT = {
   'Strong against Monsters':3,'Strong against Metinstones':3,'Strong against Portals':3,'Average Damage (AVG)':3,'Skill Damage (SD)':3,
