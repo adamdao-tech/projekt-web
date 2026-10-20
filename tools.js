@@ -100,21 +100,20 @@ async function sendStats(pool, slot, rows){
 // =====================================================================
 // Pořadí, ve kterém se hádá zdroj řádku (běžné dřív než vzácné)
 const AUTO_ORDER = ['Normal','Divine','6/7','Divine 6/7','Godly','Exalted','Exalted + Divine','Exalted 6/7','Exalted + Divine 6/7','Magic Word'];
-const NROWS = 8;
-const CK = Object.assign({mode:'auto', slot:'Weapon', rows:[]}, store.get('checker2', {}));
-CK.rows = Array.from({length:NROWS},(_,i)=>CK.rows[i]||{b:'',v:'',p:''});
-const saveCK = () => store.set('checker2', CK);
-const ckOcr = {msg:'', img:''};
+const CK = Object.assign({mode:'auto', slot:'Weapon', rows:[], item:''}, store.get('checker3', {}));
+CK.rows = (CK.rows||[]).filter(l=>l && l.b);
+const saveCK = () => store.set('checker3', CK);
+const ckOcr = {msg:'', img:'', busy:false};
+let ckEdit = null;                                   // index řádku, který se právě upravuje
 const ckSent = new Set(store.get('ckSent', []));
 const itemPools = () => AUTO_ORDER.map(poolById).filter(Boolean);
 const rowIn = (pool, name, slot) => pool && pool.rows.find(r=>r.n===name && (pool.pet || !slot || r.sl.includes(slot)));
 const exactTier = (row, v) => { const x=num(v); return x!=null && row.t.some(t=>Math.abs(num(t)-x)<1e-6); };
 const inRange = (row, v) => { const x=num(v), a=num(row.t[0]), b=num(row.t[row.t.length-1]); return x!=null && x>=a-1e-6 && x<=b+1e-6; };
-// zdroj pro řádek: ručně zvolený > zvolený režim > první s přesným tierem > první v rozsahu
-function guessPool(l, godly){
+function guessPool(l){
   if(CK.mode==='__pet') return PET;
   if(l.p) return poolById(l.p);
-  const order = godly ? [poolById('Godly'), ...itemPools()] : CK.mode!=='auto' ? [poolById(CK.mode), ...itemPools()] : itemPools();
+  const order = CK.mode!=='auto' ? [poolById(CK.mode), ...itemPools()] : itemPools();
   const cand = order.filter(Boolean).map(p=>[p,rowIn(p,l.b,CK.slot)]).filter(x=>x[1]);
   return (cand.find(([p,r])=>exactTier(r,l.v)) || cand.find(([p,r])=>inRange(r,l.v)) || [null])[0];
 }
@@ -122,6 +121,17 @@ function ckNames(){
   if(CK.mode==='__pet') return PET.rows.map(r=>r.n);
   const set=new Set(); itemPools().forEach(p=>p.rows.forEach(r=>{ if(!CK.slot||r.sl.includes(CK.slot)) set.add(r.n); }));
   return [...set].sort();
+}
+const allNames = () => { const set=new Set(); itemPools().forEach(p=>p.rows.forEach(r=>set.add(r.n))); PET.rows.forEach(r=>set.add(r.n)); return [...set]; };
+// slot podle názvu itemu z tooltipu (např. „Lying Dragon Fan+0“ → Weapon)
+const EQN = D.equip.map(e=>({e, k:norm(e.n.replace(/\+\d.*$/,''))}));
+function detectItem(text){
+  for(const raw of text.split('\n').slice(0,4)){
+    const k=norm(raw.replace(/\+\d.*$/,'').replace(/\(.*$/,'')); if(k.length<5) continue;
+    let best=null, bs=0; for(const x of EQN){ const sc=dice(k,x.k); if(sc>bs){bs=sc;best=x.e;} }
+    if(best && bs>=0.72){ const t=eqType(best); const s=SLOTS.find(s=>s.eq(t)); if(s) return {item:best, slot:s.k}; }
+  }
+  return null;
 }
 // čtení textu z tooltipu: přeskočí základní staty [Q: …], rozsahy a záporné hodnoty, zvládne „6% Chance…“ i „Max. SP +1,250“
 function parseItemText(text, names){
@@ -147,89 +157,123 @@ function parseItemText(text, names){
 }
 async function ckOCR(file, rerender){
   const url=URL.createObjectURL(file);
-  ckOcr.img=url; ckOcr.msg=T('Čtu text ze screenshotu…','Reading the screenshot…'); rerender();
+  ckOcr.img=url; ckOcr.busy=true; ckOcr.msg=T('Čtu screenshot…','Reading the screenshot…'); rerender();
   try{
     await loadTess();
     const w = await Tesseract.createWorker('eng',1,{workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int'});
-    const names=ckNames(); let best=[];
+    let best=[], item=null;
     for(const thr of [140,110,170]){
       const cv=await prepImage(url,thr); const {data}=await w.recognize(cv);
-      const found=parseItemText(data.text, names);
+      item = item || detectItem(data.text);
+      if(item && CK.mode!=='__pet') CK.slot=item.slot;
+      const found=parseItemText(data.text, CK.mode==='__pet' ? PET.rows.map(r=>r.n) : ckNames());
       if(found.length>best.length) best=found;
     }
     await w.terminate();
-    if(!best.length){ ckOcr.msg=T('Na obrázku jsem nenašel žádný bonus. Zkus výřez jen s tooltipem nebo vyplň řádky ručně.','No bonus found. Try a tighter crop or fill the rows by hand.'); return rerender(); }
-    CK.rows = Array.from({length:NROWS},(_,i)=>best[i]?{b:best[i].b,v:best[i].v,p:best[i].godly&&poolById('Godly')?'Godly':''}:{b:'',v:'',p:''}); saveCK();
-    ckOcr.msg = T(`Našel jsem ${best.length} řádků. Zdroj každého řádku jsem odhadl podle tierů – zkontroluj čísla a případně ho přepni.`,`Found ${best.length} lines. The source of each line was guessed from its tiers – check and adjust if needed.`); rerender();
-  }catch(e){ ckOcr.msg = e.message || T('Čtení se nepovedlo.','Reading failed.'); rerender(); }
+    ckOcr.busy=false; ckEdit=null;
+    CK.item = item ? item.item.id : '';
+    if(!best.length){ ckOcr.msg=T('Na obrázku jsem nenašel žádný bonus. Zkus celý tooltip bez ořezu, nebo přidej řádky ručně.','No bonus found. Try the whole tooltip or add lines by hand.'); saveCK(); return rerender(); }
+    CK.rows = best.map(x=>({b:x.b, v:x.v, p:x.godly&&poolById('Godly')?'Godly':''})); saveCK();
+    ckOcr.msg = ''; rerender();
+  }catch(e){ ckOcr.busy=false; ckOcr.msg = e.message || T('Čtení se nepovedlo.','Reading failed.'); rerender(); }
 }
 function evalRow(l){
   if(!l.b || l.v==='') return null;
-  const p = guessPool(l, l.p==='Godly'); if(!p) return {p:null};
+  const p = guessPool(l); if(!p) return {p:null};
   const r = rowIn(p,l.b,CK.slot); if(!r) return {p:null};
-  if(p.pet){ const pct=clamp((num(l.v)-num(r.t[0]))/((num(r.t[1])-num(r.t[0]))||1),0,1); return {p,r,tier:{ti:null,tn:null,pct,over:num(l.v)>num(r.t[1])}}; }
+  if(p.pet){ const pct=clamp((num(l.v)-num(r.t[0]))/((num(r.t[1])-num(r.t[0]))||1),0,1); return {p,r,tier:{ti:null,tn:null,pct,over:num(l.v)>num(r.t[1])},exact:true}; }
   return {p,r,tier:tierOf(r,l.v),exact:exactTier(r,l.v)};
 }
+const FAM = p => !p ? 'base' : p.pet ? 'pet' : p.id==='Godly' ? 'godly' : p.id==='Magic Word' ? 'word' : /6\/7/.test(p.id) ? 'six' : 'main';
+const FAMNAME = {main:T('Bonusy','Bonuses'), six:T('Bonusy 6/7','6/7 bonuses'), godly:'Godly Attribute', word:'Magic Word', pet:T('Pet artefakt','Pet artifact'), base:T('Nepoznané / základní staty','Unrecognised / base stats')};
+const qcol = t => !t ? 'var(--muted)' : t.over ? 'var(--bad)' : t.pct>=.999 ? 'var(--gold2)' : t.pct>=.8 ? 'var(--good)' : t.pct>=.5 ? 'var(--mid)' : 'var(--bad)';
+const fmtV = (v,u) => (Number(v).toLocaleString(LOC))+(u||'');
+
+function ckLine(l,i,e){
+  const u = e&&e.r ? unitOf(e.r.t[e.r.t.length-1]) : '';
+  const t = e&&e.exact!==false ? e.tier : null;
+  const pips = t && t.tn ? `<span class="pips" style="--c:${qcol(t)}">${Array.from({length:t.tn},(_,j)=>`<i class="${j<=t.ti?'on':''}"></i>`).join('')}</span>` : t ? `<span class="pips pct" style="--c:${qcol(t)}"><i style="width:${t.pct*100}%"></i></span>` : '';
+  const tag = !e||!e.p ? `<span class="ttag dim">?</span>` : e.exact===false ? `<span class="ttag dim" title="${T('Hodnota není přesný tier – asi základní stat itemu','Not an exact tier – probably a base stat')}">~</span>` : `<span class="ttag" style="--c:${qcol(t)}">${t.over?'!':t.ti!=null?`T${t.ti+1}`:Math.round(t.pct*100)+'%'}</span>`;
+  const maxv = e&&e.r ? e.r.t[e.r.t.length-1] : '';
+  return `<button class="tline ${ckEdit===i?'edit':''}" data-li="${i}" title="${T('Klikni pro úpravu','Click to edit')}">
+      <span class="tn">${esc(l.b)}</span><span class="tv">${l.v!==''?'+'+esc(fmtV(l.v,u)):'—'}</span>${tag}${pips}<span class="tmax">${maxv?T('max ','max ')+esc(maxv):''}</span>
+      <span class="tpc" data-ckb="${esc(l.b)}" data-ckp="${esc(e&&e.p?e.p.id:'')}" data-ckt="${t&&t.ti!=null?t.ti:''}"></span>
+    </button>` + (ckEdit===i ? ckEditor(l,i,e) : '');
+}
+function ckEditor(l,i,e){
+  const pet=CK.mode==='__pet';
+  const pools = (!pet && l.b) ? itemPools().filter(p=>rowIn(p,l.b,CK.slot)) : [];
+  return `<div class="teditor">
+    <select class="cksel" data-i="${i}"><option value="">${T('vyber bonus…','pick a bonus…')}</option>${ckNames().map(n=>`<option ${n===l.b?'selected':''} value="${esc(n)}">${esc(n)}</option>`).join('')}</select>
+    <input class="ckval" data-i="${i}" inputmode="decimal" placeholder="${T('hodnota','value')}" value="${esc(l.v)}">
+    ${pet?'':`<select class="ckpool" data-i="${i}" ${l.b?'':'disabled'}><option value="">${T('zdroj: automaticky','source: automatic')}${e&&e.p&&!l.p?' ('+esc(e.p.n)+')':''}</option>${pools.map(p=>`<option value="${esc(p.id)}" ${p.id===l.p?'selected':''}>${esc(p.n)}</option>`).join('')}</select>`}
+    ${e&&e.r?`<div class="ttiers">${e.r.t.map((x,j)=>`<span class="${e.tier&&e.tier.ti===j&&e.exact!==false?'on':''}">${esc(x)}</span>`).join('')}</div>`:''}
+    <div class="tedact"><button class="tbtn ghost" data-done>${T('Hotovo','Done')}</button><button class="lnk2 danger" data-rm="${i}">${T('Odebrat řádek','Remove line')}</button></div>
+  </div>`;
+}
 function checkerView(){
-  const main=$('#main'); main.className='tool';
+  const main=$('#main'); main.className='tool ck';
   const pet = CK.mode==='__pet';
-  const slots = pet ? [] : [...new Set(itemPools().flatMap(p=>p.rows.flatMap(r=>r.sl)))].filter(s=>!/Mount|Pet/.test(s)).sort();
-  const names = ckNames();
-  let sum=0, filled=0, maxed=0;
   const ev = CK.rows.map(evalRow);
-  const res = CK.rows.map((l,i)=>{
-    const e=ev[i]; let out='';
-    if(e && !e.p) out = `<span class="tbadge" style="--c:var(--muted)">?</span><span class="smut">${T('Hodnota nesedí na žádný zdroj pro tenhle slot – asi základní stat itemu.','Value fits no source for this slot – probably a base item stat.')}</span>`;
-    else if(e && e.exact===false) out = `<span class="tbadge" style="--c:var(--muted)">~T${(e.tier.ti??0)+1}</span><span class="smut">${T(`Není přesný tier ze zdroje ${esc(e.p.n)} – asi základní stat itemu, nebo zkontroluj číslo/zdroj.`,`Not an exact ${esc(e.p.n)} tier – probably a base stat; check the value/source.`)}</span>`;
-    else if(e){ const t=e.tier; filled++; sum+=t.pct; if(t.pct>=.999) maxed++;
-      const col = t.over ? 'var(--bad)' : t.pct>=.999 ? 'var(--gold2)' : t.pct>=.8 ? 'var(--good)' : t.pct>=.5 ? 'var(--mid)' : 'var(--bad)';
-      out = `<span class="tbadge" style="--c:${col}">${t.over?'> max?':t.ti!=null?`T${t.ti+1}/${t.tn}`:Math.round(t.pct*100)+' %'}</span><span class="tbar"><i style="width:${t.pct*100}%;background:${col}"></i></span><span class="cpc" data-ckb="${esc(l.b)}" data-ckp="${esc(e.p.id)}" data-ckt="${t.ti??''}"></span>`; }
-    const pools = (!pet && l.b) ? itemPools().filter(p=>rowIn(p,l.b,CK.slot)) : [];
-    const auto = e&&e.p ? e.p.n : '';
-    return `<div class="ckrow"><span class="cn">${i+1}.</span>
-      <select class="cksel" data-i="${i}"><option value="">${T('vyber bonus…','pick a bonus…')}</option>${names.map(n=>`<option ${n===l.b?'selected':''} value="${esc(n)}">${esc(n)}</option>`).join('')}</select>
-      <input class="ckval" data-i="${i}" inputmode="decimal" placeholder="${T('hodnota','value')}" value="${esc(l.v)}">
-      ${pet?'<span></span>':`<select class="ckpool" data-i="${i}" ${l.b?'':'disabled'}><option value="">${auto?T('auto: ','auto: ')+esc(auto):T('zdroj: auto','source: auto')}</option>${pools.map(p=>`<option value="${esc(p.id)}" ${p.id===l.p?'selected':''}>${esc(p.n)}</option>`).join('')}</select>`}
-      <div class="ckres">${out}</div>${e&&e.r?`<div class="cktiers">${e.r.t.map((t,j)=>`<span class="${e.tier&&e.tier.ti===j?'on':''}">${esc(t)}</span>`).join('')}</div>`:''}</div>`;
-  }).join('');
+  let sum=0, filled=0, maxed=0;
+  ev.forEach(e=>{ if(e&&e.p&&e.exact!==false){ filled++; sum+=e.tier.pct; if(e.tier.pct>=.999) maxed++; } });
   const score = filled ? Math.round(sum/filled*100) : 0;
-  const verdict = !filled ? T('Vlož screenshot itemu nebo vyplň řádky. Zdroj (Normal, Divine, 6/7, Godly…) se u každého řádku pozná sám.','Paste a screenshot or fill the rows. Each line\'s source is detected automatically.')
-    : score>=85 ? T('Skoro maxnutý item. Nech si ho, tohle se netočí.','Almost maxed. Keep it.')
-    : score>=65 ? T('Dobrý item. Přetáčej jen nejslabší řádky.','Good item. Only reroll the weakest lines.')
-    : score>=40 ? T('Průměr. Pokud máš orby, točil bych dál.','Average. If you have orbs, keep rolling.')
+  const verdict = score>=85 ? T('Skoro maxnutý. Nech si ho.','Almost maxed. Keep it.')
+    : score>=65 ? T('Dobrý item. Přetoč jen nejslabší řádky.','Good item. Reroll only the weakest lines.')
+    : score>=40 ? T('Průměr. Máš-li orby, toč dál.','Average. Keep rolling if you have orbs.')
     : T('Slabé rolly. Točit dál.','Weak rolls. Reroll.');
+  // skupiny jako ve hře
+  const groups={}; CK.rows.forEach((l,i)=>{ const e=ev[i]; const f=e&&e.exact===false?'base':FAM(e&&e.p); (groups[f] ||= []).push(i); });
+  const item = D.equip.find(x=>x.id===CK.item);
+  const slotObj = SLOTS.find(s=>s.k===CK.slot);
+  const slotOpts = [...new Set(itemPools().flatMap(p=>p.rows.flatMap(r=>r.sl)))].filter(s=>!/Mount|Pet/.test(s)).sort();
   const key = CK.mode+'|'+CK.slot+'|'+CK.rows.map(l=>l.b+':'+l.v).join(',');
-  const modes = [{id:'auto',n:T('Celý item (auto)','Whole item (auto)'),pi:null}, ...itemPools(), PET];
-  main.innerHTML = `<div class="em-top"><h1>${T('Kontrola itemu','Item check')}</h1><span class="tsub">${T('Vlož screenshot itemu a uvidíš tier každého řádku a jestli se vyplatí točit dál.','Paste an item screenshot to see each line\'s tier and whether to keep rolling.')}</span></div>
-    <div class="tl">${T('Zdroj rollů','Roll source')}</div>
-    <div class="tchips">${modes.map(x=>`<button class="gchip ${x.id===CK.mode?'on':''}" data-ckm="${esc(x.id)}">${x.pi?img(x.pi,'gi'):'✨'}${esc(x.n)}</button>`).join('')}</div>
-    ${slots.length?`<div class="tl">${T('Slot','Slot')}</div><div class="tchips">${slots.map(s=>`<button class="gchip ${s===CK.slot?'on':''}" data-cks="${esc(s)}">${esc(s)}</button>`).join('')}</div>`:''}
-    <div class="ckgrid">
-      <div>
-        <div class="ocr" id="ckocr" tabindex="0"><div class="ocrtxt"><p>${T('<b>Vlož screenshot</b> přes Ctrl+V, přetáhni ho sem, nebo','<b>Paste a screenshot</b> with Ctrl+V, drop it here, or')} <label class="lnk2">${T('vyber soubor','choose a file')}<input type="file" id="ckfile" accept="image/*" hidden></label>.</p>
-          <p class="smut">${T('Celý tooltip itemu. Základní staty [Q: …] se přeskočí, řádky pod „Godly Attribute“ se počítají jako Godly.','The whole item tooltip. Base stats [Q: …] are skipped, lines under “Godly Attribute” count as Godly.')}</p></div><div class="ocrstat">${ckOcr.msg||''}</div>${ckOcr.img?`<img class="ocrimg" src="${ckOcr.img}" alt="">`:''}</div>
-        <div class="ckrows ${pet?'pet':''}">${res}</div>
+  const has = CK.rows.length>0;
+  const tooltip = has ? `<div class="ttip">
+      <div class="ttitle">${item?img(item.i,'titem'):''}<div><b>${esc(item?item.n.replace(/\s*\+\d.*$/,''):(pet?T('Pet artefakt','Pet artifact'):slotObj?slotName(slotObj):CK.slot||T('Item','Item')))}</b><span>${pet?'':esc(slotObj?slotName(slotObj):CK.slot)}</span></div></div>
+      ${['main','six','godly','word','pet','base'].filter(f=>groups[f]).map(f=>`<div class="tsec ${f}"><div class="tsech">${FAMNAME[f]}</div>${groups[f].map(i=>ckLine(CK.rows[i],i,ev[i])).join('')}</div>`).join('')}
+      <button class="tadd" id="ckadd">+ ${T('přidat řádek ručně','add a line by hand')}</button>
+    </div>` : '';
+  main.innerHTML = `
+    <div class="cktop"><h1>${T('Kontrola itemu','Item check')}</h1>
+      <label class="cksl">${T('Slot','Slot')} <select id="ckslot" ${pet?'disabled':''}>${slotOpts.map(s=>`<option ${s===CK.slot?'selected':''} value="${esc(s)}">${esc(s)}</option>`).join('')}</select></label>
+      <label class="cksl">${T('Zdroj','Source')} <select id="ckmode"><option value="auto">${T('Celý item – poznat automaticky','Whole item – detect automatically')}</option>${itemPools().map(p=>`<option value="${esc(p.id)}" ${p.id===CK.mode?'selected':''}>${esc(p.n)}</option>`).join('')}<option value="__pet" ${pet?'selected':''}>${T('Pet artefakt','Pet artifact')}</option></select></label>
+    </div>
+    <div class="ckmain ${has?'has':''}">
+      <div class="ckleft">
+        <label class="drop ${ckOcr.busy?'busy':''}" id="ckocr" tabindex="0">
+          <input type="file" id="ckfile" accept="image/*" hidden>
+          ${ckOcr.img?`<img src="${ckOcr.img}" alt="">`:''}
+          <span class="dtxt">${ckOcr.busy?`<b>${ckOcr.msg}</b>`:has?T('<b>Ctrl+V</b> další screenshot','<b>Ctrl+V</b> another screenshot'):T('<b>Ctrl+V</b> – vlož screenshot itemu<br><small>nebo ho sem přetáhni či klikni a vyber soubor</small>','<b>Ctrl+V</b> – paste an item screenshot<br><small>or drop it here, or click to choose a file</small>')}</span>
+        </label>
+        ${!ckOcr.busy&&ckOcr.msg?`<p class="ckmsg">${ckOcr.msg}</p>`:''}
+        ${!has&&!ckOcr.busy?`<button class="lnk2" id="ckadd">${T('nebo vyplnit ručně','or fill in by hand')}</button>`:''}
       </div>
-      <aside class="card ckside">
-        <div class="snum ${score>=65?'top':score>=40?'ok':'bad'}">${filled?score:'–'}<small>/100</small></div>
-        <p class="sverd">${verdict}</p>
-        ${filled?`<p class="smut">${T(`${maxed} z ${filled} řádků je na maximu. Skóre = jak blízko maxu jsou rolly v průměru.`,`${maxed} of ${filled} lines are maxed. Score = how close the rolls are to max on average.`)}</p>`:''}
-        <div class="ckact">
-          ${!pet&&filled?`<button class="tbtn" id="cksend" ${ckSent.has(key)?'disabled':''}>${ckSent.has(key)?T('✓ Posláno do statistik','✓ Sent'):T('📊 Přispět do statistik','📊 Contribute to stats')}</button>`:''}
-          ${filled?`<button class="tbtn ghost" id="cktob">${T('➕ Vložit do buildu','➕ Add to build')}</button>`:''}
-          <button class="lnk2" id="ckclr">${T('Vymazat','Clear')}</button>
+      ${has?`<div class="ckmid">${tooltip}</div>
+      <aside class="ckverd">
+        <div class="vscore" style="--c:${score>=65?'var(--good)':score>=40?'var(--mid)':'var(--bad)'}">${filled?score:'–'}</div>
+        <p class="vtext">${filled?verdict:T('Doplň hodnoty řádků.','Fill in the line values.')}</p>
+        ${filled?`<p class="vsub">${T(`${maxed} z ${filled} řádků na maximu`,`${maxed} of ${filled} lines maxed`)}</p>`:''}
+        <div class="vact">
+          ${!pet&&filled?`<button class="tbtn" id="cksend" ${ckSent.has(key)?'disabled':''}>${ckSent.has(key)?T('Přidáno do statistik','Added to stats'):T('Přidat do statistik','Add to stats')}</button>`:''}
+          ${filled?`<button class="tbtn ghost" id="cktob">${T('Vložit do buildu','Add to build')}</button>`:''}
+          <button class="lnk2" id="ckclr">${T('Začít znovu','Start over')}</button>
         </div>
-        ${!pet?`<p class="smut" style="margin-top:12px">${T('Statistiky jsou anonymní – posílá se jen zdroj, slot, bonus a tier. Díky nim ostatní uvidí, jak vzácné rolly jsou.','Stats are anonymous – only source, slot, bonus and tier are sent.')}</p>`:''}
-      </aside>
+        <p class="vnote">${T('T = tier rollu, čárky ukazují, kolik tierů zbývá do maxima. Klikni na řádek, když chceš opravit číslo nebo zdroj.','T = roll tier, the marks show how many tiers are left to max. Click a line to fix the value or source.')}</p>
+      </aside>`:''}
     </div>`;
   const re=()=>{ const sc=main.scrollTop; checkerView(); main.scrollTop=sc; };
-  main.querySelectorAll('[data-ckm]').forEach(b=>b.onclick=()=>{ const was=CK.mode==='__pet', now=b.dataset.ckm==='__pet'; CK.mode=b.dataset.ckm; if(was!==now) CK.rows=CK.rows.map(()=>({b:'',v:'',p:''})); else CK.rows.forEach(l=>l.p=''); saveCK(); re(); });
-  main.querySelectorAll('[data-cks]').forEach(b=>b.onclick=()=>{ CK.slot=b.dataset.cks; CK.rows.forEach(l=>l.p=''); saveCK(); re(); });
-  main.querySelectorAll('.cksel').forEach(x=>x.onchange=()=>{ CK.rows[+x.dataset.i]={b:x.value,v:CK.rows[+x.dataset.i].v,p:''}; saveCK(); re(); });
+  $('#ckslot').onchange=e=>{ CK.slot=e.target.value; CK.item=''; CK.rows.forEach(l=>l.p=l.p==='Godly'?'Godly':''); saveCK(); re(); };
+  $('#ckmode').onchange=e=>{ const was=CK.mode==='__pet', now=e.target.value==='__pet'; CK.mode=e.target.value; if(was!==now){ CK.rows=[]; CK.item=''; } else CK.rows.forEach(l=>{ if(l.p!=='Godly') l.p=''; }); ckEdit=null; saveCK(); re(); };
+  main.querySelectorAll('[data-li]').forEach(b=>b.onclick=()=>{ ckEdit = ckEdit===+b.dataset.li ? null : +b.dataset.li; re(); });
+  main.querySelectorAll('#ckadd').forEach(b=>b.onclick=()=>{ CK.rows.push({b:'',v:'',p:''}); ckEdit=CK.rows.length-1; saveCK(); re(); });
+  main.querySelectorAll('.cksel').forEach(x=>x.onchange=()=>{ const l=CK.rows[+x.dataset.i]; l.b=x.value; l.p=''; saveCK(); re(); });
   main.querySelectorAll('.ckpool').forEach(x=>x.onchange=()=>{ CK.rows[+x.dataset.i].p=x.value; saveCK(); re(); });
-  main.querySelectorAll('.ckval').forEach(inp=>{ inp.onchange=()=>{ CK.rows[+inp.dataset.i].v=inp.value.trim().replace(/[+%\s]/g,''); saveCK(); re(); }; inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; });
-  $('#ckclr').onclick=()=>{ CK.rows=CK.rows.map(()=>({b:'',v:'',p:''})); ckOcr.img=''; ckOcr.msg=''; saveCK(); re(); };
-  const z=$('#ckocr'), take=f=>{ if(f&&f.type.startsWith('image/')) ckOCR(f,re); };
+  main.querySelectorAll('.ckval').forEach(inp=>{ inp.onchange=()=>{ CK.rows[+inp.dataset.i].v=inp.value.trim().replace(/[+%\s]/g,'').replace(/,(?=\d{3}\b)/g,''); saveCK(); re(); }; inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; });
+  main.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ CK.rows.splice(+b.dataset.rm,1); ckEdit=null; saveCK(); re(); });
+  main.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{ CK.rows=CK.rows.filter(l=>l.b); ckEdit=null; saveCK(); re(); });
+  const clr=$('#ckclr'); if(clr) clr.onclick=()=>{ CK.rows=[]; CK.item=''; ckEdit=null; ckOcr.img=''; ckOcr.msg=''; saveCK(); re(); };
+  const z=$('#ckocr'), take=f=>{ if(f&&f.type.startsWith('image/')&&!ckOcr.busy) ckOCR(f,re); };
   $('#ckfile').onchange=e=>take(e.target.files[0]);
   z.ondragover=e=>{e.preventDefault();z.classList.add('over')}; z.ondragleave=()=>z.classList.remove('over');
   z.ondrop=e=>{e.preventDefault();z.classList.remove('over');take(e.dataTransfer.files[0])};
@@ -244,13 +288,13 @@ function checkerView(){
     const b = SHARED ? null : curBuild(); if(!b) return;
     if(pet){ b.pet.lines = CK.rows.filter(l=>l.b&&l.v!=='').map(l=>({b:l.b,v:l.v})); }
     else { const s=SLOTS.find(x=>x.k===CK.slot); if(!s){ tb.textContent=T('Tenhle slot v buildu není','This slot is not in the planner'); return; }
-      const st=slotState(b,s.k); const lines=ev.map((e,i)=>e&&e.p&&e.tier&&e.tier.ti>=0?{b:CK.rows[i].b,ti:e.tier.ti,p:e.p.id}:null).filter(Boolean);
+      const st=slotState(b,s.k); if(CK.item) st.item=CK.item;
+      const lines=ev.map((e,i)=>e&&e.p&&e.exact!==false&&e.tier&&e.tier.ti>=0?{b:CK.rows[i].b,ti:e.tier.ti,p:e.p.id}:null).filter(Boolean);
       const cnt={}; lines.forEach(l=>cnt[l.p]=(cnt[l.p]||0)+1); st.pool=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]?.[0]||st.pool; st.lines=lines.map(l=>l.p===st.pool?{b:l.b,ti:l.ti}:l); }
-    saveBuilds(); tb.textContent=T(`✓ Vloženo do „${b.name}“`,`✓ Added to “${b.name}”`); tb.disabled=true;
+    saveBuilds(); tb.textContent=T(`Vloženo do „${b.name}“`,`Added to “${b.name}”`); tb.disabled=true;
   };
-  // komunitní percentil
-  const pls=[...new Set([...main.querySelectorAll('[data-ckp]')].map(e=>e.dataset.ckp))].filter(x=>x!=='__pet');
-  pls.forEach(pid=>stats(pid).then(d=>{ if(!d) return; main.querySelectorAll(`[data-ckp="${CSS.escape(pid)}"]`).forEach(el=>{ const s=d[el.dataset.ckb], ti=el.dataset.ckt; if(!s||!s.n||ti===''||+ti>=s.c.length) return; const better=s.c.slice(+ti+1).reduce((a,b)=>a+b,0); const pc=Math.round((s.n-better-s.c[+ti]/2)/s.n*100); el.innerHTML=`${hist(s,+ti)}<small>${T(`lepší než ${pc} %`,`beats ${pc}%`)} · ${s.n}×</small>`; }); }));
+  const pls=[...new Set([...main.querySelectorAll('[data-ckp]')].map(e=>e.dataset.ckp))].filter(x=>x&&x!=='__pet');
+  pls.forEach(pid=>stats(pid).then(d=>{ if(!d) return; main.querySelectorAll(`[data-ckp="${CSS.escape(pid)}"]`).forEach(el=>{ const s=d[el.dataset.ckb], ti=el.dataset.ckt; if(!s||!s.n||ti===''||+ti>=s.c.length) return; const better=s.c.slice(+ti+1).reduce((a,b)=>a+b,0); const pc=Math.round((s.n-better-s.c[+ti]/2)/s.n*100); el.textContent=T(`lepší než ${pc} %`,`beats ${pc}%`); el.title=T(`podle ${s.n} rollů od hráčů`,`based on ${s.n} player rolls`); }); }));
 }
 
 // =====================================================================

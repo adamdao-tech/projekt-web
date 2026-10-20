@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Metin Max Rolls</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600&family=Marcellus&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0d0f12; --panel:#15181d; --panel2:#1b1f26; --line:#262b33;
@@ -527,6 +527,121 @@ td[data-cst]{white-space:nowrap}
 /* ---------- JAZYK ---------- */
 .langsw{display:flex;gap:4px}
 .langsw .chip{padding:5px 10px;font-weight:600;letter-spacing:.5px}
+
+/* =========================================================
+   VZHLED „Jinteia“ – lakované dřevo, bronz, zlato
+   ========================================================= */
+:root{
+  --bg:#120e0b; --panel:#1b1511; --panel2:#241b15; --line:#35281d; --bronze:#8f6c3d; --bronze2:#c19a5b;
+  --text:#ece3cf; --muted:#9a8b74; --gold:#c9a24a; --gold2:#f0d58c;
+  --good:#6fc28f; --mid:#d9b24c; --bad:#d0583f; --six:#b58ce0; --godly:#7ec3f0;
+  --head:'Marcellus',Georgia,serif; --accent:var(--gold2); --sel:#2c2117;
+}
+html,body{font-family:'Barlow',system-ui,sans-serif;font-size:14.5px}
+body{background:
+  radial-gradient(900px 420px at 18% -160px,rgba(201,162,74,.10),transparent 70%),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 2px,transparent 2px 7px),
+  var(--bg)}
+header{border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(143,108,61,.25)}
+.logo{font:400 23px/1 var(--head);letter-spacing:.6px;color:var(--gold2);text-shadow:0 1px 0 #000,0 0 22px rgba(201,162,74,.25)}
+.logo small{font-family:'Barlow',sans-serif;letter-spacing:.4px;text-transform:none;font-size:12px;color:var(--muted)}
+nav{background:linear-gradient(180deg,rgba(0,0,0,.18),transparent 140px)}
+nav h4{font:400 13px var(--head);letter-spacing:.5px;text-transform:none;color:var(--bronze2);margin:14px 12px 6px}
+nav button{border-radius:4px;padding:8px 12px;margin-bottom:1px;border:0;border-left:2px solid transparent;color:#d8cdb6}
+nav button:hover{background:rgba(201,162,74,.06);color:var(--text)}
+nav button.active{background:linear-gradient(90deg,rgba(201,162,74,.14),transparent);border:0!important;border-left:2px solid var(--gold)!important;border-left-color:var(--gold);color:var(--gold2)!important}
+.title h1,.em-top h1,main.tool h1,.dhead h1,.cktop h1{font:400 26px var(--head)!important;color:var(--gold2);letter-spacing:.3px}
+th{font:600 11.5px 'Barlow',sans-serif;letter-spacing:.3px;text-transform:none;color:var(--bronze2)}
+table{border-color:var(--line);border-radius:6px}
+.search input{border-radius:4px;border-color:var(--line);background:#0f0b09}
+.search input:focus{border-color:var(--bronze2)}
+.chip,.gchip{border-radius:4px}
+.tbtn{background:linear-gradient(180deg,#e0bd6a,#b8902f);color:#1d1406;border:1px solid #6b4f22;border-radius:4px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+.tbtn:hover{background:linear-gradient(180deg,#f0d58c,#c9a24a)}
+.tbtn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--bronze);text-shadow:none}
+.card{border-radius:6px;border-color:var(--line)}
+.langsw .chip{border-radius:4px}
+.btab.on,.gchip.on{background:var(--sel)!important;border-color:var(--bronze)!important;color:var(--gold2)!important}
+.row.on{background:var(--sel);box-shadow:inset 2px 0 0 var(--gold)}
+
+/* ---------- Kontrola itemu: tooltip jako ve hře ---------- */
+main.tool.ck{padding:22px 28px 50px}
+.cktop{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:18px}
+.cktop h1{margin:0 auto 0 0}
+.cksl{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.cksl select{background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--text);font:inherit;font-size:13.5px;padding:7px 10px;outline:none}
+.cksl select:focus{border-color:var(--bronze2)}
+.ckmain{display:grid;grid-template-columns:minmax(0,1fr);max-width:720px}
+.ckmain.has{grid-template-columns:220px minmax(320px,440px) minmax(220px,280px);gap:22px;max-width:none;align-items:start}
+.ckleft{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;min-height:260px;padding:22px;border:1px dashed var(--bronze);border-radius:6px;background:rgba(0,0,0,.25);cursor:pointer;text-align:center;color:var(--muted);transition:border-color .15s,background .15s}
+.ckmain.has .drop{min-height:140px;padding:12px}
+.drop:hover,.drop.over,.drop:focus-visible{border-color:var(--gold2);background:rgba(201,162,74,.06);outline:none}
+.drop img{max-width:100%;max-height:300px;object-fit:contain;border-radius:3px;opacity:.9}
+.ckmain.has .drop img{max-height:180px}
+.drop .dtxt{font-size:15px;line-height:1.5}
+.drop .dtxt b{color:var(--gold2);font-weight:600}
+.drop .dtxt small{font-size:12.5px}
+.drop.busy{cursor:progress}
+.drop.busy img{filter:brightness(.45)}
+.drop.busy .dtxt{position:absolute;inset:auto 0 50%;transform:translateY(50%)}
+.ckmsg{margin:0;color:var(--mid);font-size:13px}
+
+.ttip{position:relative;background:rgba(8,6,5,.93);border:1px solid #5d4527;border-radius:3px;padding:14px 16px 12px;font-family:Tahoma,'Segoe UI',sans-serif;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.9),inset 0 0 0 2px rgba(193,154,91,.18),0 10px 30px rgba(0,0,0,.5)}
+.ttip::before,.ttip::after{content:'';position:absolute;width:10px;height:10px;border:1px solid var(--bronze2)}
+.ttip::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.ttip::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.ttitle{display:flex;align-items:center;gap:10px;padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid rgba(193,154,91,.18)}
+.ttitle b{display:block;color:#7fe07a;font-size:14px;font-weight:700}
+.ttitle span{color:var(--muted);font-size:12px}
+.titem{width:36px;height:36px;object-fit:contain}
+.tsec{padding:6px 0 4px}
+.tsech{font-size:11.5px;color:var(--muted);margin:2px 0 3px}
+.tsec.godly .tsech{color:var(--godly)}
+.tsec.six .tsech{color:var(--six)}
+.tline{display:grid;grid-template-columns:1fr auto 30px 70px;grid-template-rows:auto auto;column-gap:8px;align-items:center;width:100%;background:none;border:0;border-radius:2px;padding:3px 4px;margin:0 -4px;color:#e9e2cf;font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.tline:hover,.tline.edit{background:rgba(201,162,74,.08)}
+.tline:focus-visible{outline:1px solid var(--gold2)}
+.tsec.six .tn,.tsec.six .tv{color:var(--six)}
+.tsec.godly .tn,.tsec.godly .tv{color:var(--godly)}
+.tsec.word .tn,.tsec.word .tv{color:var(--gold2)}
+.tsec.base .tn,.tsec.base .tv{color:var(--muted);font-style:italic}
+.tv{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ttag{justify-self:end;font:700 11px 'Barlow',sans-serif;color:var(--c);min-width:26px;text-align:center}
+.ttag.dim{color:var(--muted)}
+.pips{display:flex;gap:2px;height:7px}
+.pips i{flex:1;background:rgba(255,255,255,.08);border-radius:1px}
+.pips i.on{background:var(--c)}
+.pips.pct{background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden}
+.pips.pct i{background:var(--c);flex:none}
+.tmax,.tpc{grid-column:1/-1;font-size:11px;color:var(--muted);line-height:1.2}
+.tmax{grid-row:2;grid-column:1/3}
+.tpc{grid-row:2;grid-column:3/5;text-align:right;color:#a99878}
+.tpc:empty,.tmax:empty{display:none}
+.teditor{display:grid;grid-template-columns:1fr 90px;gap:6px;margin:4px 0 10px;padding:10px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:3px;font-family:'Barlow',sans-serif}
+.teditor select,.teditor input{background:#0f0b09;border:1px solid var(--line);border-radius:3px;color:var(--text);font:inherit;font-size:13px;padding:6px 8px;outline:none;min-width:0}
+.teditor .ckpool{grid-column:1/-1}
+.ttiers{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px}
+.ttiers span{font-size:11px;color:#8d8270;background:rgba(255,255,255,.04);border-radius:2px;padding:1px 6px}
+.ttiers span.on{color:#1d1406;background:var(--gold)}
+.tedact{grid-column:1/-1;display:flex;gap:12px;align-items:center}
+.lnk2.danger{color:var(--bad)}
+.tadd{margin-top:8px;background:none;border:0;color:var(--muted);font:12.5px 'Barlow',sans-serif;cursor:pointer;padding:2px 0}
+.tadd:hover{color:var(--gold2)}
+
+.ckverd{position:sticky;top:12px;padding:4px 0 0 18px;border-left:1px solid var(--line)}
+.vscore{font:400 64px/1 var(--head);color:var(--c)}
+.vscore::after{content:' / 100';font:400 16px 'Barlow',sans-serif;color:var(--muted)}
+.vtext{font-size:17px;color:var(--text);margin:10px 0 2px;line-height:1.35}
+.vsub{color:var(--muted);font-size:13px;margin:0 0 16px}
+.vact{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.vnote{color:var(--muted);font-size:12px;line-height:1.5;margin-top:18px}
+@media(max-width:1180px){.ckmain.has{grid-template-columns:minmax(0,1fr) minmax(220px,280px)}.ckleft{grid-column:1/-1;flex-direction:row;align-items:center}.ckmain.has .drop{min-height:0;flex-direction:row;padding:10px 14px}.ckmain.has .drop img{max-height:60px}}
+@media(max-width:760px){.ckmain.has{grid-template-columns:1fr}.ckverd{position:static;border-left:0;padding:0}}
+button:focus:not(:focus-visible),.row:focus:not(:focus-visible){outline:none}
+button:focus-visible{outline:1px solid var(--gold2);outline-offset:1px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
